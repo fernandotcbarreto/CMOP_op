@@ -13,7 +13,7 @@ Module oil_fractions
   double precision, dimension(:, :), allocatable:: massa7, massa8, massa9, massa10, massa11, massa12
   double precision, dimension(:, :), allocatable:: massa13, massa14, massa15, massa16, massa17, massa18
   double precision, dimension(:, :), allocatable:: massa19, massa20, massa21, massa22, massa23, massa24, massa25
-  DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: rho_e, visc_e, mas_evap, porc_evap,  FRAC_MASS_OUT_PART, visc_f1
+  DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: rho_e, visc_e, mas_evap, mass_diss, porc_evap,  FRAC_MASS_OUT_PART, visc_f1
   DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: areaem, diamem, porc_evap_vol, vol_evap, vol_diss, porc_diss_vol
   DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: vol_entra, porc_vol_entra, vol_left, porc_vol_left
 

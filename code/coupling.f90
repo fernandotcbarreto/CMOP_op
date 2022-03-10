@@ -20,8 +20,14 @@ lat_model_sum_height, lon_model_sum_height, coord_sum_height
  
     inf_time = 1
     num_res_par = 0
-    path_ini_coup='/home/valdir/Documentos/oil_model/run_summer/abrolhos_summer/surface_data_abrolhosj_jan_2.txt'
-    path_frac='/home/valdir/Documentos/oil_model/run_summer/abrolhos_summer/frac_mass_abrolhos_jan_2.txt'
+!    path_ini_coup='/home/valdir/Documentos/oil_model/run_summer/abrolhos_summer/surface_data_abrolhosj_jan_2.txt'
+!    path_frac='/home/valdir/Documentos/oil_model/run_summer/abrolhos_summer/frac_mass_abrolhos_jan_2.txt'
+!    path_ini_coup='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/surface_data_noronha_nov_1day.txt' ! menor 300
+!    path_frac='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/frac_mass_noronha_nov_1day.txt' !menor 300
+    path_ini_coup='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/surface_data&
+	_noronha_nov_1day_maior300.txt'
+    path_frac='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/frac_mass_noronha_&
+	nov_1day_maior300.txt' 
     num_sp = 50
     dx_h = 1000
     dy_h = 1000

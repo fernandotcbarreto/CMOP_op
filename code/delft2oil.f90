@@ -21,8 +21,10 @@ contains
 subroutine init_delft
  implicit none 
  
- path='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/'
-
+! path='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/emergencia_daily/'
+! path='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/adcirc_reverse/'
+! path='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/adcirc/'
+ path='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/'
 
 end subroutine 
 

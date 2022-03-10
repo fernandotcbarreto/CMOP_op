@@ -2,7 +2,7 @@ Module processes
   use oil_fractions
   implicit none 
 
-  double precision:: stab_index 
+  double precision:: stab_index, ucomp2,vcomp2, vel2,dir2
   double precision:: XA !fraction and mass of asphaltenes
   double precision:: XW  !fraction and mass of wax
   double precision, dimension(:), allocatable:: XAM, XWM
@@ -57,7 +57,6 @@ Module processes
      !print*, kem
 	 !stop
       kem =  0.0000005   !VALUE USED IN EMULFICATION VALIDATION
-
      ! kem =  0.000001   !Value used to validate VISCOSITY
 
      !kem =  0.000002  !
@@ -83,6 +82,31 @@ Module processes
 
   end subroutine emulsify_parameter
 
+
+SUBROUTINE vel_conv
+ ! IMPLICIT NONE
+
+!  DOUBLE PRECISION  , INTENT(IN)   :: vel2, dir2
+!  DOUBLE PRECISION  , INTENT(OUT)   :: ucomp2,vcomp2
+  PI       = 4.D0*DATAN(1.D0)   
+  if (dir2 .le. 90) then
+    ucomp2 = vel2*sin(dir2*PI/180.D0)
+    vcomp2 = vel2*cos(dir2*PI/180.D0)
+	print*, PI
+  elseif (dir2 .gt. 90 .and. dir2 .le. 180) then
+    dir2=dir2-90
+    ucomp2 = vel2*cos(dir2*PI/180.D0)
+    vcomp2 = -vel2*sin(dir2*PI/180.D0)
+  elseif (dir2 .gt. 180 .and. dir2 .le. 270) then
+    dir2=dir2-180
+    ucomp2 = -vel2*sin(dir2*PI/180.D0)
+    vcomp2 = -vel2*cos(dir2*PI/180.D0)
+  elseif (dir2 .gt. 270 .and. dir2 .le. 360) then
+    dir2=dir2-270
+    ucomp2 = -vel2*cos(dir2*PI/180.D0)
+    vcomp2 = vel2*sin(dir2*PI/180.D0)
+  endif
+END SUBROUTINE
 
   subroutine emulsify_parameter_coupling(numtot, num_res_par)
 
