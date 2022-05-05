@@ -1,0 +1,16 @@
+2021-08-19 01:00:00 !initial time
+'/mnt/c/Users/fernando.barreto/Desktop/test_oil/data/'
+60     !running time in hours
+150                 !number of particles
+1                 !DISSOLVE         0 TURN OFF DISSOLUTION
+1                 !EMULSI           0 TURN OFF EMULSIFICATION
+1                 !EVAP_TURN        0 TURN OFF EVAPORATION
+1                 !ENTRAIN          0 TURN OFF EVAPORATION
+0                 !THEORETICAL      IF THEORETICAL ACTIVATED DO NOT TURN ENTRAINMENT ON!!!!
+0                 !DISSOLVED_FASE   0 TURN OFF EVAPORATION
+0                !uwd              u-component uniform and stationay wind velocity
+0                !vwd              u-component uniform and stationay wind velocity
+0                 !avel             activate aditional velocity of object
+0                !odir             Object direction
+0.            !ovel              Object velocity
+0             !wind_theoretical   0 turn off wind_theoretical, and read wind U and V from files

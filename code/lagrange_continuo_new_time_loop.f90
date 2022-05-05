@@ -60,9 +60,9 @@ use linear_interpolation
 
   OPEN(54 , FILE = "water_frac.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
 
-  OPEN(221 , FILE = "lat_part_coup_mai_300.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
+  OPEN(221 , FILE = "lat_part_hycom.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
 
-  OPEN(222 , FILE = "lon_part_coup_mai_300.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
+  OPEN(222 , FILE = "lon_part_hycom.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
 
   OPEN(223 , FILE = "lat_partf2.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
 
@@ -112,11 +112,11 @@ use linear_interpolation
 
 !  OPEN(27 , FILE = "mask.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
 
-  call init_delft
+ ! call init_delft
 
   zlayer = 1
 
-  coupling_ind=1
+  coupling_ind=0
 
   right_random = 1
 
@@ -126,7 +126,7 @@ use linear_interpolation
 
   probabilistic_2= 0 
 
-  wind_theoretical = 0
+!  wind_theoretical = 1
 
   linear_interp  = 1
  
@@ -155,7 +155,10 @@ use linear_interpolation
   !kem=99
   !print*, trim(path)
   !stop
-  open(6877,file=trim(path)//'input.dat',  status='old')
+  open(6877,file='input.dat',  status='old')
+  read(6877,*)
+  read(6877,*) PATH
+  read(6877,*) ts
   read(6877,*) numpal 
   read(6877,*) DISSOLVE 
   read(6877,*) EMULSI 
@@ -168,6 +171,7 @@ use linear_interpolation
   read(6877,*) avel
   read(6877,*) odir 
   read(6877,*) ovel
+  read(6877,*) wind_theoretical
   
   ucomp2=0
   vcomp2=0 
@@ -180,8 +184,9 @@ use linear_interpolation
     call vel_conv   
   endif 
 !  print*, avel, dir2, vel2, ucomp2,vcomp2 
+!  print*, numpal, wind_theoretical
 !  stop
-
+ 
   if (wind_theoretical.eq.1) then
    windsp = ((uwd**2 + vwd**2)**0.5)*3600   !wind velocity in m/h
    windspms = (uwd**2 + vwd**2)**0.5
@@ -198,7 +203,8 @@ use linear_interpolation
 
   dt_random = 1
 
-  ts = 3600 !number of hours you wanna run
+!  ts = 3600 !number of hours you wanna run fernando noronh
+!  ts = 24 !number of hours you wanna run
 
   time_finish = 1000000  ! number of hours that lasts the continuous release
 
@@ -907,8 +913,8 @@ allocate(prob_time_sum(numlat, numlon  ) )
 !  lon_ref=-46
 !  lat_ref=-27.8377     !Nordeste spill north
 
-   lon_ref=-43.154270
-   lat_ref=-22.911354
+   lon_ref=-42
+   lat_ref=-23.7
 
 !  if (probabilistic.eq.1) then
        circle_radius = ((1.45**2.)/1.14) * ((   ( (voldis**5.)*gravity*((RO_A - RO_OIL_OUT)/RO_A)   &               
@@ -919,7 +925,7 @@ allocate(prob_time_sum(numlat, numlon  ) )
 !    CALL random_number(RN2)    !!OLD SQUARE SLICK
 !    x(i,1)=X0*RN1
 !    y(i,1)=Y0*RN2
-    circle_radius=100
+    circle_radius=0
 !  enddo
 
   do i=1,numpal
@@ -1096,7 +1102,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
   write(221,fmt2) lat_part(:,1)
   write(222,fmt2) lon_part(:,1)
   write(54,fmt2) watf(:,1)
-  write(18,fmt1) counttimeh_r/60.
+  write(18,fmt2) counttimeh_r/60.
 
 !print*, lat_partf2(:,1)
  IF (ENTRAIN.EQ.1) THEN
@@ -4093,7 +4099,7 @@ if (zf1(m1,i) .ge. 0) then
        counttimeh_era = (time_lim_wind*RN5 -dt)/60.   
        counttimeh = counttime/60.
 
-
+   
   !print*, rn5
      ENDIF
 
@@ -4102,7 +4108,9 @@ if (zf1(m1,i) .ge. 0) then
   endif
 
   cont=cont+1
-
+ 
+ !fmtr='f10.3'
+!print*, 111111,counttimeh/(60)
 !  if (dt_h .ge. 1) then
   if (dt_h .ge. 6) then
   ! if (cont.eq.tsl-1) then

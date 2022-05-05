@@ -14,17 +14,14 @@ double precision, dimension(:), allocatable:: lat_part_sum, lon_part_sum, coord_
  integer:: numlat, numlon, numtime, numz, tdelf1(1), tdelf2(1), lati, lonj
  integer:: lat_in(2), lon_in(2), pinf2(1), lat_in_f2(2), lon_in_f2(2)
  character(len=1024)::  path, bas, bas2, pre_end, end_prob
-! character(*), parameter ::  path='/home/valdir/Documentos/oil_model/input_data/'
+
 contains 
 
 
 subroutine init_delft
  implicit none 
  
-! path='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/emergencia_daily/'
-! path='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/adcirc_reverse/'
-! path='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/adcirc/'
- path='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/'
+ path='/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/hycom_remo/'
 
 end subroutine 
 
