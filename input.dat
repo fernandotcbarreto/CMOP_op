@@ -1,9 +1,0 @@
-4                 !number of particles
-1                 !DISSOLVE         0 TURN OFF DISSOLUTION
-1                 !EMULSI           0 TURN OFF EMULSIFICATION
-1                 !EVAP_TURN        0 TURN OFF EVAPORATION
-1                 !ENTRAIN          0 TURN OFF EVAPORATION
-0                 !THEORETICAL      IF THEORETICAL ACTIVATED DO NOT TURN ENTRAINMENT ON!!!!
-0                 !DISSOLVED_FASE   0 TURN OFF EVAPORATION
-20                !uwd              u-component uniform and stationay wind velocity
-20                !vwd              u-component uniform and stationay wind velocity
