@@ -1,0 +1,7 @@
+rm *o
+
+gfortran -O3 -ffast-math -fstrength-reduce -c white_space.f90 datetime_module.f90 oil_fractions.f90 random_variables.f90 evaporation.f90 processes.f90  dissolve_part.f90  vertical_dispersion.f90 delft2oil.f90 era5_2_oil.f90 wind_variables.f90 dissolved_fase_mod.f90 coupling.f90 linear_interpolation.f90 r8lib.f90 lagrange_continuo_new_time_loop.f90
+
+gfortran -o cmop_exec white_space.o  oil_fractions.o datetime_module.o  random_variables.o evaporation.o processes.o dissolve_part.o vertical_dispersion.o delft2oil.o era5_2_oil.o wind_variables.o dissolved_fase_mod.o coupling.o linear_interpolation.o r8lib.o lagrange_continuo_new_time_loop.o
+
+./cmop_exec
