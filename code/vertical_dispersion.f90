@@ -53,8 +53,8 @@ implicit none
  turbed = 10000  !berry et al 
  cmax =3400    !default
  cmin = 500
-! cmax = 600
-! cmin = 500
+ cmax = 600
+ cmin = 500
 ! print*, gravity
 
 end subroutine
@@ -123,7 +123,8 @@ end subroutine
 
 
 
-subroutine vert_disp_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms, qd, zini, seafrac)
+subroutine vert_disp_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms, qd, zini, seafrac&
+, kzm, wvp)
  implicit none
 
   double precision:: cstar, viscst, ro_a, Hsig , ustar2  , windspms, Uth, tw, dv, dd, hb
@@ -178,7 +179,7 @@ subroutine vert_disp_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms,
 
   zini = max (kzm/wvp, zi)
 
-  zini = zi
+ ! zini = zi
 
 ! print*, zi, kzm/wvp
  ! print*, 'yyuyuuuuuuuuuuuuuu',wenumb, ohnumb

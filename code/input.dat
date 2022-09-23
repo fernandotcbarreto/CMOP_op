@@ -1,7 +1,11 @@
-2021-08-19 01:00:00 !initial time
-'/mnt/c/Users/fernando.barreto/Desktop/test_oil/data/'
-60     !running time in hours
-150                 !number of particles
+2022,9,18 , 12 , 0 ,  0         !   year, month, day, hour, minute, second
+'/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/emergencia/'
+48     !running time in hours  2160
+1                 !number of particles
+-40                ! Spill longitude (decimal)
+-22               ! Spill latitude  (decimal)
+900                 ! time step       (second)  default 900
+8                   ! Volume dischar (m3)
 1                 !DISSOLVE         0 TURN OFF DISSOLUTION
 1                 !EMULSI           0 TURN OFF EMULSIFICATION
 1                 !EVAP_TURN        0 TURN OFF EVAPORATION
@@ -14,3 +18,9 @@
 0                !odir             Object direction
 0.            !ovel              Object velocity
 0             !wind_theoretical   0 turn off wind_theoretical, and read wind U and V from files
+0             !reverse in time   0 turn off reverse in time. Please, turn off physical-chemical processes 
+1             !coupling. 0 turn off coupling, used for connection with blowout and multi-sources. 
+30            !time_finish  number of hours that lasts the continuous release. 0 is instantaneous
+1            !right_random
+'/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/emergencia/testsurf.txt'  !path_ini_coup
+'/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/emergencia/testfrac.txt'     !path_frac

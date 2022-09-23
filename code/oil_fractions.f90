@@ -78,7 +78,7 @@ double precision, dimension(:), allocatable:: MASSCOMPREF
 
      DOUBLE PRECISION  :: CP_OIL  , VIS_DIN_OIL
 
-     double precision, dimension(:,:), allocatable:: massa, vol, massae, vole  !mass oil, vol oil, mass emulsi, vol emulsi
+     double precision, dimension(:,:), allocatable:: massa, vol, massae, vole, beached  !mass oil, vol oil, mass emulsi, vol emulsi
 
      double precision:: API , VAZAO_OIL_OUT,TEMP_OUT
    DOUBLE PRECISION :: TS_VC						! tensao superficial de vc
