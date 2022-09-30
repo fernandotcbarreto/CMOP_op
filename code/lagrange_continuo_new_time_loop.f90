@@ -29,7 +29,7 @@ use datetime_module
   double precision, dimension(:, :), allocatable:: x, area, y, u,v
   double precision, dimension(:,:), allocatable :: diam
   double precision, dimension(:), allocatable:: dt_h_spr
-  double precision :: time_lim, time_lim_wind
+  double precision :: time_lim, time_lim_wind, outp_h
   character*20::  fmt1, x1, fmt, fmt2, fmt3, x2, fmt5, x5, fmt6, x3, fmt4, fmt7, fmt8
 
 !!!!!! RESHAPE
@@ -49,6 +49,8 @@ use datetime_module
   open(14,file='massa2.txt', status='UNKNOWN')
   open(15,file='diam.txt', status='UNKNOWN')
   open(16,file='height.txt', status='UNKNOWN')
+  open(199,file='vol.txt', status='UNKNOWN')
+
 
   open(141,file='massaf2.txt', status='UNKNOWN', FORM= 'FORMATTED ')
 
@@ -167,6 +169,7 @@ use datetime_module
   read(6877,*) PATH
   read(6877,*) ts
   read(6877,*) numpal 
+  read(6877,*) outp_h  
   read(6877,*) lon_ref
   read(6877,*) lat_ref
   read(6877,*) dt
@@ -1078,6 +1081,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     write(13,'(i10)') i
     write(14,'(i10)') i
     write(15,'(i10)') i     
+    write(199,'(i10)') i     
     write(16,'(i10)') i 
     write(17,'(i10)') i 
     write(18,'(i10)') i
@@ -1095,6 +1099,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     write(13,'(i10)', advance='no') i
     write(14,'(i10)', advance='no') i
     write(15,'(i10)', advance='no') i
+    write(199,'(i10)', advance='no') i
     write(16,'(i10)', advance='no') i
     write(17,'(i10)', advance='no') i
     write(18,'(i10)', advance='no') i
@@ -1160,6 +1165,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
   write(231,fmt2) mas_evap(:,1)
   write(232,fmt2) mass_diss(:,1)
   write(15,fmt2) diam(:,1)
+  write(199,fmt2) vol(:,1)
   write(16,fmt2) height(:,1)
   write(221,fmt2) lat_part(:,1)
   write(222,fmt2) lon_part(:,1)
@@ -1259,9 +1265,12 @@ do outer_l=1,1000000000
 
             numtot=numtot+numpal
 
-            vol(num_res_par+1:numtot, :)=vol_res(tc_in)/b(1) 
+!            vol(num_res_par+1:numtot, :)=vol_res(tc_in)/b(1)   ! tested and wrong
+            vol(num_res_par+1:numtot, :)=vol_res(tc_in)/numpal
 
 !  !print*, 'vol', vol(:,1), counttimeh
+!print*, vol_res, b(1), numpal
+!stop
 
             do coup_ct= num_res_par+1,numtot
               FRAC_MASS_OUT_PART(coup_ct,:)=FRAC_MASS_OUT
@@ -1285,10 +1294,13 @@ do outer_l=1,1000000000
 
             OPT = 2
 
-            circle_radius = ((1.45**2.)/1.14) * ((   ( ((vol_res(tc_in)/b(1))**5.)*gravity*((RO_A - RO_OIL_OUT)/RO_A)   &               
+            circle_radius = ((1.45**2.)/1.14) * ((   ( ((vol_res(tc_in))**5.)*gravity*((RO_A - RO_OIL_OUT)/RO_A)   &               
                    ) /((VIS_DIN_A/RO_A))**2.  )**(1./12.))   
 
-
+            !print*, circle_radius
+			!stop
+			!circle_radius=0
+			
             do coup_ct= num_res_par+1,numtot
                CALL random_number(RN1)
                CALL random_number(RN2)
@@ -4256,13 +4268,14 @@ if (zf1(m1,i) .ge. 0) then
  1547 continue
  !fmtr='f10.3'
 !print*, 111111,counttimeh/(60)
-  if (dt_h .ge. 1) then
+  if (dt_h .ge. outp_h) then
 !  if (dt_h .ge. 5) then
   ! if (cont.eq.tsl-1) then
      write(12,fmt2) x(:,i)
      write(13,fmt2) y(:,i)
      write(14,fmt2) massa(:,i)
      write(15,fmt2) diam(:,i)
+     write(199,fmt2) vol(:,i)
      write(16,fmt2) height(:,i)
      write(17,fmt2) visc_e(:,i)
      write(18,fmt1) counttimeh/(60) - counttimeh_r0/60.
