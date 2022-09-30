@@ -1,7 +1,8 @@
 2022,9,18 , 12 , 0 ,  0         !   year, month, day, hour, minute, second
 '/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/emergencia/'
-48     !running time in hours  2160
+10     !running time in hours  2160
 1                 !number of particles
+1                 !output frequency in hours
 -40                ! Spill longitude (decimal)
 -22               ! Spill latitude  (decimal)
 900                 ! time step       (second)  default 900
