@@ -27,7 +27,7 @@ use datetime_module
   double precision:: dt,vf, vft, x_model(100,100), y_model(100,100), u_model(100,100), x_mask(100,100), v_model(100,100)  !vf eh vel func
   double precision:: y_mask(100,100), mask(100,100), maskt(1,1)
   double precision, dimension(:, :), allocatable:: x, area, y, u,v
-  double precision, dimension(:,:), allocatable :: diam
+  double precision, dimension(:,:), allocatable :: diam, temps, salts
   double precision, dimension(:), allocatable:: dt_h_spr
   double precision :: time_lim, time_lim_wind, outp_h
   character*20::  fmt1, x1, fmt, fmt2, fmt3, x2, fmt5, x5, fmt6, x3, fmt4, fmt7, fmt8
@@ -50,6 +50,8 @@ use datetime_module
   open(15,file='diam.txt', status='UNKNOWN')
   open(16,file='height.txt', status='UNKNOWN')
   open(199,file='vol.txt', status='UNKNOWN')
+  open(198,file='temp.txt', status='UNKNOWN')
+  open(197,file='salt.txt', status='UNKNOWN')
 
 
   open(141,file='massaf2.txt', status='UNKNOWN', FORM= 'FORMATTED ')
@@ -418,6 +420,7 @@ use datetime_module
     call StripSpaces(fmt1) 
 
     fmt2='( '//trim(x1)//'f16.6)'    !"( 1000f10.3 )"
+ !   fmt2='( '//trim(x1)//'f10.3)'    !"( 1000f10.3 )"
     fmt2=trim(fmt2)
     call StripSpaces(fmt2)
 
@@ -438,6 +441,10 @@ use datetime_module
   allocate( diam(int(b(1)),int(b(2))), massa(int(b(1)),int(b(2))), beached(int(b(1)),int(b(2))))
 
   allocate( vol(int(b(1)),int(b(2))), area(int(b(1)),int(b(2))), u(int(b(1)),int(b(2))), v(int(b(1)),int(b(2))) )
+   
+  
+  allocate( temps(int(b(1)),int(b(2))), salts(int(b(1)),int(b(2))))
+  
 
   allocate (massa2(int(b(1)),int(b(2))), massa1(int(b(1)),int(b(2))), height(int(b(1)),int(b(2))))
 
@@ -1082,6 +1089,8 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     write(14,'(i10)') i
     write(15,'(i10)') i     
     write(199,'(i10)') i     
+    write(198,'(i10)') i     
+    write(197,'(i10)') i     
     write(16,'(i10)') i 
     write(17,'(i10)') i 
     write(18,'(i10)') i
@@ -1100,6 +1109,8 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     write(14,'(i10)', advance='no') i
     write(15,'(i10)', advance='no') i
     write(199,'(i10)', advance='no') i
+    write(198,'(i10)', advance='no') i
+    write(197,'(i10)', advance='no') i
     write(16,'(i10)', advance='no') i
     write(17,'(i10)', advance='no') i
     write(18,'(i10)', advance='no') i
@@ -1166,6 +1177,8 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
   write(232,fmt2) mass_diss(:,1)
   write(15,fmt2) diam(:,1)
   write(199,fmt2) vol(:,1)
+  write(198,fmt2) temps(:,1)
+  write(197,fmt2) salts(:,1)
   write(16,fmt2) height(:,1)
   write(221,fmt2) lat_part(:,1)
   write(222,fmt2) lon_part(:,1)
@@ -2143,6 +2156,9 @@ do outer_l=1,1000000000
        call pwl_value_1d (size(intertime), intertime, vel_interp, 1, ts_vec , ui_vec )
 
        kz=ui_vec(1)
+       
+	   temps(j,i)=ti(1,1)
+	   salts(j,i)=si(1,1)
  !ui=-1
  !vi=-1
       if (three_dim .ne. 1) then
@@ -4276,6 +4292,8 @@ if (zf1(m1,i) .ge. 0) then
      write(14,fmt2) massa(:,i)
      write(15,fmt2) diam(:,i)
      write(199,fmt2) vol(:,i)
+     write(198,fmt2) temps(:,i)
+     write(197,fmt2) salts(:,i) 
      write(16,fmt2) height(:,i)
      write(17,fmt2) visc_e(:,i)
      write(18,fmt1) counttimeh/(60) - counttimeh_r0/60.
@@ -4382,6 +4400,8 @@ if (zf1(m1,i) .ge. 0) then
     area(:,1) =   area(:,i)
   areaem(:,1) = areaem(:,i)
      vol(:,1) =    vol(:,i)
+temps(:,1) =    temps(:,i)	 
+salts(:,1) =    salts(:,i)	 
 masscomp(:,1,:) = masscomp(:,i, :)
 mas_evap(:,1) = mas_evap(:,i)
 mass_diss(:,1) = mass_diss(:,i)
