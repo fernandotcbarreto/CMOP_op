@@ -20,13 +20,13 @@ use datetime_module
 
 
   double precision:: al, kl, spm, b(2), c(100,100), areat, diamt, ui(1,1), vi(1,1), ti(1,1), si(1,1),mwf, lo,wvp, rrr
-  double precision:: scft, kf, rn1, rn2, voldis, odir, ovel, counttimeh_r0, probsl, rn10
-  integer i,a,j,cont, tsl, itsl, freq, ts_lim, cont_ts, outer_l, zlayer,  avel, reverse
+  double precision:: scft, kf, rn1, rn2, voldis, odir, ovel, counttimeh_r0, probsl, rn10, ductwd
+  integer i,a,j,cont, tsl, itsl, freq, ts_lim, cont_ts, outer_l, zlayer,  avel, reverse, depvi
   integer :: ts, numpalm, turn_off_mask, year11, month11, day11, hour11, minute11, secon11
   character:: g(100)
   double precision:: dt,vf, vft, x_model(100,100), y_model(100,100), u_model(100,100), x_mask(100,100), v_model(100,100)  !vf eh vel func
   double precision:: y_mask(100,100), mask(100,100), maskt(1,1)
-  double precision, dimension(:, :), allocatable:: x, area, y, u,v
+  double precision, dimension(:, :), allocatable:: x, area, y, u,v, checkb
   double precision, dimension(:,:), allocatable :: diam, temps, salts
   double precision, dimension(:), allocatable:: dt_h_spr
   double precision :: time_lim, time_lim_wind, outp_h
@@ -46,13 +46,14 @@ use datetime_module
 
   open(12,file='x_part.txt', status='UNKNOWN')
   open(13,file='y_part.txt', status='UNKNOWN')
-  open(14,file='massa2.txt', status='UNKNOWN')
+  open(14,file='massa.txt', status='UNKNOWN')
   open(15,file='diam.txt', status='UNKNOWN')
   open(16,file='height.txt', status='UNKNOWN')
   open(199,file='vol.txt', status='UNKNOWN')
-  open(198,file='temp.txt', status='UNKNOWN')
-  open(197,file='salt.txt', status='UNKNOWN')
-
+!  open(198,file='temp.txt', status='UNKNOWN')
+!  open(197,file='salt.txt', status='UNKNOWN')
+  open(198,file='u_wind.txt', status='UNKNOWN')
+  open(197,file='v_wind.txt', status='UNKNOWN')
 
   open(141,file='massaf2.txt', status='UNKNOWN', FORM= 'FORMATTED ')
 
@@ -143,7 +144,13 @@ use datetime_module
  
   turn_off_mask = 0
 
-  api=36.5523D0  !!!!!!!!!!!!API Johansen Deep blow
+  !api=36.5523D0  !!!!!!!!!!!!API Johansen Deep blow
+  !API=36.7229556  !diesel
+  !api=30.5410933707076
+  !api=45.6367254222577
+ ! api=45.6747897   !oscar jordbaer 2010 13
+  !api=33.02352      !oscar mandalay batelle 20
+
 
 !   api= 30.5410933707076
    
@@ -153,7 +160,7 @@ use datetime_module
    
   scf=2.7  !handbook of oil spill scienc and technology
 
-  widfc=0.035
+!  widfc=0.035
 !  widfc=0.0
 
 !  windspx=15800  !m/h 15800 is 15.8 km/h
@@ -194,8 +201,29 @@ use datetime_module
   read(6877,*) right_random
   read(6877,*) path_ini_coup
   read(6877,*) path_frac
+  read(6877,*) depvi
+  read(6877,*) widfc
+  read(6877,*) CDIF_HOR
+  read(6877,*) apist
+  read(6877,*) ductwd
   
-  !print*, path_ini_coup
+ !print*, trim(apist)
+ if (trim(apist) .eq. 'Diesel') then
+   API=36.7229556  !diesel
+ endif
+ if (trim(apist) .eq. 'Jordbaer') then
+   api=45.6747897   !oscar jordbaer 2010 13
+ endif
+ if (trim(apist) .eq. 'Mandalay') then
+   api=33.02352      !oscar mandalay batelle 20
+ endif  
+! print*, api
+  !
+
+!   stop
+  !print*, widfc, CDIF_HOR
+  !print*, numparcels_dis
+  !stop
 !  print*, year11, month11, day11, hour11, minute11, secon11
 !  print*, coupling_ind
  ! timenum = datetime(2020, 2, 28, 23, 59, 25)
@@ -324,14 +352,14 @@ use datetime_module
     END DO
     CLOSE (1564)
     allocate (time_res(numb_lines_c), lat_ref_res(numb_lines_c), lon_ref_res(numb_lines_c), vol_res(numb_lines_c), &
-     res_par_in (numb_lines_c))
+     res_par_in (numb_lines_c), zfc(numb_lines_c))
 
 !    !print*, numb_lines_c
 
     open(1564, file=trim(path_ini_coup), status='old')
 
     DO i = 1, numb_lines_c
-     READ(1564,*) res_par_in(i), time_res(i), lon_ref_res(i), lat_ref_res(i), dummy_val,  vol_res(i)
+     READ(1564,*) res_par_in(i), time_res(i), lon_ref_res(i), lat_ref_res(i), dummy_val,  vol_res(i), zfc(i)
     END DO
     CLOSE (1564)    
 
@@ -443,7 +471,7 @@ use datetime_module
   allocate( vol(int(b(1)),int(b(2))), area(int(b(1)),int(b(2))), u(int(b(1)),int(b(2))), v(int(b(1)),int(b(2))) )
    
   
-  allocate( temps(int(b(1)),int(b(2))), salts(int(b(1)),int(b(2))))
+  allocate( temps(int(b(1)),int(b(2))), salts(int(b(1)),int(b(2))), checkb(int(b(1)),int(b(2))))
   
 
   allocate (massa2(int(b(1)),int(b(2))), massa1(int(b(1)),int(b(2))), height(int(b(1)),int(b(2))))
@@ -607,7 +635,10 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
 
 
   if (coupling_ind .ne. 1) then
-
+    zf1(:,:)=depvi
+	if (depvi .lt. 0) then
+	checkb(:,:)=19
+	endif
    !print*, b(1), 'eee'
    !stop
 !  spm=830  !kg/m3
@@ -626,11 +657,17 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
 
 
 !stop
+! API=36.7229556  !diesel
+
 
      CALL components( API , VAZAO_OIL_OUT , DT , TEMP_OUT , &
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT )
 
+ !stop
+ !api=7778
  !print*, 'first', api, temp_out, spmt
+ !call calc_api(api)
+ !stop
 
      do i=1, numpal
        FRAC_MASS_OUT_PART(i,:)=FRAC_MASS_OUT
@@ -659,7 +696,8 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
   v_model2(numlat, numlon, numz), t_model1(numlat, numlon, numz), t_model2 (numlat, numlon, numz), &
   s_model1(numlat, numlon, numz), s_model2 (numlat, numlon, numz)) 
   allocate(kz_model1(numlat, numlon, numz), kz_model2(numlat, numlon, numz))
- allocate(depth(numlat, numlon), lat_model_sum(numlat, numlon), lon_model_sum(numlat, numlon), &
+! allocate(depth(numlat, numlon), lat_model_sum(numlat, numlon), lon_model_sum(numlat, numlon), &
+ allocate(lat_model_sum(numlat, numlon), lon_model_sum(numlat, numlon), &
  coord_sum(numlat, numlon), levelsd(int(numz)))
 ! allocate(area_grid(numlat, numlon))
  allocate(deplevel(int(numz))) 
@@ -673,7 +711,15 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
    read(145,*) levelsd(i) 
  enddo
   
-  !read(145,*) counttimeh_r
+ read(145,*)
+ read(145,*) numlatm, numlonm
+ allocate(depth(numlatm, numlonm), lat_modelm(numlatm, numlonm), lon_modelm(numlatm, numlonm))
+ allocate(lat_model_summ(numlatm, numlonm), lon_model_summ(numlatm, numlonm), &
+ coord_summ(numlatm, numlonm)) 
+! print*, numlatm, numlonm
+! stop
+ 
+ 
   timenum = datetime(year11, month11, day11, hour11, minute11, secon11)
   counttimeh_r = (date2num(timenum)  - date2num(datetime(1970, 1, 1)))* (24*60)
  ! print*, counttimeh_r
@@ -698,6 +744,8 @@ counttimeh_r0=counttimeh_r
  
   open(145,file=trim(path)//'lat_delft.txt',  status='old')
   open(146,file=trim(path)//'lon_delft.txt',  status='old')
+  open(14555,file=trim(path)//'lat_dmask.txt',  status='old')
+  open(14666,file=trim(path)//'lon_dmask.txt',  status='old')  
   open(111,file=trim(path)//'depth.txt',  status='old')
 !  open(3766,file=trim(path)//'area_grid.txt',  status='old')
 !  open(7535,file=trim(path)//'winter.dry',  status='old')
@@ -706,12 +754,21 @@ counttimeh_r0=counttimeh_r
  do i=1,numlat
      read (145,*) (lat_model(i,j), j=1,numlon)
      read (146,*) (lon_model(i,j), j=1,numlon) 
-     read (111,*) (depth(i,j), j=1,numlon) 
+!     read (111,*) (depth(i,j), j=1,numlon) 
 !     read (3766,*) (area_grid(i,j), j=1,numlon) 
+ enddo
+ do i=1,numlatm
+     read (14555,*) (lat_modelm(i,j), j=1,numlonm)
+     read (14666,*) (lon_modelm(i,j), j=1,numlonm)
+     read (111,*) (depth(i,j), j=1,numlonm) 
  enddo
  close(145)
  close(146)
-
+ close(111)
+ close(14555)
+ close(14666)
+!print*, "kkk"
+!stop
  !print*, lat_model
 !  do i=1,110
 !    read(7535,*) indexlon,indexlat
@@ -994,7 +1051,7 @@ allocate(prob_time_sum(numlat, numlon  ) )
 !    CALL random_number(RN2)    !!OLD SQUARE SLICK
 !    x(i,1)=X0*RN1
 !    y(i,1)=Y0*RN2
-    circle_radius=0
+ !   circle_radius=0
 !  enddo
 
   do i=1,numpal
@@ -1102,6 +1159,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     write(222,'(i10)') i
     write(54,'(i10)') i
 	write(2254,'(i10)') i
+    write(225,'(i10)') i
 
      else 
     write(12,'(i10)', advance='no') i
@@ -1122,6 +1180,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     write(222,'(i10)', advance='no') i
     write(54,'(i10)', advance='no') i
 	write(2254,'(i10)', advance='no') i
+    write(225,'(i10)', advance='no') i
     endif 
  enddo
 
@@ -1152,7 +1211,6 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
 
        write(223,'(i10)') i
        write(224,'(i10)') i
-       write(225,'(i10)') i
        write(141,'(i10)') i
        write(331,'(i10)') i
        write(332,'(i10)') i
@@ -1160,7 +1218,6 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     else 
        write(223,'(i10)', advance='no') i
        write(224,'(i10)', advance='no') i
-       write(225,'(i10)', advance='no') i
        write(141,'(i10)', advance='no') i
        write(331,'(i10)', advance='no') i
        write(332,'(i10)', advance='no') i
@@ -1185,12 +1242,19 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
   write(54,fmt2) watf(:,1)
   write(18,fmt2) counttimeh_r/60. - counttimeh_r0/60.
   write(2254,fmt2) beached(:,1)
+  write(225,fmt2) zf1(:,1)
   
 !print*, lat_partf2(:,1)
+
+     if (dissolved_fase .eq. 1) then
+       write(227,fmt4) lat_partf3(:,1)
+       write(228,fmt4) lon_partf3(:,1)
+       write(226,fmt4) zf3(:,1)
+     endif
+	 
  IF (ENTRAIN.EQ.1) THEN
    write(223,fmt2) lat_partf2(:,1)
-   write(224,fmt2) lon_partf2(:,1)
-   write(225,fmt2) zf1(:,1)   
+   write(224,fmt2) lon_partf2(:,1) 
    write(331,fmt2) dropdiamf2(:,1)
    write(332,fmt2) spmtf2(:,1)
    write(141,fmt2) massaf2(:,1)
@@ -1275,12 +1339,20 @@ do outer_l=1,1000000000
 
             read (1112,*) dummy_val, (FRAC_MASS_OUT(frac_in), frac_in=1,NCOMP_OIL)
 
+        xa=0.4
+
+        xw=0.4  !fix
 
             numtot=numtot+numpal
 
 !            vol(num_res_par+1:numtot, :)=vol_res(tc_in)/b(1)   ! tested and wrong
             vol(num_res_par+1:numtot, :)=vol_res(tc_in)/numpal
-
+            
+			zf1(num_res_par+1:numtot, :)=zfc(tc_in)
+			
+		    if (zfc(tc_in) .lt. 0) then
+	              checkb(num_res_par+1:numtot,:)=19
+	        endif
 !  !print*, 'vol', vol(:,1), counttimeh
 !print*, vol_res, b(1), numpal
 !stop
@@ -1511,7 +1583,11 @@ do outer_l=1,1000000000
 
   !print*, 'PARTICLE', J, 'TS', cont_ts, outer_l, i
 
+  if (  (beached(j,i-1) .eq.1) .and. (dissolved_fase .eq. 0) ) then
 
+    go to 77958
+  endif
+ 
   IF (THEORETICAL.EQ.1) THEN
        ui=u_model(minloc(abs(y_model(:,1)-y(j,i-1))), minloc(abs(x_model(1,:)-x(j,i-1))))
 
@@ -1773,7 +1849,13 @@ do outer_l=1,1000000000
        lat_in =  minloc(coord_sum)
        lon_in=lat_in
 
+       lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
+       lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
 
+       coord_summ=lat_model_summ + lon_model_summ
+
+       lat_inm =  minloc(coord_summ)
+       lon_inm=lat_inm
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ERA 5
      if (wind_theoretical.ne.1) then
 
@@ -2050,7 +2132,8 @@ do outer_l=1,1000000000
   endif
 
 
-       di  = depth(lat_in(1), lon_in(2))
+       di = depth(lat_inm(1), lon_inm(2))
+	 !  print*, di
 
        intertime(1) = time_vec(tdelf1(1))
        intertime(2) = time_vec(tdelf2(1))
@@ -2157,8 +2240,8 @@ do outer_l=1,1000000000
 
        kz=ui_vec(1)
        
-	   temps(j,i)=ti(1,1)
-	   salts(j,i)=si(1,1)
+!	   temps(j,i)=ti(1,1)
+!	   salts(j,i)=si(1,1)
  !ui=-1
  !vi=-1
       if (three_dim .ne. 1) then
@@ -2195,11 +2278,16 @@ do outer_l=1,1000000000
 !       !print*, exp(((-0.38*(-10.**(-8)))*((windspx/3600)**3))/(10.*0.1))
 !!       !print*, uwd
 !       !print*, vwd
+	   temps(j,i)=uwd
+	   salts(j,i)=vwd
 !       !print*, windspx/3600
       
-!!print*, 111111111111111111, massa1(j,i)/massa(1,1)
+!!print*,  massa1(j,i)/massa(1,1)
 !!print*, sum(FRAC_MASS_OUT)
 !!print*, evapmass(j,2)
+
+77958 continue
+
  if (dissolved_fase .eq. 1) then   !! BEGIN FASE 3
 
   if (tsevol(contind) .ne. tsevol(contind-1)) then
@@ -2241,23 +2329,23 @@ do outer_l=1,1000000000
          lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
          cycle
        
-        elseif ( (lat_model(lat_in_f3(1)-1, lon_in_f3(2)).eq.0) .or. (lat_model(lat_in_f3(1)+1, lon_in_f3(2)) .eq.0)  .or. &
-                 (lat_model(lat_in_f3(1), lon_in_f3(2)+1).eq.0) .or. (lat_model(lat_in_f3(1), lon_in_f3(2)-1) .eq.0) ) then
-         xf3(m1_f3,i)=xf3(m1_f3,i-1)
-         yf3(m1_f3,i)=yf3(m1_f3,i-1)
-         lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
-         lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
-         zf3(m1_f3,i) = zf3(m1_f3,i-1)
-         cycle
+        ! elseif ( (lat_model(lat_in_f3(1)-1, lon_in_f3(2)).eq.0) .or. (lat_model(lat_in_f3(1)+1, lon_in_f3(2)) .eq.0)  .or. &
+                 ! (lat_model(lat_in_f3(1), lon_in_f3(2)+1).eq.0) .or. (lat_model(lat_in_f3(1), lon_in_f3(2)-1) .eq.0) ) then
+         ! xf3(m1_f3,i)=xf3(m1_f3,i-1)
+         ! yf3(m1_f3,i)=yf3(m1_f3,i-1)
+         ! lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
+         ! lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
+         ! zf3(m1_f3,i) = zf3(m1_f3,i-1)
+         ! cycle
 
-        elseif ( (lon_model(lat_in_f3(1)-1, lon_in_f3(2)).eq.0) .or. (lon_model(lat_in_f3(1)+1, lon_in_f3(2)) .eq.0)  .or. &
-                 (lon_model(lat_in_f3(1), lon_in_f3(2)+1).eq.0) .or. (lon_model(lat_in_f3(1), lon_in_f3(2)-1) .eq.0) ) then
-         xf3(m1_f3,i)=xf3(m1_f3,i-1)
-         yf3(m1_f3,i)=yf3(m1_f3,i-1)
-         lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
-         lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
-         zf3(m1_f3,i) = zf3(m1_f3,i-1)
-         cycle
+        ! elseif ( (lon_model(lat_in_f3(1)-1, lon_in_f3(2)).eq.0) .or. (lon_model(lat_in_f3(1)+1, lon_in_f3(2)) .eq.0)  .or. &
+                 ! (lon_model(lat_in_f3(1), lon_in_f3(2)+1).eq.0) .or. (lon_model(lat_in_f3(1), lon_in_f3(2)-1) .eq.0) ) then
+         ! xf3(m1_f3,i)=xf3(m1_f3,i-1)
+         ! yf3(m1_f3,i)=yf3(m1_f3,i-1)
+         ! lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
+         ! lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
+         ! zf3(m1_f3,i) = zf3(m1_f3,i-1)
+         ! cycle
         endif
 
 
@@ -2761,6 +2849,7 @@ if ( (massa(j,i-1).eq.0) ) then
           CALL vapour_pressure(TEMP_OUT)
 
 !print*, '5555555555555555', sum(masscomp(j,i-1,:))
+!print*, "dia", counttime/(60*60*24)
 
  IF (EVAP_TURN.EQ.1) THEN
        do comps=1, NCOMP_OIL
@@ -2786,6 +2875,9 @@ if ( (massa(j,i-1).eq.0) ) then
   !               evap1 = masscomp(j,i-1, comps)
   !           endif
   !          print*, '2',evap1, evapmass(j, comps)
+             if (counttime/(60*60*24).gt. 15) then
+			  evap1=0
+			 endif
 
             masscomp(j,i, comps)=masscomp(j,i-1, comps)-evap1
 
@@ -2797,7 +2889,7 @@ if ( (massa(j,i-1).eq.0) ) then
 
             evapmass(j, comps) = masscomp(j,i, comps)
 
-            evapmass(j, comps) = ((maxwf-watf(j,i-1) )/maxwf) *  masscomp(j,i,comps)           !!!!EMULSIFICATION INTERFERENCE ON EVAPORATION
+   !         evapmass(j, comps) = ((maxwf-watf(j,i-1) )/maxwf) *  masscomp(j,i,comps)           !!!!EMULSIFICATION INTERFERENCE ON EVAPORATION
 
    !       !print*, watf(j,i-1), maxwf, evapmass(j, 10), masscomp(j,i,10), evap1
    
@@ -3355,6 +3447,13 @@ enddo
    dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
 
  !  dropdiam(j,i-1) = dropdiam(j,i)
+ 
+    if (checkb(j,i) .ne. 0) then
+	 if (ductwd .gt. 0) then
+      dropdiam(j,i)=ductwd
+	 endif
+    endif 
+   
 
    voldrops(j,i) = ((dropdiam(j,i)/2.)**3.) *  pi * (4./3.)
 
@@ -3363,7 +3462,8 @@ enddo
    numdrops(j,i) =  vol(j,i) / voldrops (j,i)
 
 !   numdrops(j,i-1)= numdrops(j,i)
-  
+
+ ! print*, numdrops(j,i), dropdiam(j,i)
 
 !print*, 'third', dropdiam(j,i-1)
 !print*, ro_oil_out,  rho_e(jj,ii)
@@ -3372,6 +3472,8 @@ enddo
 
  IF (ENTRAIN.eq.1) then
 
+
+ !  print*, checkb(j,i), dropdiam(j,i)
 
      ! if(j.eq.6) then
      !  !print*, 'caooooooooooooooooooooooooo', dropdiam(j,i-1), dropdiam(j,i), j
@@ -3484,9 +3586,11 @@ endif
   !		  call DISSOLVE_OIL_fase2(watcont(j,i), VIS_DIN_A, RO_A, spmt, dropdiam(M1,i-1), abs(Wvp), VIS_DIN_OIL_OUT, TS_VC, &    !use last watcont and diam cause they ve been already modified, in thesis. 
   !                  dt, numdrops (j,i-1))
  
+  ! 		  call DISSOLVE_OIL_fase2(watcont(j,i), VIS_DIN_A, RO_A, spmt, dropdiam(m1,i), abs(Wvp), VIS_DIN_OIL_OUT, TS_VC, &    !use last watcont and diam cause they ve been already modified, in thesis. 
+  !                  dt, numdrops (j,i-1))
+
    		  call DISSOLVE_OIL_fase2(watcont(j,i), VIS_DIN_A, RO_A, spmt, dropdiam(m1,i), abs(Wvp), VIS_DIN_OIL_OUT, TS_VC, &    !use last watcont and diam cause they ve been already modified, in thesis. 
-                    dt, numdrops (j,i-1))
- 
+                    dt, numdrops (j,i)) 
        endif
 
 !        print*,  1, massa(m1,i)
@@ -3644,6 +3748,8 @@ endif
         zf1(m1,i)=zf1(m1,i-1) + wi*dt +  zrandom 
         !zf1(m1, i-1) = zf1(m1,i)
 
+ !      print*, wvp, dropdiam(m1,i), zf1(m1,i), zf1(m1,i-1)
+
        xrandom = 0 
        yrandom = 0
        zrandom = 0
@@ -3694,6 +3800,7 @@ endif
           if (RN1 .lt.  oil_entrainment_probability) then
 !		    print*, 'rrr'
 !			print*, RN1, oil_entrainment_probability
+!            print*, "zini", zini
 !			stop
             zf1(j, i) = - zini
           endif
@@ -3707,7 +3814,8 @@ endif
 
  546 continue
 if ( zf1(j, i) .ge. -0) then
-   zf1(j, i)=0
+   zf1(j,:)=0
+   checkb(j,:)=0
 endif
 
  !print*, 'qd', qd*dt*area(j,i), massa(j,i-1)
@@ -3733,123 +3841,122 @@ endif                                                           !!!!!!!!!!!!!!!!
 
 contind=contind+1
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!       if (x(j,i-1).ge.15)then
-!        x(j,i)=15
 
-!!        y(j,i)=y(j,i-1)                                    !very,very,very simplified sticking in solid surface
-!        go to 1000
-!       end if 
-  if (turn_off_mask .eq. 1) then 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 inicio interacao fundo
+  ! if (turn_off_mask .eq. 1) then 
 
-    go to 8867
+    ! go to 8867
 
-  else  
-     if(THEORETICAL.EQ.1) THEN
+  ! else  
+     ! if(THEORETICAL.EQ.1) THEN
 
 
-         maskt=mask(minloc(abs(y_mask(:,1)-y(j,i-1))), minloc(abs(x_mask(1,:)-x(j,i-1))))       !!!NEW MASK
+         ! maskt=mask(minloc(abs(y_mask(:,1)-y(j,i-1))), minloc(abs(x_mask(1,:)-x(j,i-1))))       !!!NEW MASK
       
-         if (maskt(1,1).eq.1.) then
-          x(j,i)=x(j,i-1)
-          y(j,i)=y(j,i-1)                      
-          go to 1000 
-         endif
+         ! if (maskt(1,1).eq.1.) then
+          ! x(j,i)=x(j,i-1)
+          ! y(j,i)=y(j,i-1)                      
+          ! go to 1000 
+         ! endif
 
-     ELSE     
-                                                                                       !!!!!!!!!MASK WITH DELFT
-!print*, rn10, RN10, probsl
-!stop
-!print*, 'di', di
-! print*, 'di', di, lon_model(lat_in(1), lon_in(2)),lat_model(lat_in(1), lon_in(2)-1)
+     ! ELSE     
+                                                                                       ! !!!!!!!!!MASK WITH DELFT
+! !print*, rn10, RN10, probsl
+! !stop
+! !print*, 'di', di
+! ! print*, 'di', di, lon_model(lat_in(1), lon_in(2)),lat_model(lat_in(1), lon_in(2)-1)
 
-       if (di.le.0) then
-		CALL random_number(rn10)
-        OPT=1
+       ! if (di.le.0) then
+		! CALL random_number(rn10)
+        ! OPT=1
 
-!        x(j,i)=x(j,i-1)
-!        y(j,i)=y(j,i-1)
-!        lon_part(j,i) = lon_part(j,i-1)
-!        lat_part(j,i) = lat_part(j,i-1)  
-        if (rn10 .le.  probsl) then
-         beached(j,:)=1
-         lon_part(j,i) = lon_model(lat_in(1), lon_in(2))
-         lat_part(j,i) = lat_model(lat_in(1), lon_in(2))
-         call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
-         OPT=2
-		! print*, '111'
-	!	 print*, rn10, probsl
-	!	 stop
-         go to 1000 
-		else
-	     lon_part(j,i) = lon_part(j,i-1)
-         lat_part(j,i) =  lat_part(j,i-1)
-         call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
-         OPT=2	
-!		 print*, '222'
-!		 print*, rn10, probsl, lon_part(j,i-1), lon_part(j,i-2)
-!		 stop
-		 go to 8867
-		endif
+! !        x(j,i)=x(j,i-1)
+! !        y(j,i)=y(j,i-1)
+! !        lon_part(j,i) = lon_part(j,i-1)
+! !        lat_part(j,i) = lat_part(j,i-1)  
+        ! if (rn10 .le.  probsl) then
+         ! beached(j,:)=1
+	     ! lon_part(j,i) = lon_part(j,i-1)
+         ! lat_part(j,i) =  lat_part(j,i-1)		 
+! !         lon_part(j,i) = lon_model(lat_in(1), lon_in(2))
+! !         lat_part(j,i) = lat_model(lat_in(1), lon_in(2))
+         ! call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
+         ! OPT=2
+		! ! print*, '111'
+	! !	 print*, rn10, probsl
+	! !	 stop
+         ! go to 1000 
+		! else
+	     ! lon_part(j,i) = lon_part(j,i-1)
+         ! lat_part(j,i) =  lat_part(j,i-1)
+         ! call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
+         ! OPT=2	
+! !		 print*, '222'
+! !		 print*, rn10, probsl, lon_part(j,i-1), lon_part(j,i-2)
+! !		 stop
+		 ! go to 8867
+		! endif
        
-!       elseif ( (lat_model(lat_in(1)-1, lon_in(2)).eq.0) .or. (lat_model(lat_in(1)+1, lon_in(2)) .eq.0)  .or. &
-!             (lat_model(lat_in(1), lon_in(2)+1).eq.0) .or. (lat_model(lat_in(1), lon_in(2)-1) .eq.0) ) then
-       elseif ( (lat_model(lat_in(1), lon_in(2)).eq.0) .or. (lat_model(lat_in(1), lon_in(2)) .eq.0)  .or. &
-             (lat_model(lat_in(1), lon_in(2)).eq.0) .or. (lat_model(lat_in(1), lon_in(2)) .eq.0) ) then
+! !       elseif ( (lat_model(lat_in(1)-1, lon_in(2)).eq.0) .or. (lat_model(lat_in(1)+1, lon_in(2)) .eq.0)  .or. &
+! !             (lat_model(lat_in(1), lon_in(2)+1).eq.0) .or. (lat_model(lat_in(1), lon_in(2)-1) .eq.0) ) then
+       ! ! elseif ( (lat_model(lat_in(1), lon_in(2)).eq.0) .or. (lat_model(lat_in(1), lon_in(2)) .eq.0)  .or. &
+             ! ! (lat_model(lat_in(1), lon_in(2)).eq.0) .or. (lat_model(lat_in(1), lon_in(2)) .eq.0) ) then
 
-        OPT=1
+        ! ! OPT=1
 
-!        x(j,i)=x(j,i-1)
-!        y(j,i)=y(j,i-1)
-!        lon_part(j,i) = lon_part(j,i-1)
-!        lat_part(j,i) = lat_part(j,i-1)  
-        beached(j,:)=1
-        lon_part(j,i) = lon_model(lat_in(1), lon_in(2))
-        lat_part(j,i) = lat_model(lat_in(1), lon_in(2))
-        call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
-        OPT=2
+! ! !        x(j,i)=x(j,i-1)
+! ! !        y(j,i)=y(j,i-1)
+! ! !        lon_part(j,i) = lon_part(j,i-1)
+! ! !        lat_part(j,i) = lat_part(j,i-1)  
+        ! ! beached(j,:)=1
+        ! ! lon_part(j,i) = lon_model(lat_in(1), lon_in(2))
+        ! ! lat_part(j,i) = lat_model(lat_in(1), lon_in(2))
+        ! ! call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
+        ! ! OPT=2
 
-!        !print*, lon_part(j,i-1), lon_part(j,i)
-!        !print*, lat_part(j,i-1), lat_part(j,i)
-!        PRINT*, X(J,I-1), X(J,I)
-!        PRINT*, Y(J,I-1),Y(J,I)
-! PRINT*, 'dryyyyy'
-!        STOP
+! ! !        !print*, lon_part(j,i-1), lon_part(j,i)
+! ! !        !print*, lat_part(j,i-1), lat_part(j,i)
+! ! !        PRINT*, X(J,I-1), X(J,I)
+! ! !        PRINT*, Y(J,I-1),Y(J,I)
+! ! ! PRINT*, 'dryyyyy'
+! ! !        STOP
 
-        go to 1000 
+        ! ! go to 1000 
 
-!       elseif ( (lon_model(lat_in(1)-1, lon_in(2)).eq.0) .or. (lon_model(lat_in(1)+1, lon_in(2)) .eq.0)  .or. &
-!             (lon_model(lat_in(1), lon_in(2)+1).eq.0) .or. (lon_model(lat_in(1), lon_in(2)-1) .eq.0) ) then
-       elseif ( (lon_model(lat_in(1), lon_in(2)).eq.0) .or. (lon_model(lat_in(1), lon_in(2)) .eq.0)  .or. &
-             (lon_model(lat_in(1), lon_in(2)).eq.0) .or. (lon_model(lat_in(1), lon_in(2)) .eq.0) ) then
+! ! !       elseif ( (lon_model(lat_in(1)-1, lon_in(2)).eq.0) .or. (lon_model(lat_in(1)+1, lon_in(2)) .eq.0)  .or. &
+! ! !             (lon_model(lat_in(1), lon_in(2)+1).eq.0) .or. (lon_model(lat_in(1), lon_in(2)-1) .eq.0) ) then
+       ! ! elseif ( (lon_model(lat_in(1), lon_in(2)).eq.0) .or. (lon_model(lat_in(1), lon_in(2)) .eq.0)  .or. &
+             ! ! (lon_model(lat_in(1), lon_in(2)).eq.0) .or. (lon_model(lat_in(1), lon_in(2)) .eq.0) ) then
 
 
-        OPT=1
+        ! ! OPT=1
 
-!        x(j,i)=x(j,i-1)
-!        y(j,i)=y(j,i-1)
-!        lon_part(j,i) = lon_part(j,i-1)
-!        lat_part(j,i) = lat_part(j,i-1)  
+! ! !        x(j,i)=x(j,i-1)
+! ! !        y(j,i)=y(j,i-1)
+! ! !        lon_part(j,i) = lon_part(j,i-1)
+! ! !        lat_part(j,i) = lat_part(j,i-1)  
 
-        beached(j,:)=1
-        lon_part(j,i) = lon_model(lat_in(1), lon_in(2))
-        lat_part(j,i) = lat_model(lat_in(1), lon_in(2))
-        call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
-        OPT=2
+        ! ! beached(j,:)=1
+        ! ! lon_part(j,i) = lon_model(lat_in(1), lon_in(2))
+        ! ! lat_part(j,i) = lat_model(lat_in(1), lon_in(2))
+        ! ! call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
+        ! ! OPT=2
 
-!        !print*, lon_part(j,i-1), lon_part(j,i)
-!        !print*, lat_part(j,i-1), lat_part(j,i)
-!        PRINT*, X(J,I-1), X(J,I)
-!        PRINT*, Y(J,I-1),Y(J,I)
-! PRINT*, 'dryyyyy'
-!        STOP
+! ! !        !print*, lon_part(j,i-1), lon_part(j,i)
+! ! !        !print*, lat_part(j,i-1), lat_part(j,i)
+! ! !        PRINT*, X(J,I-1), X(J,I)
+! ! !        PRINT*, Y(J,I-1),Y(J,I)
+! ! ! PRINT*, 'dryyyyy'
+! ! !        STOP
 
-        go to 1000 
-       endif
+        ! ! go to 1000 
+       ! endif
 
-     ENDIF
+     ! ENDIF
 
-  endif
+  ! endif
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 fim interacao fundo
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 8867 continue
 
@@ -3891,6 +3998,8 @@ if (zf1(m1,i) .ge. 0) then
 !         zrandom = zrandom + ( randvert * ((2.D0*kz/dt_random)**(0.5D0)) ) *dt_random  !!  based on Reed et al., 1995
       enddo
 
+!print*, CDIF_HOR
+!stop
 !!print*, 'hh', uwd, vwd
 !!print*, x(j,i-1) + ui(1,1)*dt +  xrandom, y(j,i-1) + vi(1,1)*dt +  yrandom
 !!print*, uwd, (uwd * 0.03)*dt 
@@ -3980,7 +4089,40 @@ if (zf1(m1,i) .ge. 0) then
 
 ! !print*, 'cool', uwd, vwd, CDIF_HOR
 
+       if (di.le.0) then
+		CALL random_number(rn10)
+        OPT=1
 
+!        x(j,i)=x(j,i-1)
+!        y(j,i)=y(j,i-1)
+!        lon_part(j,i) = lon_part(j,i-1)
+!        lat_part(j,i) = lat_part(j,i-1)  
+        if (rn10 .le.  probsl) then
+         beached(j,:)=1
+!	     lon_part(j,i) = lon_part(j,i-1)
+!         lat_part(j,i) =  lat_part(j,i-1)		 
+!         lon_part(j,i) = lon_model(lat_in(1), lon_in(2))
+!         lat_part(j,i) = lat_model(lat_in(1), lon_in(2))
+         call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
+         OPT=2
+		! print*, '111'
+	!	 print*, rn10, probsl
+	!	 stop
+  !       go to 1000 
+		else
+	     lon_part(j,i) = lon_part(j,i-1)
+         lat_part(j,i) =  lat_part(j,i-1)
+         call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
+         OPT=2	
+!		 print*, '222'
+!		 print*, rn10, probsl, lon_part(j,i-1), lon_part(j,i-2)
+!		 stop
+	!	 go to 8867
+		endif
+       
+       endif
+
+  
 1000   continue 
 
  !      !print*, cont, tsl
@@ -4305,6 +4447,8 @@ if (zf1(m1,i) .ge. 0) then
      write(222,fmt2) lon_part(:,i)
      write(54,fmt2) watf(:,i) 
 	 write(2254,fmt2) beached(:,i)
+     write(225,fmt2) zf1(:,i)
+
 !	 stop
 
     open(769,file='height_deep_55_0_time_1.txt', status='replace')
@@ -4322,7 +4466,6 @@ if (zf1(m1,i) .ge. 0) then
      if (ENTRAIN.EQ.1) THEN 
        write(223,fmt2) lat_partf2(:,i)
        write(224,fmt2) lon_partf2(:,i)
-       write(225,fmt2) zf1(:,i)
        write(331,fmt2) dropdiamf2(:,i)
        write(332,fmt2) spmtf2(:,i)       
        write(141,fmt2) massaf2(:,i)
@@ -4530,8 +4673,12 @@ print *, "Simulation time:", &
      write(232,fmt2) mass_diss(:,i)
      write(221,fmt2) lat_part(:,i)
      write(222,fmt2) lon_part(:,i)
+	 write(199,fmt2) vol(:,i)
+     write(198,fmt2) temps(:,i)
+     write(197,fmt2) salts(:,i) 
      write(54,fmt2) watf(:,i) 
 	 write(2254,fmt2) beached(:,i)
+	 write(225,fmt2) zf1(:,i)
 !	 stop
 
     open(769,file='height_deep_55_0_time_1.txt', status='replace')
@@ -4549,7 +4696,6 @@ print *, "Simulation time:", &
      if (ENTRAIN.EQ.1) THEN 
        write(223,fmt2) lat_partf2(:,i)
        write(224,fmt2) lon_partf2(:,i)
-       write(225,fmt2) zf1(:,i)
        write(331,fmt2) dropdiamf2(:,i)
        write(332,fmt2) spmtf2(:,i)       
        write(141,fmt2) massaf2(:,i)
@@ -4561,5 +4707,6 @@ print *, "Simulation time:", &
   
 8856  continue
 PRINT*, 'END OF SIMULATION'
+print*, widfc, CDIF_HOR
 end program
   

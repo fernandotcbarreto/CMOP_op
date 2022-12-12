@@ -5,7 +5,7 @@ Module coupling
  character(len=1024)::  path_ini_coup, path_frac
  integer:: numb_lines_c, num_res_par
  real:: dummy_val
- double precision, dimension(:), allocatable :: time_res, lat_ref_res, lon_ref_res, vol_res, res_par_in
+ double precision, dimension(:), allocatable :: time_res, lat_ref_res, lon_ref_res, vol_res, res_par_in, zfc
  double precision:: time_ini_spread, counttimeh_coup
  double precision, dimension(:,:), allocatable:: x_height, y_height, lat_height, lon_height, height_map, &
 lat_model_sum_height, lon_model_sum_height, coord_sum_height

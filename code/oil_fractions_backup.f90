@@ -16,8 +16,7 @@ Module oil_fractions
   DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: rho_e, visc_e, mas_evap, mass_diss, porc_evap,  FRAC_MASS_OUT_PART, visc_f1
   DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: areaem, diamem, porc_evap_vol, vol_evap, vol_diss, porc_diss_vol
   DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: vol_entra, porc_vol_entra, vol_left, porc_vol_left
-  double precision:: XA !fraction and mass of asphaltenes
-  double precision:: XW  !fraction and mass of wax
+
   double precision, dimension(:, :), allocatable:: area1, area2,  area3, area4, area5, area6
   double precision, dimension(:, :), allocatable:: area7, area8, area9, area10, area11, area12
   double precision, dimension(:, :), allocatable:: area13, area14, area15, area16, area17, area18
@@ -246,168 +245,8 @@ double precision, dimension(:), allocatable:: MASSCOMPREF
 	     TEB_COMP_OIL(I) = 662.D0    ;  CP_COMP_OIL(I)   = 0.2248D0
 
 
-
-   I = 1  ;  PM_COMP_OIL(I)  = 37.D0     ;  SOLU_COMP_OIL(I) = 40.D-03   ;  RO_COMP_OIL_15(I) = 615.D0  ;  
-             TEB_COMP_OIL(I) = -112.D0   ;  CP_COMP_OIL(I)   = 0.3431D0
-   I = 2  ;  PM_COMP_OIL(I)  = 66.D0     ;  SOLU_COMP_OIL(I) = 95.D-03   ;  RO_COMP_OIL_15(I) = 673.D0  ;  
-             TEB_COMP_OIL(I) = 100.4D0   ;  CP_COMP_OIL(I)   = 0.4137D0
-   I = 3  ;  PM_COMP_OIL(I)  = 80.5D0    ;  SOLU_COMP_OIL(I) = 32.5D-03  ;  RO_COMP_OIL_15(I) = 697.D0  ;  
-             TEB_COMP_OIL(I) = 158D0  ;  CP_COMP_OIL(I)   = 0.4776D0
-   I = 4  ;  PM_COMP_OIL(I)  = 78.D0     ;  SOLU_COMP_OIL(I) = 1780.D-03    ;  RO_COMP_OIL_15(I) = 884.D0  ;  
-	     TEB_COMP_OIL(I) = 176D0  ;  CP_COMP_OIL(I)   = 0.4854D0
-   I = 5  ;  PM_COMP_OIL(I)  = 99.D0    ;  SOLU_COMP_OIL(I) = 4.D-03  ;  RO_COMP_OIL_15(I) = 711.5D0  ;  
-	     TEB_COMP_OIL(I) = 194D0  ;  CP_COMP_OIL(I)   = 0.4407D0
-   I = 6  ;  PM_COMP_OIL(I)  =92.D0    ;  SOLU_COMP_OIL(I) = 515D-03  ;  RO_COMP_OIL_15(I) = 880.D0  ;  
-	     TEB_COMP_OIL(I) = 230D0  ;  CP_COMP_OIL(I)   = 0.4999D0
-   I = 7  ;  PM_COMP_OIL(I)  = 113.D0     ;  SOLU_COMP_OIL(I) = 1D-03   ;  RO_COMP_OIL_15(I) = 753.D0  ; 
- 	     TEB_COMP_OIL(I) = 242.6D0  ;  CP_COMP_OIL(I)   = 0.4113D0
-   I = 8  ;  PM_COMP_OIL(I)  = 106.D0     ;  SOLU_COMP_OIL(I) = 175D-03  ;  RO_COMP_OIL_15(I) = 874.5D0  ;  
-	     TEB_COMP_OIL(I) = 284D0  ;  CP_COMP_OIL(I)   = 0.3995D0
-   I = 9  ;  PM_COMP_OIL(I)  = 127.D0    ;  SOLU_COMP_OIL(I) = 0.205D-03  ;  RO_COMP_OIL_15(I) = 764.D0  ;  
-	     TEB_COMP_OIL(I) = 296.6D0  ;  CP_COMP_OIL(I)   = 0.4057D0
-   I = 10 ;  PM_COMP_OIL(I)  = 120.D0    ;  SOLU_COMP_OIL(I) = 57.5D-03  ;  RO_COMP_OIL_15(I) = 875.D0  ;  
-	     TEB_COMP_OIL(I) = 320D0  ;  CP_COMP_OIL(I)   = 0.4131D0
-   I = 11 ;  PM_COMP_OIL(I)  = 140.5D0   ;  SOLU_COMP_OIL(I) = 0.0001D-03  ;  RO_COMP_OIL_15(I) = 772.5D0  ;  
-	     TEB_COMP_OIL(I) = 356D0  ;  CP_COMP_OIL(I)   = 0.4312D0
-   I = 12 ;  PM_COMP_OIL(I)  = 141.5D0   ;  SOLU_COMP_OIL(I) = 12.5D-03  ;  RO_COMP_OIL_15(I) = 879.5D0  ;  
-	     TEB_COMP_OIL(I) = 368.6D0  ;  CP_COMP_OIL(I)   = 0.4549D0
-   I = 13 ;  PM_COMP_OIL(I)  = 156.5D0   ;  SOLU_COMP_OIL(I) = 0.00001D-03  ;  RO_COMP_OIL_15(I) = 809.5D0  ;  
-	     TEB_COMP_OIL(I) = 401D0  ;  CP_COMP_OIL(I)   = 0.4378D0 
-   I = 14 ;  PM_COMP_OIL(I)  = 130D0   ;  SOLU_COMP_OIL(I) = 51000D-03   ;  RO_COMP_OIL_15(I) = 986.D0  ;  
-	     TEB_COMP_OIL(I) = 419D0  ;  CP_COMP_OIL(I)   = 0.4461D0
-   I = 15 ;  PM_COMP_OIL(I)  = 135D0   ;  SOLU_COMP_OIL(I) = 27.5D-03    ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     TEB_COMP_OIL(I) = 449.6D0  ;  CP_COMP_OIL(I)   = 0.4813D0
-   I = 16 ;  PM_COMP_OIL(I)  = 185.5D0    ;  SOLU_COMP_OIL(I) = 0.000005D-03    ;  RO_COMP_OIL_15(I) = 815.5D0  ;  
-	     TEB_COMP_OIL(I) = 473D0  ;  CP_COMP_OIL(I)   = 0.4592D0
-   I = 17 ;  PM_COMP_OIL(I)  = 163.D0    ;  SOLU_COMP_OIL(I) = 5.5D-03    ;  RO_COMP_OIL_15(I) = 1016.D0  ;  
-	     TEB_COMP_OIL(I) = 521.6D0  ;  CP_COMP_OIL(I)   = 0.4541D0
-   I = 18 ;  PM_COMP_OIL(I)  = 215.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03    ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     TEB_COMP_OIL(I) = 536D0  ;  CP_COMP_OIL(I)   = 0.4430D0
-   I = 19 ;  PM_COMP_OIL(I)  = 177D0    ;  SOLU_COMP_OIL(I) = 3.65D-03    ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     TEB_COMP_OIL(I) = 563D0  ;  CP_COMP_OIL(I)   = 0.3607D0
-   I = 20 ;  PM_COMP_OIL(I)  = 238.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03   ;  RO_COMP_OIL_15(I) = 827.5D0 ;  
-	     TEB_COMP_OIL(I) = 590D0  ;  CP_COMP_OIL(I)   = 0.3707D0
-   I = 21 ;  PM_COMP_OIL(I)  = 273.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03   ;  RO_COMP_OIL_15(I) = 817.5D0 ;  
-	     TEB_COMP_OIL(I) = 638.6D0  ;  CP_COMP_OIL(I)   = 0.3722D0
-   I = 22 ;  PM_COMP_OIL(I)  = 215.D0    ;  SOLU_COMP_OIL(I) = 0.001D-03  ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     TEB_COMP_OIL(I) = 662.D0    ;  CP_COMP_OIL(I)   = 0.2399D0
-   I = 23 ;  PM_COMP_OIL(I)  = 317.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03 ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     TEB_COMP_OIL(I) = 698D0   ;  CP_COMP_OIL(I)   = 0.2379D0
-   I = 24 ;  PM_COMP_OIL(I)  = 222.5D0    ;  SOLU_COMP_OIL(I) = 0.101D-03     ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     TEB_COMP_OIL(I) = 752D0   ;  CP_COMP_OIL(I)   = 0.4872D0
-   I = 25 ;  PM_COMP_OIL(I)  = 465.D0    ;  SOLU_COMP_OIL(I) = 0.0000001D-03   ;  RO_COMP_OIL_15(I) = 950.D0 ;  
-	     TEB_COMP_OIL(I) = 761.D0    ;  CP_COMP_OIL(I)   = 0.2248D0
-
-
-
-   I = 1  ;  PM_COMP_OIL(I)  = 37.D0     ;  SOLU_COMP_OIL(I) = 40.D-03   ;  RO_COMP_OIL_15(I) = 615.D0  ;  
-             TEB_COMP_OIL(I) = -112.D0   ;  CP_COMP_OIL(I)   = 0.3431D0
-   I = 2  ;  PM_COMP_OIL(I)  = 66.D0     ;  SOLU_COMP_OIL(I) = 95.D-03   ;  RO_COMP_OIL_15(I) = 673.D0  ;  
-             TEB_COMP_OIL(I) = 100.4D0   ;  CP_COMP_OIL(I)   = 0.4137D0
-   I = 3  ;  PM_COMP_OIL(I)  = 80.5D0    ;  SOLU_COMP_OIL(I) = 32.5D-03  ;  RO_COMP_OIL_15(I) = 697.D0  ;  
-             TEB_COMP_OIL(I) = 158D0  ;  CP_COMP_OIL(I)   = 0.4776D0
-   I = 4  ;  PM_COMP_OIL(I)  = 78.D0     ;  SOLU_COMP_OIL(I) = 1780.D-03    ;  RO_COMP_OIL_15(I) = 884.D0  ;  
-	     TEB_COMP_OIL(I) = 176D0  ;  CP_COMP_OIL(I)   = 0.4407D0
-   I = 5  ;  PM_COMP_OIL(I)  = 99.D0    ;  SOLU_COMP_OIL(I) = 4.D-03  ;  RO_COMP_OIL_15(I) = 711.5D0  ;  
-	     TEB_COMP_OIL(I) = 194D0  ;  CP_COMP_OIL(I)   = 0.4113D0
-   I = 6  ;  PM_COMP_OIL(I)  =92.D0    ;  SOLU_COMP_OIL(I) = 515D-03  ;  RO_COMP_OIL_15(I) = 880.D0  ;  
-	     TEB_COMP_OIL(I) = 230D0  ;  CP_COMP_OIL(I)   = 0.4057D0
-   I = 7  ;  PM_COMP_OIL(I)  = 113.D0     ;  SOLU_COMP_OIL(I) = 1D-03   ;  RO_COMP_OIL_15(I) = 753.D0  ; 
- 	     TEB_COMP_OIL(I) = 242.6D0  ;  CP_COMP_OIL(I)   = 0.4854D0
-   I = 8  ;  PM_COMP_OIL(I)  = 106.D0     ;  SOLU_COMP_OIL(I) = 175D-03  ;  RO_COMP_OIL_15(I) = 874.5D0  ;  
-	     TEB_COMP_OIL(I) = 284D0  ;  CP_COMP_OIL(I)   = 0.4999D0
-   I = 9  ;  PM_COMP_OIL(I)  = 127.D0    ;  SOLU_COMP_OIL(I) = 0.205D-03  ;  RO_COMP_OIL_15(I) = 764.D0  ;  
-	     TEB_COMP_OIL(I) = 296.6D0  ;  CP_COMP_OIL(I)   = 0.3995D0
-   I = 10 ;  PM_COMP_OIL(I)  = 120.D0    ;  SOLU_COMP_OIL(I) = 57.5D-03  ;  RO_COMP_OIL_15(I) = 875.D0  ;  
-	     TEB_COMP_OIL(I) = 320D0  ;  CP_COMP_OIL(I)   = 0.4131D0
-   I = 11 ;  PM_COMP_OIL(I)  = 140.5D0   ;  SOLU_COMP_OIL(I) = 0.0001D-03  ;  RO_COMP_OIL_15(I) = 772.5D0  ;  
-	     TEB_COMP_OIL(I) = 356D0  ;  CP_COMP_OIL(I)   = 0.4549D0
-   I = 12 ;  PM_COMP_OIL(I)  = 141.5D0   ;  SOLU_COMP_OIL(I) = 12.5D-03  ;  RO_COMP_OIL_15(I) = 879.5D0  ;  
-	     TEB_COMP_OIL(I) = 368.6D0  ;  CP_COMP_OIL(I)   = 0.4312D0
-   I = 13 ;  PM_COMP_OIL(I)  = 156.5D0   ;  SOLU_COMP_OIL(I) = 0.00001D-03  ;  RO_COMP_OIL_15(I) = 809.5D0  ;  
-	     TEB_COMP_OIL(I) = 401D0  ;  CP_COMP_OIL(I)   = 0.4378D0 
-   I = 14 ;  PM_COMP_OIL(I)  = 130D0   ;  SOLU_COMP_OIL(I) = 51000D-03   ;  RO_COMP_OIL_15(I) = 986.D0  ;  
-	     TEB_COMP_OIL(I) = 419D0  ;  CP_COMP_OIL(I)   = 0.4592D0
-   I = 15 ;  PM_COMP_OIL(I)  = 135D0   ;  SOLU_COMP_OIL(I) = 27.5D-03    ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     TEB_COMP_OIL(I) = 449.6D0  ;  CP_COMP_OIL(I)   = 0.4430D0
-   I = 16 ;  PM_COMP_OIL(I)  = 185.5D0    ;  SOLU_COMP_OIL(I) = 0.000005D-03    ;  RO_COMP_OIL_15(I) = 815.5D0  ;  
-	     TEB_COMP_OIL(I) = 473D0  ;  CP_COMP_OIL(I)   = 0.3707D0
-   I = 17 ;  PM_COMP_OIL(I)  = 163.D0    ;  SOLU_COMP_OIL(I) = 5.5D-03    ;  RO_COMP_OIL_15(I) = 1016.D0  ;  
-	     TEB_COMP_OIL(I) = 521.6D0  ;  CP_COMP_OIL(I)   = 0.3722D0
-   I = 18 ;  PM_COMP_OIL(I)  = 215.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03    ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     TEB_COMP_OIL(I) = 536D0  ;  CP_COMP_OIL(I)   = 0.2379D0
-   I = 19 ;  PM_COMP_OIL(I)  = 177D0    ;  SOLU_COMP_OIL(I) = 3.65D-03    ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     TEB_COMP_OIL(I) = 563D0  ;  CP_COMP_OIL(I)   = 0.2248D0
-   I = 20 ;  PM_COMP_OIL(I)  = 238.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03   ;  RO_COMP_OIL_15(I) = 827.5D0 ;  
-	     TEB_COMP_OIL(I) = 590D0  ;  CP_COMP_OIL(I)   = 0.4813D0
-   I = 21 ;  PM_COMP_OIL(I)  = 273.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03   ;  RO_COMP_OIL_15(I) = 817.5D0 ;  
-	     TEB_COMP_OIL(I) = 638.6D0  ;  CP_COMP_OIL(I)   = 0.4541D0
-   I = 22 ;  PM_COMP_OIL(I)  = 215.D0    ;  SOLU_COMP_OIL(I) = 0.001D-03  ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     TEB_COMP_OIL(I) = 662.D0    ;  CP_COMP_OIL(I)   = 0.3607D0
-   I = 23 ;  PM_COMP_OIL(I)  = 317.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03 ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     TEB_COMP_OIL(I) = 698D0   ;  CP_COMP_OIL(I)   = 0.4872D0
-   I = 24 ;  PM_COMP_OIL(I)  = 222.5D0    ;  SOLU_COMP_OIL(I) = 0.101D-03     ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     TEB_COMP_OIL(I) = 752D0   ;  CP_COMP_OIL(I)   = 0.4461D0
-   I = 25 ;  PM_COMP_OIL(I)  = 465.D0    ;  SOLU_COMP_OIL(I) = 0.0000001D-03   ;  RO_COMP_OIL_15(I) = 950.D0 ;  
-	     TEB_COMP_OIL(I) = 761.D0    ;  CP_COMP_OIL(I)   = 0.2399D0
-
-		 
-   ! I = 1  ;  PM_COMP_OIL(I)  = 37.D0     ;  SOLU_COMP_OIL(I) = 40.D-08   ;  RO_COMP_OIL_15(I) = 615.D0  ;  
-             ! TEB_COMP_OIL(I) = -112.D0   ;  CP_COMP_OIL(I)   = 0.3431D0
-   ! I = 2  ;  PM_COMP_OIL(I)  = 66.D0     ;  SOLU_COMP_OIL(I) = 95.D-08   ;  RO_COMP_OIL_15(I) = 673.D0  ;  
-             ! TEB_COMP_OIL(I) = 100.4D0   ;  CP_COMP_OIL(I)   = 0.4137D0
-   ! I = 3  ;  PM_COMP_OIL(I)  = 80.5D0    ;  SOLU_COMP_OIL(I) = 32.5D-08  ;  RO_COMP_OIL_15(I) = 697.D0  ;  
-             ! TEB_COMP_OIL(I) = 158D0  ;  CP_COMP_OIL(I)   = 0.4776D0
-   ! I = 4  ;  PM_COMP_OIL(I)  = 78.D0     ;  SOLU_COMP_OIL(I) = 1780.D-08    ;  RO_COMP_OIL_15(I) = 884.D0  ;  
-	     ! TEB_COMP_OIL(I) = 176D0  ;  CP_COMP_OIL(I)   = 0.4854D0
-   ! I = 5  ;  PM_COMP_OIL(I)  = 99.D0    ;  SOLU_COMP_OIL(I) = 4.D-08  ;  RO_COMP_OIL_15(I) = 711.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 194D0  ;  CP_COMP_OIL(I)   = 0.4407D0
-   ! I = 6  ;  PM_COMP_OIL(I)  =92.D0    ;  SOLU_COMP_OIL(I) = 515D-08  ;  RO_COMP_OIL_15(I) = 880.D0  ;  
-	     ! TEB_COMP_OIL(I) = 230D0  ;  CP_COMP_OIL(I)   = 0.4999D0
-   ! I = 7  ;  PM_COMP_OIL(I)  = 113.D0     ;  SOLU_COMP_OIL(I) = 1D-08   ;  RO_COMP_OIL_15(I) = 753.D0  ; 
- 	     ! TEB_COMP_OIL(I) = 242.6D0  ;  CP_COMP_OIL(I)   = 0.4113D0
-   ! I = 8  ;  PM_COMP_OIL(I)  = 106.D0     ;  SOLU_COMP_OIL(I) = 175D-08  ;  RO_COMP_OIL_15(I) = 874.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 284D0  ;  CP_COMP_OIL(I)   = 0.3995D0
-   ! I = 9  ;  PM_COMP_OIL(I)  = 127.D0    ;  SOLU_COMP_OIL(I) = 0.205D-08  ;  RO_COMP_OIL_15(I) = 764.D0  ;  
-	     ! TEB_COMP_OIL(I) = 296.6D0  ;  CP_COMP_OIL(I)   = 0.4057D0
-   ! I = 10 ;  PM_COMP_OIL(I)  = 120.D0    ;  SOLU_COMP_OIL(I) = 57.5D-08  ;  RO_COMP_OIL_15(I) = 875.D0  ;  
-	     ! TEB_COMP_OIL(I) = 320D0  ;  CP_COMP_OIL(I)   = 0.4131D0
-   ! I = 11 ;  PM_COMP_OIL(I)  = 140.5D0   ;  SOLU_COMP_OIL(I) = 0.0001D-08  ;  RO_COMP_OIL_15(I) = 772.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 356D0  ;  CP_COMP_OIL(I)   = 0.4312D0
-   ! I = 12 ;  PM_COMP_OIL(I)  = 141.5D0   ;  SOLU_COMP_OIL(I) = 12.5D-08  ;  RO_COMP_OIL_15(I) = 879.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 368.6D0  ;  CP_COMP_OIL(I)   = 0.4549D0
-   ! I = 13 ;  PM_COMP_OIL(I)  = 156.5D0   ;  SOLU_COMP_OIL(I) = 0.00001D-08  ;  RO_COMP_OIL_15(I) = 809.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 401D0  ;  CP_COMP_OIL(I)   = 0.4378D0 
-   ! I = 14 ;  PM_COMP_OIL(I)  = 130D0   ;  SOLU_COMP_OIL(I) = 51000D-08   ;  RO_COMP_OIL_15(I) = 986.D0  ;  
-	     ! TEB_COMP_OIL(I) = 419D0  ;  CP_COMP_OIL(I)   = 0.4461D0
-   ! I = 15 ;  PM_COMP_OIL(I)  = 135D0   ;  SOLU_COMP_OIL(I) = 27.5D-08    ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     ! TEB_COMP_OIL(I) = 449.6D0  ;  CP_COMP_OIL(I)   = 0.4813D0
-   ! I = 16 ;  PM_COMP_OIL(I)  = 185.5D0    ;  SOLU_COMP_OIL(I) = 0.000005D-08    ;  RO_COMP_OIL_15(I) = 815.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 473D0  ;  CP_COMP_OIL(I)   = 0.4592D0
-   ! I = 17 ;  PM_COMP_OIL(I)  = 163.D0    ;  SOLU_COMP_OIL(I) = 5.5D-08    ;  RO_COMP_OIL_15(I) = 1016.D0  ;  
-	     ! TEB_COMP_OIL(I) = 521.6D0  ;  CP_COMP_OIL(I)   = 0.4541D0
-   ! I = 18 ;  PM_COMP_OIL(I)  = 215.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-08    ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 536D0  ;  CP_COMP_OIL(I)   = 0.4430D0
-   ! I = 19 ;  PM_COMP_OIL(I)  = 177D0    ;  SOLU_COMP_OIL(I) = 3.65D-08    ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     ! TEB_COMP_OIL(I) = 563D0  ;  CP_COMP_OIL(I)   = 0.3607D0
-   ! I = 20 ;  PM_COMP_OIL(I)  = 238.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-08   ;  RO_COMP_OIL_15(I) = 827.5D0 ;  
-	     ! TEB_COMP_OIL(I) = 590D0  ;  CP_COMP_OIL(I)   = 0.3707D0
-   ! I = 21 ;  PM_COMP_OIL(I)  = 273.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-08   ;  RO_COMP_OIL_15(I) = 817.5D0 ;  
-	     ! TEB_COMP_OIL(I) = 638.6D0  ;  CP_COMP_OIL(I)   = 0.3722D0
-   ! I = 22 ;  PM_COMP_OIL(I)  = 215.D0    ;  SOLU_COMP_OIL(I) = 0.001D-08  ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     ! TEB_COMP_OIL(I) = 662.D0    ;  CP_COMP_OIL(I)   = 0.2399D0
-   ! I = 23 ;  PM_COMP_OIL(I)  = 317.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-08 ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 698D0   ;  CP_COMP_OIL(I)   = 0.2379D0
-   ! I = 24 ;  PM_COMP_OIL(I)  = 222.5D0    ;  SOLU_COMP_OIL(I) = 0.101D-08     ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     ! TEB_COMP_OIL(I) = 752D0   ;  CP_COMP_OIL(I)   = 0.4872D0
-   ! I = 25 ;  PM_COMP_OIL(I)  = 465.D0    ;  SOLU_COMP_OIL(I) = 0.0000001D-08   ;  RO_COMP_OIL_15(I) = 950.D0 ;  
-	     ! TEB_COMP_OIL(I) = 761.D0    ;  CP_COMP_OIL(I)   = 0.2248D0
-
-
-!print*, I, SOLU_COMP_OIL(I)*10000
-!stop
-! ! FRAC_MASS_OUT -> % do total da massa de oleo de cada componente - partindo dos valores de Johansen(2003), as fracoes foram 
-! !                  reajustadas para obter um valor de API proximo do inicial
+! FRAC_MASS_OUT -> % do total da massa de oleo de cada componente - partindo dos valores de Johansen(2003), as fracoes foram 
+!                  reajustadas para obter um valor de API proximo do inicial
 
 
 
@@ -442,63 +281,32 @@ double precision, dimension(:), allocatable:: MASSCOMPREF
 !      KUOP = 11.8
    ELSE IF (API .EQ. 36.7229556) THEN    
       print*, '45.diesel'
-      I = 1  ;  FRAC_MASS_OUT(I) = 0.0291D-02
-      I = 2  ;  FRAC_MASS_OUT(I) = 0.0464D-02
-      I = 3  ;  FRAC_MASS_OUT(I) = 0.0943D-02
-      I = 4  ;  FRAC_MASS_OUT(I) = 0.0157D-02
-      I = 5  ;  FRAC_MASS_OUT(I) = 0.1520D-02  
-      I = 6  ;  FRAC_MASS_OUT(I) = 0.0509D-02 
-      I = 7  ;  FRAC_MASS_OUT(I) = 0.2005D-02  
-      I = 8  ;  FRAC_MASS_OUT(I) = 0.0548D-02  
-      I = 9  ;  FRAC_MASS_OUT(I) = 0.2232D-02
-      I = 10 ;  FRAC_MASS_OUT(I) = 2.0333D-02    
-      I = 11 ;  FRAC_MASS_OUT(I) = 3.2233D-02
-      I = 12 ;  FRAC_MASS_OUT(I) = 0.1111D-02   
-      I = 13 ;  FRAC_MASS_OUT(I) = 17.1893D-02 
-      I = 14 ;  FRAC_MASS_OUT(I) = 0.0274D-02 
-      I = 15 ;  FRAC_MASS_OUT(I) = 0.4094D-02 
-      I = 16 ;  FRAC_MASS_OUT(I) = 8.1986D-02 
-      I = 17 ;  FRAC_MASS_OUT(I) = 24.7897D-02 
-      I = 18 ;  FRAC_MASS_OUT(I) = 13.8317D-02 
-      I = 19 ;  FRAC_MASS_OUT(I) = 0.5992D-02 
-      I = 20 ;  FRAC_MASS_OUT(I) = 14.4217D-02 
-      I = 21 ;  FRAC_MASS_OUT(I) = 9.4983D-02 
-      I = 22 ;  FRAC_MASS_OUT(I) = 0.0568D-02   
-      I = 23 ;  FRAC_MASS_OUT(I) = 4.7322D-02   
+      I = 1  ;  FRAC_MASS_OUT(I) = 0.0291
+      I = 2  ;  FRAC_MASS_OUT(I) = 0.0464
+      I = 3  ;  FRAC_MASS_OUT(I) = 0.0943
+      I = 4  ;  FRAC_MASS_OUT(I) = 0.0157   
+      I = 5  ;  FRAC_MASS_OUT(I) = 0.1520  
+      I = 6  ;  FRAC_MASS_OUT(I) = 0.0509 
+      I = 7  ;  FRAC_MASS_OUT(I) = 0.2005  
+      I = 8  ;  FRAC_MASS_OUT(I) = 0.0548  
+      I = 9  ;  FRAC_MASS_OUT(I) = 0.2232 
+      I = 10 ;  FRAC_MASS_OUT(I) = 2.0333    
+      I = 11 ;  FRAC_MASS_OUT(I) = 3.2233
+      I = 12 ;  FRAC_MASS_OUT(I) = 0.1111   
+      I = 13 ;  FRAC_MASS_OUT(I) = 17.1893 
+      I = 14 ;  FRAC_MASS_OUT(I) = 0.0274 
+      I = 15 ;  FRAC_MASS_OUT(I) = 0.4094 
+      I = 16 ;  FRAC_MASS_OUT(I) = 8.1986 
+      I = 17 ;  FRAC_MASS_OUT(I) = 24.7897 
+      I = 18 ;  FRAC_MASS_OUT(I) = 13.8317 
+      I = 19 ;  FRAC_MASS_OUT(I) = 0.5992 
+      I = 20 ;  FRAC_MASS_OUT(I) = 14.4217 
+      I = 21 ;  FRAC_MASS_OUT(I) = 9.4983 
+      I = 22 ;  FRAC_MASS_OUT(I) = 0.0568   
+      I = 23 ;  FRAC_MASS_OUT(I) = 4.7322   
       I = 24 ;  FRAC_MASS_OUT(I) = 0
-      I = 25 ;  FRAC_MASS_OUT(I) = 0.0110D-02
-	  xa=0.05
-	  xw=0.05
+      I = 25 ;  FRAC_MASS_OUT(I) = 0.0110
 
-  ELSE IF (API .EQ. 45.6747897) THEN
-       print*, "Jordbaer"
-      I = 1  ;  FRAC_MASS_OUT(I) = 2.6906D-02 
-      I = 2  ;  FRAC_MASS_OUT(I) = 2.9125D-02 
-      I = 3  ;  FRAC_MASS_OUT(I) = 1.7618D-02 
-      I = 4  ;  FRAC_MASS_OUT(I) = 0.2936D-02   
-      I = 5  ;  FRAC_MASS_OUT(I) = 2.8411D-02  
-      I = 6  ;  FRAC_MASS_OUT(I) = 1.3932D-02 
-      I = 7  ;  FRAC_MASS_OUT(I) = 5.4915D-02  
-      I = 8  ;  FRAC_MASS_OUT(I) = 1.5002D-02  
-      I = 9  ;  FRAC_MASS_OUT(I) = 6.1137D-02 
-      I = 10 ;  FRAC_MASS_OUT(I) = 2.9188D-02    
-      I = 11 ;  FRAC_MASS_OUT(I) = 7.6133D-02  
-      I = 12 ;  FRAC_MASS_OUT(I) = 0.2625D-02 
-      I = 13 ;  FRAC_MASS_OUT(I) = 4.2247D-02 
-      I = 14 ;  FRAC_MASS_OUT(I) = 0.0067D-02 
-      I = 15 ;  FRAC_MASS_OUT(I) = 0.5805D-02 
-      I = 16 ;  FRAC_MASS_OUT(I) = 11.6246D-02 
-      I = 17 ;  FRAC_MASS_OUT(I) = 0.4117D-02 
-      I = 18 ;  FRAC_MASS_OUT(I) = 5.7319D-02 
-      I = 19 ;  FRAC_MASS_OUT(I) = 0.2483D-02 
-      I = 20 ;  FRAC_MASS_OUT(I) = 5.6555D-02 
-      I = 21 ;  FRAC_MASS_OUT(I) = 5.9560D-02 
-      I = 22 ;  FRAC_MASS_OUT(I) = 0.1295D-02   
-      I = 23 ;  FRAC_MASS_OUT(I) = 4.7260D-02 
-      I = 24 ;  FRAC_MASS_OUT(I) = 0.2048D-02  
-      I = 25 ;  FRAC_MASS_OUT(I) = 24.7067D-02
-	  xa=0.2
-	  xw=2.5
    ELSE IF (API .EQ. API_LULA) THEN
       
 
@@ -529,35 +337,6 @@ double precision, dimension(:), allocatable:: MASSCOMPREF
       I = 25 ;  FRAC_MASS_OUT(I) = 2.1D-01
 
 !      KUOP = 11.8
-  ELSE IF (API .EQ. 33.02352) THEN
-		print*, "Mandalay"
-      I = 1  ;  FRAC_MASS_OUT(I) = 1.1370D-02 
-      I = 2  ;  FRAC_MASS_OUT(I) = 1.8143D-02 
-      I = 3  ;  FRAC_MASS_OUT(I) = 1.1684D-02 
-      I = 4  ;  FRAC_MASS_OUT(I) = 0.1947D-02   
-      I = 5  ;  FRAC_MASS_OUT(I) = 1.8841D-02  
-      I = 6  ;  FRAC_MASS_OUT(I) = 0.5193D-02 
-      I = 7  ;  FRAC_MASS_OUT(I) = 2.0469D-02  
-      I = 8  ;  FRAC_MASS_OUT(I) = 0.5592D-02  
-      I = 9  ;  FRAC_MASS_OUT(I) = 2.2788D-02 
-      I = 10 ;  FRAC_MASS_OUT(I) = 1.3767D-02    
-      I = 11 ;  FRAC_MASS_OUT(I) = 3.5908D-02  
-      I = 12 ;  FRAC_MASS_OUT(I) = 0.1238D-02 
-      I = 13 ;  FRAC_MASS_OUT(I) = 3.8241D-02 
-      I = 14 ;  FRAC_MASS_OUT(I) = 0.0061D-02 
-      I = 15 ;  FRAC_MASS_OUT(I) = 0.2063D-02 
-      I = 16 ;  FRAC_MASS_OUT(I) = 4.1303D-02 
-      I = 17 ;  FRAC_MASS_OUT(I) = 4.0401D-02 
-      I = 18 ;  FRAC_MASS_OUT(I) = 2.6897D-02 
-      I = 19 ;  FRAC_MASS_OUT(I) = 0.1165D-02 
-      I = 20 ;  FRAC_MASS_OUT(I) = 2.6539D-02 
-      I = 21 ;  FRAC_MASS_OUT(I) = 2.0380D-02 
-      I = 22 ;  FRAC_MASS_OUT(I) = 0.0910D-02   
-      I = 23 ;  FRAC_MASS_OUT(I) = 7.5818D-02 
-      I = 24 ;  FRAC_MASS_OUT(I) = 0.3286D-02  
-      I = 25 ;  FRAC_MASS_OUT(I) = 55.5997D-02
-	  xa=3.3
-	  xw=5
 
    ELSE IF (API .EQ. API_JUB) THEN
 
@@ -1288,164 +1067,7 @@ acen=0.01
 
 
 
-   I = 1  ;  PM_COMP_OIL(I)  = 37.D0     ;  SOLU_COMP_OIL(I) = 40.D-03   ;  RO_COMP_OIL_15(I) = 615.D0  ;  
-             TEB_COMP_OIL(I) = -112.D0   ;  CP_COMP_OIL(I)   = 0.3431D0
-   I = 2  ;  PM_COMP_OIL(I)  = 66.D0     ;  SOLU_COMP_OIL(I) = 95.D-03   ;  RO_COMP_OIL_15(I) = 673.D0  ;  
-             TEB_COMP_OIL(I) = 100.4D0   ;  CP_COMP_OIL(I)   = 0.4137D0
-   I = 3  ;  PM_COMP_OIL(I)  = 80.5D0    ;  SOLU_COMP_OIL(I) = 32.5D-03  ;  RO_COMP_OIL_15(I) = 697.D0  ;  
-             TEB_COMP_OIL(I) = 158D0  ;  CP_COMP_OIL(I)   = 0.4776D0
-   I = 4  ;  PM_COMP_OIL(I)  = 78.D0     ;  SOLU_COMP_OIL(I) = 1780.D-03    ;  RO_COMP_OIL_15(I) = 884.D0  ;  
-	     TEB_COMP_OIL(I) = 176D0  ;  CP_COMP_OIL(I)   = 0.4854D0
-   I = 5  ;  PM_COMP_OIL(I)  = 99.D0    ;  SOLU_COMP_OIL(I) = 4.D-03  ;  RO_COMP_OIL_15(I) = 711.5D0  ;  
-	     TEB_COMP_OIL(I) = 194D0  ;  CP_COMP_OIL(I)   = 0.4407D0
-   I = 6  ;  PM_COMP_OIL(I)  =92.D0    ;  SOLU_COMP_OIL(I) = 515D-04  ;  RO_COMP_OIL_15(I) = 880.D0  ;  
-	     TEB_COMP_OIL(I) = 230D0  ;  CP_COMP_OIL(I)   = 0.4999D0
-   I = 7  ;  PM_COMP_OIL(I)  = 113.D0     ;  SOLU_COMP_OIL(I) = 1D-03   ;  RO_COMP_OIL_15(I) = 753.D0  ; 
- 	     TEB_COMP_OIL(I) = 242.6D0  ;  CP_COMP_OIL(I)   = 0.4113D0
-   I = 8  ;  PM_COMP_OIL(I)  = 106.D0     ;  SOLU_COMP_OIL(I) = 175D-03  ;  RO_COMP_OIL_15(I) = 874.5D0  ;  
-	     TEB_COMP_OIL(I) = 284D0  ;  CP_COMP_OIL(I)   = 0.3995D0
-   I = 9  ;  PM_COMP_OIL(I)  = 127.D0    ;  SOLU_COMP_OIL(I) = 0.205D-03  ;  RO_COMP_OIL_15(I) = 764.D0  ;  
-	     TEB_COMP_OIL(I) = 296.6D0  ;  CP_COMP_OIL(I)   = 0.4057D0
-   I = 10 ;  PM_COMP_OIL(I)  = 120.D0    ;  SOLU_COMP_OIL(I) = 57.5D-03  ;  RO_COMP_OIL_15(I) = 875.D0  ;  
-	     TEB_COMP_OIL(I) = 320D0  ;  CP_COMP_OIL(I)   = 0.4131D0
-   I = 11 ;  PM_COMP_OIL(I)  = 140.5D0   ;  SOLU_COMP_OIL(I) = 0.0001D-03  ;  RO_COMP_OIL_15(I) = 772.5D0  ;  
-	     TEB_COMP_OIL(I) = 356D0  ;  CP_COMP_OIL(I)   = 0.4312D0
-   I = 12 ;  PM_COMP_OIL(I)  = 141.5D0   ;  SOLU_COMP_OIL(I) = 12.5D-03  ;  RO_COMP_OIL_15(I) = 879.5D0  ;  
-	     TEB_COMP_OIL(I) = 368.6D0  ;  CP_COMP_OIL(I)   = 0.4549D0
-   I = 13 ;  PM_COMP_OIL(I)  = 156.5D0   ;  SOLU_COMP_OIL(I) = 0.00001D-03  ;  RO_COMP_OIL_15(I) = 809.5D0  ;  
-	     TEB_COMP_OIL(I) = 401D0  ;  CP_COMP_OIL(I)   = 0.4378D0 
-   I = 14 ;  PM_COMP_OIL(I)  = 130D0   ;  SOLU_COMP_OIL(I) = 51000D-03   ;  RO_COMP_OIL_15(I) = 986.D0  ;  
-	     TEB_COMP_OIL(I) = 419D0  ;  CP_COMP_OIL(I)   = 0.4461D0
-   I = 15 ;  PM_COMP_OIL(I)  = 135D0   ;  SOLU_COMP_OIL(I) = 27.5D-03    ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     TEB_COMP_OIL(I) = 449.6D0  ;  CP_COMP_OIL(I)   = 0.4813D0
-   I = 16 ;  PM_COMP_OIL(I)  = 185.5D0    ;  SOLU_COMP_OIL(I) = 0.000005D-03    ;  RO_COMP_OIL_15(I) = 815.5D0  ;  
-	     TEB_COMP_OIL(I) = 473D0  ;  CP_COMP_OIL(I)   = 0.4592D0
-   I = 17 ;  PM_COMP_OIL(I)  = 163.D0    ;  SOLU_COMP_OIL(I) = 5.5D-03    ;  RO_COMP_OIL_15(I) = 1016.D0  ;  
-	     TEB_COMP_OIL(I) = 521.6D0  ;  CP_COMP_OIL(I)   = 0.4541D0
-   I = 18 ;  PM_COMP_OIL(I)  = 215.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03    ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     TEB_COMP_OIL(I) = 536D0  ;  CP_COMP_OIL(I)   = 0.4430D0
-   I = 19 ;  PM_COMP_OIL(I)  = 177D0    ;  SOLU_COMP_OIL(I) = 3.65D-03    ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     TEB_COMP_OIL(I) = 563D0  ;  CP_COMP_OIL(I)   = 0.3607D0
-   I = 20 ;  PM_COMP_OIL(I)  = 238.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03   ;  RO_COMP_OIL_15(I) = 827.5D0 ;  
-	     TEB_COMP_OIL(I) = 590D0  ;  CP_COMP_OIL(I)   = 0.3707D0
-   I = 21 ;  PM_COMP_OIL(I)  = 273.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03   ;  RO_COMP_OIL_15(I) = 817.5D0 ;  
-	     TEB_COMP_OIL(I) = 638.6D0  ;  CP_COMP_OIL(I)   = 0.3722D0
-   I = 22 ;  PM_COMP_OIL(I)  = 215.D0    ;  SOLU_COMP_OIL(I) = 0.001D-03  ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     TEB_COMP_OIL(I) = 662.D0    ;  CP_COMP_OIL(I)   = 0.2399D0
-   I = 23 ;  PM_COMP_OIL(I)  = 317.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03 ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     TEB_COMP_OIL(I) = 698D0   ;  CP_COMP_OIL(I)   = 0.2379D0
-   I = 24 ;  PM_COMP_OIL(I)  = 222.5D0    ;  SOLU_COMP_OIL(I) = 0.101D-03     ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     TEB_COMP_OIL(I) = 752D0   ;  CP_COMP_OIL(I)   = 0.4872D0
-   I = 25 ;  PM_COMP_OIL(I)  = 465.D0    ;  SOLU_COMP_OIL(I) = 0.0000001D-03   ;  RO_COMP_OIL_15(I) = 950.D0 ;  
-	     TEB_COMP_OIL(I) = 761.D0    ;  CP_COMP_OIL(I)   = 0.2248D0
-
-
-
-   I = 1  ;  PM_COMP_OIL(I)  = 37.D0     ;  SOLU_COMP_OIL(I) = 40.D-03   ;  RO_COMP_OIL_15(I) = 615.D0  ;  
-             TEB_COMP_OIL(I) = -112.D0   ;  CP_COMP_OIL(I)   = 0.3431D0
-   I = 2  ;  PM_COMP_OIL(I)  = 66.D0     ;  SOLU_COMP_OIL(I) = 95.D-03   ;  RO_COMP_OIL_15(I) = 673.D0  ;  
-             TEB_COMP_OIL(I) = 100.4D0   ;  CP_COMP_OIL(I)   = 0.4137D0
-   I = 3  ;  PM_COMP_OIL(I)  = 80.5D0    ;  SOLU_COMP_OIL(I) = 32.5D-03  ;  RO_COMP_OIL_15(I) = 697.D0  ;  
-             TEB_COMP_OIL(I) = 158D0  ;  CP_COMP_OIL(I)   = 0.4776D0
-   I = 4  ;  PM_COMP_OIL(I)  = 78.D0     ;  SOLU_COMP_OIL(I) = 1780.D-03    ;  RO_COMP_OIL_15(I) = 884.D0  ;  
-	     TEB_COMP_OIL(I) = 176D0  ;  CP_COMP_OIL(I)   = 0.4407D0
-   I = 5  ;  PM_COMP_OIL(I)  = 99.D0    ;  SOLU_COMP_OIL(I) = 4.D-03  ;  RO_COMP_OIL_15(I) = 711.5D0  ;  
-	     TEB_COMP_OIL(I) = 194D0  ;  CP_COMP_OIL(I)   = 0.4113D0
-   I = 6  ;  PM_COMP_OIL(I)  =92.D0    ;  SOLU_COMP_OIL(I) = 515D-03  ;  RO_COMP_OIL_15(I) = 880.D0  ;  
-	     TEB_COMP_OIL(I) = 230D0  ;  CP_COMP_OIL(I)   = 0.4057D0
-   I = 7  ;  PM_COMP_OIL(I)  = 113.D0     ;  SOLU_COMP_OIL(I) = 1D-03   ;  RO_COMP_OIL_15(I) = 753.D0  ; 
- 	     TEB_COMP_OIL(I) = 242.6D0  ;  CP_COMP_OIL(I)   = 0.4854D0
-   I = 8  ;  PM_COMP_OIL(I)  = 106.D0     ;  SOLU_COMP_OIL(I) = 175D-03  ;  RO_COMP_OIL_15(I) = 874.5D0  ;  
-	     TEB_COMP_OIL(I) = 284D0  ;  CP_COMP_OIL(I)   = 0.4999D0
-   I = 9  ;  PM_COMP_OIL(I)  = 127.D0    ;  SOLU_COMP_OIL(I) = 0.205D-03  ;  RO_COMP_OIL_15(I) = 764.D0  ;  
-	     TEB_COMP_OIL(I) = 296.6D0  ;  CP_COMP_OIL(I)   = 0.3995D0
-   I = 10 ;  PM_COMP_OIL(I)  = 120.D0    ;  SOLU_COMP_OIL(I) = 57.5D-03  ;  RO_COMP_OIL_15(I) = 875.D0  ;  
-	     TEB_COMP_OIL(I) = 320D0  ;  CP_COMP_OIL(I)   = 0.4131D0
-   I = 11 ;  PM_COMP_OIL(I)  = 140.5D0   ;  SOLU_COMP_OIL(I) = 0.0001D-03  ;  RO_COMP_OIL_15(I) = 772.5D0  ;  
-	     TEB_COMP_OIL(I) = 356D0  ;  CP_COMP_OIL(I)   = 0.4549D0
-   I = 12 ;  PM_COMP_OIL(I)  = 141.5D0   ;  SOLU_COMP_OIL(I) = 12.5D-03  ;  RO_COMP_OIL_15(I) = 879.5D0  ;  
-	     TEB_COMP_OIL(I) = 368.6D0  ;  CP_COMP_OIL(I)   = 0.4312D0
-   I = 13 ;  PM_COMP_OIL(I)  = 156.5D0   ;  SOLU_COMP_OIL(I) = 0.00001D-03  ;  RO_COMP_OIL_15(I) = 809.5D0  ;  
-	     TEB_COMP_OIL(I) = 401D0  ;  CP_COMP_OIL(I)   = 0.4378D0 
-   I = 14 ;  PM_COMP_OIL(I)  = 130D0   ;  SOLU_COMP_OIL(I) = 51000D-03   ;  RO_COMP_OIL_15(I) = 986.D0  ;  
-	     TEB_COMP_OIL(I) = 419D0  ;  CP_COMP_OIL(I)   = 0.4592D0
-   I = 15 ;  PM_COMP_OIL(I)  = 135D0   ;  SOLU_COMP_OIL(I) = 27.5D-03    ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     TEB_COMP_OIL(I) = 449.6D0  ;  CP_COMP_OIL(I)   = 0.4430D0
-   I = 16 ;  PM_COMP_OIL(I)  = 185.5D0    ;  SOLU_COMP_OIL(I) = 0.000005D-03    ;  RO_COMP_OIL_15(I) = 815.5D0  ;  
-	     TEB_COMP_OIL(I) = 473D0  ;  CP_COMP_OIL(I)   = 0.3707D0
-   I = 17 ;  PM_COMP_OIL(I)  = 163.D0    ;  SOLU_COMP_OIL(I) = 5.5D-03    ;  RO_COMP_OIL_15(I) = 1016.D0  ;  
-	     TEB_COMP_OIL(I) = 521.6D0  ;  CP_COMP_OIL(I)   = 0.3722D0
-   I = 18 ;  PM_COMP_OIL(I)  = 215.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03    ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     TEB_COMP_OIL(I) = 536D0  ;  CP_COMP_OIL(I)   = 0.2379D0
-   I = 19 ;  PM_COMP_OIL(I)  = 177D0    ;  SOLU_COMP_OIL(I) = 3.65D-03    ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     TEB_COMP_OIL(I) = 563D0  ;  CP_COMP_OIL(I)   = 0.2248D0
-   I = 20 ;  PM_COMP_OIL(I)  = 238.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03   ;  RO_COMP_OIL_15(I) = 827.5D0 ;  
-	     TEB_COMP_OIL(I) = 590D0  ;  CP_COMP_OIL(I)   = 0.4813D0
-   I = 21 ;  PM_COMP_OIL(I)  = 273.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03   ;  RO_COMP_OIL_15(I) = 817.5D0 ;  
-	     TEB_COMP_OIL(I) = 638.6D0  ;  CP_COMP_OIL(I)   = 0.4541D0
-   I = 22 ;  PM_COMP_OIL(I)  = 215.D0    ;  SOLU_COMP_OIL(I) = 0.001D-03  ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     TEB_COMP_OIL(I) = 662.D0    ;  CP_COMP_OIL(I)   = 0.3607D0
-   I = 23 ;  PM_COMP_OIL(I)  = 317.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03 ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     TEB_COMP_OIL(I) = 698D0   ;  CP_COMP_OIL(I)   = 0.4872D0
-   I = 24 ;  PM_COMP_OIL(I)  = 222.5D0    ;  SOLU_COMP_OIL(I) = 0.101D-03     ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     TEB_COMP_OIL(I) = 752D0   ;  CP_COMP_OIL(I)   = 0.4461D0
-   I = 25 ;  PM_COMP_OIL(I)  = 465.D0    ;  SOLU_COMP_OIL(I) = 0.0000001D-03   ;  RO_COMP_OIL_15(I) = 950.D0 ;  
-	     TEB_COMP_OIL(I) = 761.D0    ;  CP_COMP_OIL(I)   = 0.2399D0
-
-		 
-		 
-   ! I = 1  ;  PM_COMP_OIL(I)  = 37.D0     ;  SOLU_COMP_OIL(I) = 40.D-08   ;  RO_COMP_OIL_15(I) = 615.D0  ;  
-             ! TEB_COMP_OIL(I) = -112.D0   ;  CP_COMP_OIL(I)   = 0.3431D0
-   ! I = 2  ;  PM_COMP_OIL(I)  = 66.D0     ;  SOLU_COMP_OIL(I) = 95.D-08   ;  RO_COMP_OIL_15(I) = 673.D0  ;  
-             ! TEB_COMP_OIL(I) = 100.4D0   ;  CP_COMP_OIL(I)   = 0.4137D0
-   ! I = 3  ;  PM_COMP_OIL(I)  = 80.5D0    ;  SOLU_COMP_OIL(I) = 32.5D-08  ;  RO_COMP_OIL_15(I) = 697.D0  ;  
-             ! TEB_COMP_OIL(I) = 158D0  ;  CP_COMP_OIL(I)   = 0.4776D0
-   ! I = 4  ;  PM_COMP_OIL(I)  = 78.D0     ;  SOLU_COMP_OIL(I) = 1780.D-08    ;  RO_COMP_OIL_15(I) = 884.D0  ;  
-	     ! TEB_COMP_OIL(I) = 176D0  ;  CP_COMP_OIL(I)   = 0.4854D0
-   ! I = 5  ;  PM_COMP_OIL(I)  = 99.D0    ;  SOLU_COMP_OIL(I) = 4.D-08  ;  RO_COMP_OIL_15(I) = 711.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 194D0  ;  CP_COMP_OIL(I)   = 0.4407D0
-   ! I = 6  ;  PM_COMP_OIL(I)  =92.D0    ;  SOLU_COMP_OIL(I) = 515D-08  ;  RO_COMP_OIL_15(I) = 880.D0  ;  
-	     ! TEB_COMP_OIL(I) = 230D0  ;  CP_COMP_OIL(I)   = 0.4999D0
-   ! I = 7  ;  PM_COMP_OIL(I)  = 113.D0     ;  SOLU_COMP_OIL(I) = 1D-08   ;  RO_COMP_OIL_15(I) = 753.D0  ; 
- 	     ! TEB_COMP_OIL(I) = 242.6D0  ;  CP_COMP_OIL(I)   = 0.4113D0
-   ! I = 8  ;  PM_COMP_OIL(I)  = 106.D0     ;  SOLU_COMP_OIL(I) = 175D-08  ;  RO_COMP_OIL_15(I) = 874.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 284D0  ;  CP_COMP_OIL(I)   = 0.3995D0
-   ! I = 9  ;  PM_COMP_OIL(I)  = 127.D0    ;  SOLU_COMP_OIL(I) = 0.205D-08  ;  RO_COMP_OIL_15(I) = 764.D0  ;  
-	     ! TEB_COMP_OIL(I) = 296.6D0  ;  CP_COMP_OIL(I)   = 0.4057D0
-   ! I = 10 ;  PM_COMP_OIL(I)  = 120.D0    ;  SOLU_COMP_OIL(I) = 57.5D-08  ;  RO_COMP_OIL_15(I) = 875.D0  ;  
-	     ! TEB_COMP_OIL(I) = 320D0  ;  CP_COMP_OIL(I)   = 0.4131D0
-   ! I = 11 ;  PM_COMP_OIL(I)  = 140.5D0   ;  SOLU_COMP_OIL(I) = 0.0001D-08  ;  RO_COMP_OIL_15(I) = 772.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 356D0  ;  CP_COMP_OIL(I)   = 0.4312D0
-   ! I = 12 ;  PM_COMP_OIL(I)  = 141.5D0   ;  SOLU_COMP_OIL(I) = 12.5D-08  ;  RO_COMP_OIL_15(I) = 879.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 368.6D0  ;  CP_COMP_OIL(I)   = 0.4549D0
-   ! I = 13 ;  PM_COMP_OIL(I)  = 156.5D0   ;  SOLU_COMP_OIL(I) = 0.00001D-08  ;  RO_COMP_OIL_15(I) = 809.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 401D0  ;  CP_COMP_OIL(I)   = 0.4378D0 
-   ! I = 14 ;  PM_COMP_OIL(I)  = 130D0   ;  SOLU_COMP_OIL(I) = 51000D-08   ;  RO_COMP_OIL_15(I) = 986.D0  ;  
-	     ! TEB_COMP_OIL(I) = 419D0  ;  CP_COMP_OIL(I)   = 0.4461D0
-   ! I = 15 ;  PM_COMP_OIL(I)  = 135D0   ;  SOLU_COMP_OIL(I) = 27.5D-08    ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     ! TEB_COMP_OIL(I) = 449.6D0  ;  CP_COMP_OIL(I)   = 0.4813D0
-   ! I = 16 ;  PM_COMP_OIL(I)  = 185.5D0    ;  SOLU_COMP_OIL(I) = 0.000005D-08    ;  RO_COMP_OIL_15(I) = 815.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 473D0  ;  CP_COMP_OIL(I)   = 0.4592D0
-   ! I = 17 ;  PM_COMP_OIL(I)  = 163.D0    ;  SOLU_COMP_OIL(I) = 5.5D-08    ;  RO_COMP_OIL_15(I) = 1016.D0  ;  
-	     ! TEB_COMP_OIL(I) = 521.6D0  ;  CP_COMP_OIL(I)   = 0.4541D0
-   ! I = 18 ;  PM_COMP_OIL(I)  = 215.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-08    ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 536D0  ;  CP_COMP_OIL(I)   = 0.4430D0
-   ! I = 19 ;  PM_COMP_OIL(I)  = 177D0    ;  SOLU_COMP_OIL(I) = 3.65D-08    ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     ! TEB_COMP_OIL(I) = 563D0  ;  CP_COMP_OIL(I)   = 0.3607D0
-   ! I = 20 ;  PM_COMP_OIL(I)  = 238.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-08   ;  RO_COMP_OIL_15(I) = 827.5D0 ;  
-	     ! TEB_COMP_OIL(I) = 590D0  ;  CP_COMP_OIL(I)   = 0.3707D0
-   ! I = 21 ;  PM_COMP_OIL(I)  = 273.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-08   ;  RO_COMP_OIL_15(I) = 817.5D0 ;  
-	     ! TEB_COMP_OIL(I) = 638.6D0  ;  CP_COMP_OIL(I)   = 0.3722D0
-   ! I = 22 ;  PM_COMP_OIL(I)  = 215.D0    ;  SOLU_COMP_OIL(I) = 0.001D-08  ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     ! TEB_COMP_OIL(I) = 662.D0    ;  CP_COMP_OIL(I)   = 0.2399D0
-   ! I = 23 ;  PM_COMP_OIL(I)  = 317.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-08 ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     ! TEB_COMP_OIL(I) = 698D0   ;  CP_COMP_OIL(I)   = 0.2379D0
-   ! I = 24 ;  PM_COMP_OIL(I)  = 222.5D0    ;  SOLU_COMP_OIL(I) = 0.101D-08     ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     ! TEB_COMP_OIL(I) = 752D0   ;  CP_COMP_OIL(I)   = 0.4872D0
-   ! I = 25 ;  PM_COMP_OIL(I)  = 465.D0    ;  SOLU_COMP_OIL(I) = 0.0000001D-08   ;  RO_COMP_OIL_15(I) = 950.D0 ;  
-	     ! TEB_COMP_OIL(I) = 761.D0    ;  CP_COMP_OIL(I)   = 0.2248D0
-
-! !-----------------------------------------------------------------------------------
+!-----------------------------------------------------------------------------------
 !## cada tipo de oleo tem um conjunto de fracoes diferentes - esses sao para os oleos dos campos de Golfinho, Jubarte e Lula,
 !com base na composicao media do oleo brasileiro dado por Zilio, Pinho (2002) [Cenpes].
 
@@ -2052,59 +1674,6 @@ acen=0.01
 	     TEB_COMP_OIL(I) = 662.D0    ;  CP_COMP_OIL(I)   = 0.2248D0
 
 
-!!! new fraction cp_cmop_oil corrected
-
-   I = 1  ;  PM_COMP_OIL(I)  = 37.D0     ;  SOLU_COMP_OIL(I) = 40.D-03   ;  RO_COMP_OIL_15(I) = 615.D0  ;  
-             TEB_COMP_OIL(I) = -112.D0   ;  CP_COMP_OIL(I)   = 0.3431D0
-   I = 2  ;  PM_COMP_OIL(I)  = 66.D0     ;  SOLU_COMP_OIL(I) = 95.D-03   ;  RO_COMP_OIL_15(I) = 673.D0  ;  
-             TEB_COMP_OIL(I) = 100.4D0   ;  CP_COMP_OIL(I)   = 0.4137D0
-   I = 3  ;  PM_COMP_OIL(I)  = 80.5D0    ;  SOLU_COMP_OIL(I) = 32.5D-03  ;  RO_COMP_OIL_15(I) = 697.D0  ;  
-             TEB_COMP_OIL(I) = 158D0  ;  CP_COMP_OIL(I)   = 0.4776D0
-   I = 4  ;  PM_COMP_OIL(I)  = 78.D0     ;  SOLU_COMP_OIL(I) = 1780.D-03    ;  RO_COMP_OIL_15(I) = 884.D0  ;  
-	     TEB_COMP_OIL(I) = 176D0  ;  CP_COMP_OIL(I)   = 0.4407D0
-   I = 5  ;  PM_COMP_OIL(I)  = 99.D0    ;  SOLU_COMP_OIL(I) = 4.D-03  ;  RO_COMP_OIL_15(I) = 711.5D0  ;  
-	     TEB_COMP_OIL(I) = 194D0  ;  CP_COMP_OIL(I)   = 0.4113D0
-   I = 6  ;  PM_COMP_OIL(I)  =92.D0    ;  SOLU_COMP_OIL(I) = 515D-03  ;  RO_COMP_OIL_15(I) = 880.D0  ;  
-	     TEB_COMP_OIL(I) = 230D0  ;  CP_COMP_OIL(I)   = 0.4057D0
-   I = 7  ;  PM_COMP_OIL(I)  = 113.D0     ;  SOLU_COMP_OIL(I) = 1D-03   ;  RO_COMP_OIL_15(I) = 753.D0  ; 
- 	     TEB_COMP_OIL(I) = 242.6D0  ;  CP_COMP_OIL(I)   = 0.4854D0
-   I = 8  ;  PM_COMP_OIL(I)  = 106.D0     ;  SOLU_COMP_OIL(I) = 175D-03  ;  RO_COMP_OIL_15(I) = 874.5D0  ;  
-	     TEB_COMP_OIL(I) = 284D0  ;  CP_COMP_OIL(I)   = 0.4999D0
-   I = 9  ;  PM_COMP_OIL(I)  = 127.D0    ;  SOLU_COMP_OIL(I) = 0.205D-03  ;  RO_COMP_OIL_15(I) = 764.D0  ;  
-	     TEB_COMP_OIL(I) = 296.6D0  ;  CP_COMP_OIL(I)   = 0.3995D0
-   I = 10 ;  PM_COMP_OIL(I)  = 120.D0    ;  SOLU_COMP_OIL(I) = 57.5D-03  ;  RO_COMP_OIL_15(I) = 875.D0  ;  
-	     TEB_COMP_OIL(I) = 320D0  ;  CP_COMP_OIL(I)   = 0.4131D0
-   I = 11 ;  PM_COMP_OIL(I)  = 140.5D0   ;  SOLU_COMP_OIL(I) = 0.0001D-03  ;  RO_COMP_OIL_15(I) = 772.5D0  ;  
-	     TEB_COMP_OIL(I) = 356D0  ;  CP_COMP_OIL(I)   = 0.4549D0
-   I = 12 ;  PM_COMP_OIL(I)  = 141.5D0   ;  SOLU_COMP_OIL(I) = 12.5D-03  ;  RO_COMP_OIL_15(I) = 879.5D0  ;  
-	     TEB_COMP_OIL(I) = 368.6D0  ;  CP_COMP_OIL(I)   = 0.4312D0
-   I = 13 ;  PM_COMP_OIL(I)  = 156.5D0   ;  SOLU_COMP_OIL(I) = 0.00001D-03  ;  RO_COMP_OIL_15(I) = 809.5D0  ;  
-	     TEB_COMP_OIL(I) = 401D0  ;  CP_COMP_OIL(I)   = 0.4378D0 
-   I = 14 ;  PM_COMP_OIL(I)  = 130D0   ;  SOLU_COMP_OIL(I) = 51000D-03   ;  RO_COMP_OIL_15(I) = 986.D0  ;  
-	     TEB_COMP_OIL(I) = 419D0  ;  CP_COMP_OIL(I)   = 0.4592D0
-   I = 15 ;  PM_COMP_OIL(I)  = 135D0   ;  SOLU_COMP_OIL(I) = 27.5D-03    ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     TEB_COMP_OIL(I) = 449.6D0  ;  CP_COMP_OIL(I)   = 0.4430D0
-   I = 16 ;  PM_COMP_OIL(I)  = 185.5D0    ;  SOLU_COMP_OIL(I) = 0.000005D-03    ;  RO_COMP_OIL_15(I) = 815.5D0  ;  
-	     TEB_COMP_OIL(I) = 473D0  ;  CP_COMP_OIL(I)   = 0.3707D0
-   I = 17 ;  PM_COMP_OIL(I)  = 163.D0    ;  SOLU_COMP_OIL(I) = 5.5D-03    ;  RO_COMP_OIL_15(I) = 1016.D0  ;  
-	     TEB_COMP_OIL(I) = 521.6D0  ;  CP_COMP_OIL(I)   = 0.3722D0
-   I = 18 ;  PM_COMP_OIL(I)  = 215.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03    ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     TEB_COMP_OIL(I) = 536D0  ;  CP_COMP_OIL(I)   = 0.2379D0
-   I = 19 ;  PM_COMP_OIL(I)  = 177D0    ;  SOLU_COMP_OIL(I) = 3.65D-03    ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     TEB_COMP_OIL(I) = 563D0  ;  CP_COMP_OIL(I)   = 0.2248D0
-   I = 20 ;  PM_COMP_OIL(I)  = 238.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03   ;  RO_COMP_OIL_15(I) = 827.5D0 ;  
-	     TEB_COMP_OIL(I) = 590D0  ;  CP_COMP_OIL(I)   = 0.4813D0
-   I = 21 ;  PM_COMP_OIL(I)  = 273.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03   ;  RO_COMP_OIL_15(I) = 817.5D0 ;  
-	     TEB_COMP_OIL(I) = 638.6D0  ;  CP_COMP_OIL(I)   = 0.4541D0
-   I = 22 ;  PM_COMP_OIL(I)  = 215.D0    ;  SOLU_COMP_OIL(I) = 0.001D-03  ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
-	     TEB_COMP_OIL(I) = 662.D0    ;  CP_COMP_OIL(I)   = 0.3607D0
-   I = 23 ;  PM_COMP_OIL(I)  = 317.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03 ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
-	     TEB_COMP_OIL(I) = 698D0   ;  CP_COMP_OIL(I)   = 0.4872D0
-   I = 24 ;  PM_COMP_OIL(I)  = 222.5D0    ;  SOLU_COMP_OIL(I) = 0.101D-03     ;  RO_COMP_OIL_15(I) = 980.D0  ;  
-	     TEB_COMP_OIL(I) = 752D0   ;  CP_COMP_OIL(I)   = 0.4461D0
-   I = 25 ;  PM_COMP_OIL(I)  = 465.D0    ;  SOLU_COMP_OIL(I) = 0.0000001D-03   ;  RO_COMP_OIL_15(I) = 950.D0 ;  
-	     TEB_COMP_OIL(I) = 761.D0    ;  CP_COMP_OIL(I)   = 0.2399D0
-
 ! FRAC_MASS_OUT -> % do total da massa de oleo de cada componente - partindo dos valores de Johansen(2003), as fracoes foram 
 !                  reajustadas para obter um valor de API proximo do inicial
 
@@ -2598,9 +2167,9 @@ acen=0.01
 
 ! FRAC_MASS_OUT -> % do total da massa de oleo de cada componente - partindo dos valores de Johansen(2003), as fracoes foram 
 !                  reajustadas para obter um valor de API proximo do inicial
-!print*, 'LDLDLDL'
-!print*, 'llff'
-!print*, api_golf
+print*, 'LDLDLDL'
+print*, 'llff'
+print*, api_golf
 
  IF ( API .EQ. API_GOLF) THEN
 
@@ -2818,95 +2387,6 @@ PRINT*, '456'
       I = 23 ;  FRAC_MASS_OUT(I) = 0   
       I = 24 ;  FRAC_MASS_OUT(I) = 0.0274
       I = 25 ;  FRAC_MASS_OUT(I) = 0.0568
-
-
-  ELSE IF (API .EQ. 7778) THEN
-       
-      I = 1  ;  FRAC_MASS_OUT(I) = 1.1370D-02 
-      I = 2  ;  FRAC_MASS_OUT(I) = 1.8143D-02 
-      I = 3  ;  FRAC_MASS_OUT(I) = 1.1684D-02 
-      I = 4  ;  FRAC_MASS_OUT(I) = 0.1947D-02   
-      I = 5  ;  FRAC_MASS_OUT(I) = 1.8841D-02  
-      I = 6  ;  FRAC_MASS_OUT(I) = 0.5193D-02 
-      I = 7  ;  FRAC_MASS_OUT(I) = 2.0469D-02  
-      I = 8  ;  FRAC_MASS_OUT(I) = 0.5592D-02  
-      I = 9  ;  FRAC_MASS_OUT(I) = 2.2788D-02 
-      I = 10 ;  FRAC_MASS_OUT(I) = 1.3767D-02    
-      I = 11 ;  FRAC_MASS_OUT(I) = 3.5908D-02  
-      I = 12 ;  FRAC_MASS_OUT(I) = 0.1238D-02 
-      I = 13 ;  FRAC_MASS_OUT(I) = 3.8241D-02 
-      I = 14 ;  FRAC_MASS_OUT(I) = 0.0061D-02 
-      I = 15 ;  FRAC_MASS_OUT(I) = 0.2063D-02 
-      I = 16 ;  FRAC_MASS_OUT(I) = 4.1303D-02 
-      I = 17 ;  FRAC_MASS_OUT(I) = 4.0401D-02 
-      I = 18 ;  FRAC_MASS_OUT(I) = 2.6897D-02 
-      I = 19 ;  FRAC_MASS_OUT(I) = 0.1165D-02 
-      I = 20 ;  FRAC_MASS_OUT(I) = 2.6539D-02 
-      I = 21 ;  FRAC_MASS_OUT(I) = 2.0380D-02 
-      I = 22 ;  FRAC_MASS_OUT(I) = 0.0910D-02   
-      I = 23 ;  FRAC_MASS_OUT(I) = 7.5818D-02 
-      I = 24 ;  FRAC_MASS_OUT(I) = 0.3286D-02  
-      I = 25 ;  FRAC_MASS_OUT(I) = 55.5997D-02
-	
-   ELSE IF (API .EQ. 36.7229556) THEN    
-      print*, '45.diesel'
-      I = 1  ;  FRAC_MASS_OUT(I) = 0.0291D-02
-      I = 2  ;  FRAC_MASS_OUT(I) = 0.0464D-02
-      I = 3  ;  FRAC_MASS_OUT(I) = 0.0943D-02
-      I = 4  ;  FRAC_MASS_OUT(I) = 0.0157D-02
-      I = 5  ;  FRAC_MASS_OUT(I) = 0.1520D-02  
-      I = 6  ;  FRAC_MASS_OUT(I) = 0.0509D-02 
-      I = 7  ;  FRAC_MASS_OUT(I) = 0.2005D-02  
-      I = 8  ;  FRAC_MASS_OUT(I) = 0.0548D-02  
-      I = 9  ;  FRAC_MASS_OUT(I) = 0.2232D-02
-      I = 10 ;  FRAC_MASS_OUT(I) = 2.0333D-02    
-      I = 11 ;  FRAC_MASS_OUT(I) = 3.2233D-02
-      I = 12 ;  FRAC_MASS_OUT(I) = 0.1111D-02   
-      I = 13 ;  FRAC_MASS_OUT(I) = 17.1893D-02 
-      I = 14 ;  FRAC_MASS_OUT(I) = 0.0274D-02 
-      I = 15 ;  FRAC_MASS_OUT(I) = 0.4094D-02 
-      I = 16 ;  FRAC_MASS_OUT(I) = 8.1986D-02 
-      I = 17 ;  FRAC_MASS_OUT(I) = 24.7897D-02 
-      I = 18 ;  FRAC_MASS_OUT(I) = 13.8317D-02 
-      I = 19 ;  FRAC_MASS_OUT(I) = 0.5992D-02 
-      I = 20 ;  FRAC_MASS_OUT(I) = 14.4217D-02 
-      I = 21 ;  FRAC_MASS_OUT(I) = 9.4983D-02 
-      I = 22 ;  FRAC_MASS_OUT(I) = 0.0568D-02   
-      I = 23 ;  FRAC_MASS_OUT(I) = 4.7322D-02   
-      I = 24 ;  FRAC_MASS_OUT(I) = 0
-      I = 25 ;  FRAC_MASS_OUT(I) = 0.0110D-02
-	  xa=0.05
-	  xw=0.05
-
-   ELSE IF (API .EQ. 45.6747897) THEN
-       print*, "Jordbaer"
-      I = 1  ;  FRAC_MASS_OUT(I) = 2.6906D-02 
-      I = 2  ;  FRAC_MASS_OUT(I) = 2.9125D-02 
-      I = 3  ;  FRAC_MASS_OUT(I) = 1.7618D-02 
-      I = 4  ;  FRAC_MASS_OUT(I) = 0.2936D-02   
-      I = 5  ;  FRAC_MASS_OUT(I) = 2.8411D-02  
-      I = 6  ;  FRAC_MASS_OUT(I) = 1.3932D-02 
-      I = 7  ;  FRAC_MASS_OUT(I) = 5.4915D-02  
-      I = 8  ;  FRAC_MASS_OUT(I) = 1.5002D-02  
-      I = 9  ;  FRAC_MASS_OUT(I) = 6.1137D-02 
-      I = 10 ;  FRAC_MASS_OUT(I) = 2.9188D-02    
-      I = 11 ;  FRAC_MASS_OUT(I) = 7.6133D-02  
-      I = 12 ;  FRAC_MASS_OUT(I) = 0.2625D-02 
-      I = 13 ;  FRAC_MASS_OUT(I) = 4.2247D-02 
-      I = 14 ;  FRAC_MASS_OUT(I) = 0.0067D-02 
-      I = 15 ;  FRAC_MASS_OUT(I) = 0.5805D-02 
-      I = 16 ;  FRAC_MASS_OUT(I) = 11.6246D-02 
-      I = 17 ;  FRAC_MASS_OUT(I) = 0.4117D-02 
-      I = 18 ;  FRAC_MASS_OUT(I) = 5.7319D-02 
-      I = 19 ;  FRAC_MASS_OUT(I) = 0.2483D-02 
-      I = 20 ;  FRAC_MASS_OUT(I) = 5.6555D-02 
-      I = 21 ;  FRAC_MASS_OUT(I) = 5.9560D-02 
-      I = 22 ;  FRAC_MASS_OUT(I) = 0.1295D-02   
-      I = 23 ;  FRAC_MASS_OUT(I) = 4.7260D-02 
-      I = 24 ;  FRAC_MASS_OUT(I) = 0.2048D-02  
-      I = 25 ;  FRAC_MASS_OUT(I) = 24.7067D-02
-	  xa=0.2
-	  xw=2.5
 
    ELSE IF (API .EQ. 45.6367254222577) THEN    
       print*, '45.6367254222577'

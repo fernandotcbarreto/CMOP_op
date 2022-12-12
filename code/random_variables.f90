@@ -13,7 +13,7 @@ Module random_variables
   vapp=0.01
   r=8.208*(10.**(-5.)) 
   temp=44 !celsius
-  CDIF_HOR       = 6.0D0				
+!  CDIF_HOR       = 20.0D0				
 !  CDIF_HOR       = 6.0D0	 baia guanabara			
   CDIF_VER       = 1.D-3
   SALin          =  35  

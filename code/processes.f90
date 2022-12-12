@@ -3,8 +3,8 @@ Module processes
   implicit none 
 
   double precision:: stab_index, ucomp2,vcomp2, vel2,dir2
-  double precision:: XA !fraction and mass of asphaltenes
-  double precision:: XW  !fraction and mass of wax
+!  double precision:: XA !fraction and mass of asphaltenes
+!  double precision:: XW  !fraction and mass of wax
   double precision, dimension(:), allocatable:: XAM, XWM
   double precision:: kao, kaw
   double precision:: alfa, alfa0, alfa67
@@ -34,10 +34,11 @@ Module processes
   
      kaw=200 ! at 293 k
 
-     xa=0.4
+!     xa=0.4
 
-     xw=0.4
-
+!     xw=0.4
+!print*, xa, xw
+!stop
      watf(:,:)=0
 
      maxwf=0.8   !Xie et al. 2007 Modeling emulsification after an oil spill in the sea 
@@ -57,8 +58,7 @@ Module processes
      !print*, kem
 	 !stop
       kem =  0.0000005   !VALUE USED IN EMULFICATION VALIDATION
-     ! kem =  0.000001   !Value used to validate VISCOSITY
-
+     ! kem = 0.000001   !Value used to validate VISCOSITY
      !kem =  0.000002  !
 
      k1N = 0.8
@@ -116,10 +116,10 @@ END SUBROUTINE
   
      kaw=200 ! at 293 k
 
-     xa=0.4
+!     xa=0.4   !fraction of alphaltenes
 
-     xw=0.4
-
+!     xw=0.4   !!fraction of wax
+!print*, xa, xw
      watf(:,:)=0
 
      maxwf=0.8   !Xie et al. 2007 Modeling emulsification after an oil spill in the sea 
