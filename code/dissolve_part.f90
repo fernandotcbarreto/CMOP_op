@@ -205,6 +205,7 @@ do comps=1, NCOMP_OIL
       
       massdis(comps) = KM_OIL*4.D0*PI*(DIAM_PL/2.D0)**(2.D0)*(FRAC_MOL*CORRECAO*SOLU_COMP_OIL(comps) - C_MDISS)*DT_STEP  	! massa de componente 
 
+!      massdis(comps) =  massdis(comps) * (NUMDROPS/1000000)
       massdis(comps) =  massdis(comps) * (NUMDROPS/10)
 
 

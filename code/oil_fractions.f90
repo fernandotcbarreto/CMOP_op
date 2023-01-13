@@ -438,7 +438,35 @@ double precision, dimension(:), allocatable:: MASSCOMPREF
       I = 23 ;  FRAC_MASS_OUT(I) = 2.4D-03
       I = 24 ;  FRAC_MASS_OUT(I) = 0.D0
       I = 25 ;  FRAC_MASS_OUT(I) = 2.2D-01
-      
+  ELSE IF (API .EQ. 27.55361) THEN
+		print*, "LINERLE"
+      I = 1  ;  FRAC_MASS_OUT(I) = 0.0951D-02 
+      I = 2  ;  FRAC_MASS_OUT(I) = 0.0D-02 
+      I = 3  ;  FRAC_MASS_OUT(I) = 0.0D-02 
+      I = 4  ;  FRAC_MASS_OUT(I) = 0.0D-02   
+      I = 5  ;  FRAC_MASS_OUT(I) = 0.0D-02  
+      I = 6  ;  FRAC_MASS_OUT(I) = 0.0D-02 
+      I = 7  ;  FRAC_MASS_OUT(I) = 0.0D-02  
+      I = 8  ;  FRAC_MASS_OUT(I) = 0.0D-02  
+      I = 9  ;  FRAC_MASS_OUT(I) = 0.0D-02 
+      I = 10 ;  FRAC_MASS_OUT(I) = 0.0D-02    
+      I = 11 ;  FRAC_MASS_OUT(I) = 0.5449D-02  
+      I = 12 ;  FRAC_MASS_OUT(I) = 0.0188D-02 
+      I = 13 ;  FRAC_MASS_OUT(I) = 1.0198D-02 
+      I = 14 ;  FRAC_MASS_OUT(I) = 0.0016D-02 
+      I = 15 ;  FRAC_MASS_OUT(I) = 0.0550D-02 
+      I = 16 ;  FRAC_MASS_OUT(I) = 3.8377D-02 
+      I = 17 ;  FRAC_MASS_OUT(I) = 0.2595D-02 
+      I = 18 ;  FRAC_MASS_OUT(I) = 3.6133D-02 
+      I = 19 ;  FRAC_MASS_OUT(I) = 0.1565D-02 
+      I = 20 ;  FRAC_MASS_OUT(I) = 3.5651D-02 
+      I = 21 ;  FRAC_MASS_OUT(I) = 6.4267D-02 
+      I = 22 ;  FRAC_MASS_OUT(I) = 0.1397D-02   
+      I = 23 ;  FRAC_MASS_OUT(I) = 11.6365D-02 
+      I = 24 ;  FRAC_MASS_OUT(I) = 0.1645D-02  
+      I = 25 ;  FRAC_MASS_OUT(I) = 68.4652D-02
+	  xa=0.77
+	  xw=0.27      
 !      KUOP = 11.8
    ELSE IF (API .EQ. 36.7229556) THEN    
       print*, '45.diesel'
@@ -2847,6 +2875,36 @@ PRINT*, '456'
       I = 23 ;  FRAC_MASS_OUT(I) = 7.5818D-02 
       I = 24 ;  FRAC_MASS_OUT(I) = 0.3286D-02  
       I = 25 ;  FRAC_MASS_OUT(I) = 55.5997D-02
+	  
+  ELSE IF (API .EQ. 888) THEN
+		print*, "LINERLE"
+      I = 1  ;  FRAC_MASS_OUT(I) = 0.0951D-02 
+      I = 2  ;  FRAC_MASS_OUT(I) = 0.0D-02 
+      I = 3  ;  FRAC_MASS_OUT(I) = 0.0D-02 
+      I = 4  ;  FRAC_MASS_OUT(I) = 0.0D-02   
+      I = 5  ;  FRAC_MASS_OUT(I) = 0.0D-02  
+      I = 6  ;  FRAC_MASS_OUT(I) = 0.0D-02 
+      I = 7  ;  FRAC_MASS_OUT(I) = 0.0D-02  
+      I = 8  ;  FRAC_MASS_OUT(I) = 0.0D-02  
+      I = 9  ;  FRAC_MASS_OUT(I) = 0.0D-02 
+      I = 10 ;  FRAC_MASS_OUT(I) = 0.0D-02    
+      I = 11 ;  FRAC_MASS_OUT(I) = 0.5449D-02  
+      I = 12 ;  FRAC_MASS_OUT(I) = 0.0188D-02 
+      I = 13 ;  FRAC_MASS_OUT(I) = 1.0198D-02 
+      I = 14 ;  FRAC_MASS_OUT(I) = 0.0016D-02 
+      I = 15 ;  FRAC_MASS_OUT(I) = 0.0550D-02 
+      I = 16 ;  FRAC_MASS_OUT(I) = 3.8377D-02 
+      I = 17 ;  FRAC_MASS_OUT(I) = 0.2595D-02 
+      I = 18 ;  FRAC_MASS_OUT(I) = 3.6133D-02 
+      I = 19 ;  FRAC_MASS_OUT(I) = 0.1565D-02 
+      I = 20 ;  FRAC_MASS_OUT(I) = 3.5651D-02 
+      I = 21 ;  FRAC_MASS_OUT(I) = 6.4267D-02 
+      I = 22 ;  FRAC_MASS_OUT(I) = 0.1397D-02   
+      I = 23 ;  FRAC_MASS_OUT(I) = 11.6365D-02 
+      I = 24 ;  FRAC_MASS_OUT(I) = 0.1645D-02  
+      I = 25 ;  FRAC_MASS_OUT(I) = 68.4652D-02
+	  xa=0.77
+	  xw=0.27	  
 	
    ELSE IF (API .EQ. 36.7229556) THEN    
       print*, '45.diesel'

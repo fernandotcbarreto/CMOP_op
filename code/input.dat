@@ -1,24 +1,24 @@
-2020,1,1 , 0 , 0 ,  0      !   year, month, day, hour, minute, second   2022,9,16 , 0 , 0 ,  0   
-'/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/'
-24     !running time in hours  2160
-200                 !number of particles 200
-0.25                 !output frequency in hours
--34                ! Spill longitude (decimal)   -34 41.1
--7               ! Spill latitude  (decimal)     -7 22.9
+2018,11,4 , 0 , 0 ,  0      !   year, month, day, hour, minute, second   2021,11,3 , 12 , 0 ,  0  
+'/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/hycom_remo/'
+50     !running time in hours  2160
+50                 !number of particles 200
+1                 !output frequency in hours
+-41.1              ! Spill longitude (decimal)   -34 -41.1  -43.2617
+-22.9                ! Spill latitude  (decimal)     -7 -22.9  -22.8210 
 900                 ! time step       (second)  default 900
-200                   ! Volume dischar (m3)
+50                   ! Volume dischar (m3)
 1                 !DISSOLVE         0 TURN OFF DISSOLUTION
 1                 !EMULSI           0 TURN OFF EMULSIFICATION
 1                 !EVAP_TURN        0 TURN OFF EVAPORATION
 1                 !ENTRAIN          0 TURN OFF EVAPORATION
 0                 !THEORETICAL      IF THEORETICAL ACTIVATED DO NOT TURN ENTRAINMENT ON!!!!
 1                 !DISSOLVED_FASE   0 TURN OFF EVAPORATION
-5                !uwd              u-component uniform and stationay wind velocity
-5                !vwd              u-component uniform and stationay wind velocity
+0                !uwd              u-component uniform and stationay wind velocity
+0                !vwd              u-component uniform and stationay wind velocity
 0                 !avel             activate aditional velocity of object
 0                !odir             Object direction
 0.            !ovel              Object velocity
-0             !wind_theoretical   0 turn off wind_theoretical, and read wind U and V from files
+1             !wind_theoretical   0 turn off wind_theoretical, and read wind U and V from files
 0             !reverse in time   0 turn off reverse in time. Please, turn off physical-chemical processes 
 0             !coupling. 0 turn off coupling, used for connection with blowout and multi-sources. 
 0            !time_finish  number of hours that lasts the continuous release. 0 is instantaneous
@@ -26,7 +26,7 @@
 '/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/testsurf.txt'  !path_ini_coup
 '/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/testfrac.txt'     !path_frac
 0    !depth of spill in negative values
-0.01    !wind coefficient
-0    ! horizontal dispersion coefficient
-'Jordbaer'  !Diesel Jordbaer Mandalay
-0.0
+0.035    !wind coefficient
+50    ! horizontal dispersion coefficient
+'Mandalay'  !Diesel Jordbaer Mandalay  Linerle
+0.      !Duct width

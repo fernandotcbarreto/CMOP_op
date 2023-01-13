@@ -8,9 +8,9 @@ implicit none
 double precision, dimension(:, :), allocatable:: lon_modelm, lat_modelm,lat_model_summ, lon_model_summ, coord_summ
 double precision, dimension(:), allocatable:: lat_part_sum, lon_part_sum, coord_sum_f2
  double precision::  ui1,ui2,vi1,vi2,ti1,ti2,si1,si2, counttimeh , intertime(2), vel_interp(2), ui_vec(1), ts_vec(1),&
- di, dt_h, wi1, wi2, wi, dt_hf2 
+ di, dt_h, wi1, wi2, wi, dt_hf2, coastad
  double precision:: kz1, kz2, kz, counttimeh_r
- double precision, dimension(:, :), allocatable:: lat_part, lon_part, depth, area_grid, zf1
+ double precision, dimension(:, :), allocatable:: lat_part, lon_part, depth, area_grid, zf1, coastvalue,coastvalueb
  double precision, dimension(:), allocatable :: time_vec, vec_tdelf
  integer:: numlat, numlon, numlatm, numlonm, numtime, numz, tdelf1(1), tdelf2(1), lati, lonj
  integer:: lat_in(2), lon_in(2), pinf2(1), lat_in_f2(2), lon_in_f2(2), lat_inm(2), lon_inm(2)

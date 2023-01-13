@@ -30,7 +30,7 @@ use datetime_module
   double precision, dimension(:,:), allocatable :: diam, temps, salts
   double precision, dimension(:), allocatable:: dt_h_spr
   double precision :: time_lim, time_lim_wind, outp_h
-  character*20::  fmt1, x1, fmt, fmt2, fmt3, x2, fmt5, x5, fmt6, x3, fmt4, fmt7, fmt8
+  character*20::  fmt1, x1, fmt, fmt2, fmt3, x2, fmt5, x5, fmt6, x3, fmt4, fmt7, fmt8, fmt9
 
 !!!!!! RESHAPE
   double precision, dimension(:), allocatable:: res_ar
@@ -54,6 +54,8 @@ use datetime_module
 !  open(197,file='salt.txt', status='UNKNOWN')
   open(198,file='u_wind.txt', status='UNKNOWN')
   open(197,file='v_wind.txt', status='UNKNOWN')
+
+  open(11111,file='coastvalues.txt', status='UNKNOWN')
 
   open(141,file='massaf2.txt', status='UNKNOWN', FORM= 'FORMATTED ')
 
@@ -217,6 +219,9 @@ use datetime_module
  if (trim(apist) .eq. 'Mandalay') then
    api=33.02352      !oscar mandalay batelle 20
  endif  
+ if (trim(apist) .eq. 'Linerle') then
+   api=27.55361      !oscar Linerle
+ endif  
 ! print*, api
   !
 
@@ -359,7 +364,7 @@ use datetime_module
     open(1564, file=trim(path_ini_coup), status='old')
 
     DO i = 1, numb_lines_c
-     READ(1564,*) res_par_in(i), time_res(i), lon_ref_res(i), lat_ref_res(i), dummy_val,  vol_res(i), zfc(i)
+     READ(1564,*) res_par_in(i), time_res(i), lon_ref_res(i), lat_ref_res(i), zfc(i),  vol_res(i)
     END DO
     CLOSE (1564)    
 
@@ -664,7 +669,7 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT )
 
  !stop
- !api=7778
+! api=888
  !print*, 'first', api, temp_out, spmt
  !call calc_api(api)
  !stop
@@ -714,6 +719,7 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
  read(145,*)
  read(145,*) numlatm, numlonm
  allocate(depth(numlatm, numlonm), lat_modelm(numlatm, numlonm), lon_modelm(numlatm, numlonm))
+ allocate(coastvalue(numlatm, numlonm), coastvalueb(numlatm, numlonm))
  allocate(lat_model_summ(numlatm, numlonm), lon_model_summ(numlatm, numlonm), &
  coord_summ(numlatm, numlonm)) 
 ! print*, numlatm, numlonm
@@ -747,6 +753,8 @@ counttimeh_r0=counttimeh_r
   open(14555,file=trim(path)//'lat_dmask.txt',  status='old')
   open(14666,file=trim(path)//'lon_dmask.txt',  status='old')  
   open(111,file=trim(path)//'depth.txt',  status='old')
+  open(1111,file=trim(path)//'coastvalue.txt',  status='old')
+
 !  open(3766,file=trim(path)//'area_grid.txt',  status='old')
 !  open(7535,file=trim(path)//'winter.dry',  status='old')
   !print*, shape(depth), numlon,numlat
@@ -761,13 +769,16 @@ counttimeh_r0=counttimeh_r
      read (14555,*) (lat_modelm(i,j), j=1,numlonm)
      read (14666,*) (lon_modelm(i,j), j=1,numlonm)
      read (111,*) (depth(i,j), j=1,numlonm) 
+     read (1111,*) (coastvalue(i,j), j=1,numlonm) 
  enddo
  close(145)
  close(146)
  close(111)
  close(14555)
  close(14666)
-!print*, "kkk"
+ 
+ coastvalueb=coastvalue
+!print*, maxval(coastvalueb)
 !stop
  !print*, lat_model
 !  do i=1,110
@@ -858,6 +869,13 @@ allocate(prob_time_sum(numlat, numlon  ) )
   fmt6='( '//trim(x5)//'i7)'    !"( 1000f10.3 )"
   fmt6=trim(fmt6)
   call StripSpaces(fmt6)
+  
+      fmt= '(I10)'
+    write (x5,fmt) numlonm
+
+  fmt9='( '//trim(x5)//'f15.5)'    !"( 1000f10.3 )"
+  fmt9=trim(fmt9)
+  call StripSpaces(fmt9)
 
 ! !print*,  depth(50, :)
 
@@ -1050,6 +1068,7 @@ allocate(prob_time_sum(numlat, numlon  ) )
 !    CALL random_number(RN1)
 !    CALL random_number(RN2)    !!OLD SQUARE SLICK
 !    x(i,1)=X0*RN1
+!	print*, circle_radius
 !    y(i,1)=Y0*RN2
  !   circle_radius=0
 !  enddo
@@ -1619,6 +1638,25 @@ do outer_l=1,1000000000
 
        if (counttimeh.gt.time_vec(numtime)) then
          pre_end='end'
+		               massa(:,i) =  massa(:,i-1)
+              massae(:,i) = massae(:,i-1)
+              masscomp(:,i,:) = masscomp(:,i-1,:)
+              diam(:,i) = diam(:,i-1)
+              diamem(:,i) = diamem(:,i-1)
+              area(:,i) = area(:,i-1)
+              areaem(:,i) = areaem(:,i-1)
+              height(:,i) = height(:,i-1)
+              vol(:,i)    = vol(:,i-1)  
+	   vol_diss(:,i)=vol_diss(:,i-1)
+	   porc_evap(:,i)=porc_evap(:,i-1)
+	   mas_evap(:,i)=mas_evap(:,i-1)
+	   mass_diss(:,i)=mass_diss(:,i-1)
+	   rho_e(:,i)=rho_e(:,i-1)
+	   visc_e(:,i)=visc_e(:,i-1)
+	   watf(:,i)=watf(:,i-1)
+	   zf1(:,i)=0
+	    lon_part(:,i)=lon_part(:,i-1)
+		lat_part(:,i)=lat_part(:,i-1)
          go to 3000
        endif
 
@@ -1849,13 +1887,13 @@ do outer_l=1,1000000000
        lat_in =  minloc(coord_sum)
        lon_in=lat_in
 
-       lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
-       lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
+       ! lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
+       ! lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
 
-       coord_summ=lat_model_summ + lon_model_summ
+       ! coord_summ=lat_model_summ + lon_model_summ
 
-       lat_inm =  minloc(coord_summ)
-       lon_inm=lat_inm
+       ! lat_inm =  minloc(coord_summ)
+       ! lon_inm=lat_inm
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ERA 5
      if (wind_theoretical.ne.1) then
 
@@ -2132,7 +2170,9 @@ do outer_l=1,1000000000
   endif
 
 
-       di = depth(lat_inm(1), lon_inm(2))
+       ! di = depth(lat_inm(1), lon_inm(2))
+       ! coastad = coastvalue(lat_inm(1), lon_inm(2))
+
 	 !  print*, di
 
        intertime(1) = time_vec(tdelf1(1))
@@ -2289,6 +2329,8 @@ do outer_l=1,1000000000
 77958 continue
 
  if (dissolved_fase .eq. 1) then   !! BEGIN FASE 3
+ 
+! print*, "dissolved_fase", tsevol(contind-1), tsevol(contind)
 
   if (tsevol(contind) .ne. tsevol(contind-1)) then
 
@@ -2310,43 +2352,43 @@ do outer_l=1,1000000000
        endif
 
        indexz = minloc(abs(deplevel-zf3(m1_f3,i-1)))
-       dif3  = depth(lat_in_f3(1), lon_in_f3(2))
+    !   dif3  = depth(lat_in_f3(1), lon_in_f3(2))
 
-        if (dif3.le.0) then
-         zf3(m1_f3,i) = zf3(m1_f3,i-1)
-         xf3(m1_f3,i) = xf3(m1_f3,i-1)
-         yf3(m1_f3,i) = yf3(m1_f3,i-1)
-         lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
-         lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
- !       !print*, 'DI', di               
-         cycle
+        ! if (dif3.le.0) then
+         ! zf3(m1_f3,i) = zf3(m1_f3,i-1)
+         ! xf3(m1_f3,i) = xf3(m1_f3,i-1)
+         ! yf3(m1_f3,i) = yf3(m1_f3,i-1)
+         ! lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
+         ! lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
+ ! !       !print*, 'DI', di               
+         ! cycle
 
-        elseif(-zf3(m1_f3,i-1) .ge. dif3) then
-         zf3(m1_f3,i) = zf3(m1_f3,i-1)
-         xf3(m1_f3,i) = xf3(m1_f3,i-1)
-         yf3(m1_f3,i) = yf3(m1_f3,i-1)
-         lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
-         lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
-         cycle
+        ! elseif(-zf3(m1_f3,i-1) .ge. dif3) then
+         ! zf3(m1_f3,i) = zf3(m1_f3,i-1)
+         ! xf3(m1_f3,i) = xf3(m1_f3,i-1)
+         ! yf3(m1_f3,i) = yf3(m1_f3,i-1)
+         ! lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
+         ! lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
+         ! cycle
        
-        ! elseif ( (lat_model(lat_in_f3(1)-1, lon_in_f3(2)).eq.0) .or. (lat_model(lat_in_f3(1)+1, lon_in_f3(2)) .eq.0)  .or. &
-                 ! (lat_model(lat_in_f3(1), lon_in_f3(2)+1).eq.0) .or. (lat_model(lat_in_f3(1), lon_in_f3(2)-1) .eq.0) ) then
-         ! xf3(m1_f3,i)=xf3(m1_f3,i-1)
-         ! yf3(m1_f3,i)=yf3(m1_f3,i-1)
-         ! lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
-         ! lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
-         ! zf3(m1_f3,i) = zf3(m1_f3,i-1)
-         ! cycle
+        ! ! elseif ( (lat_model(lat_in_f3(1)-1, lon_in_f3(2)).eq.0) .or. (lat_model(lat_in_f3(1)+1, lon_in_f3(2)) .eq.0)  .or. &
+                 ! ! (lat_model(lat_in_f3(1), lon_in_f3(2)+1).eq.0) .or. (lat_model(lat_in_f3(1), lon_in_f3(2)-1) .eq.0) ) then
+         ! ! xf3(m1_f3,i)=xf3(m1_f3,i-1)
+         ! ! yf3(m1_f3,i)=yf3(m1_f3,i-1)
+         ! ! lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
+         ! ! lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
+         ! ! zf3(m1_f3,i) = zf3(m1_f3,i-1)
+         ! ! cycle
 
-        ! elseif ( (lon_model(lat_in_f3(1)-1, lon_in_f3(2)).eq.0) .or. (lon_model(lat_in_f3(1)+1, lon_in_f3(2)) .eq.0)  .or. &
-                 ! (lon_model(lat_in_f3(1), lon_in_f3(2)+1).eq.0) .or. (lon_model(lat_in_f3(1), lon_in_f3(2)-1) .eq.0) ) then
-         ! xf3(m1_f3,i)=xf3(m1_f3,i-1)
-         ! yf3(m1_f3,i)=yf3(m1_f3,i-1)
-         ! lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
-         ! lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
-         ! zf3(m1_f3,i) = zf3(m1_f3,i-1)
-         ! cycle
-        endif
+        ! ! elseif ( (lon_model(lat_in_f3(1)-1, lon_in_f3(2)).eq.0) .or. (lon_model(lat_in_f3(1)+1, lon_in_f3(2)) .eq.0)  .or. &
+                 ! ! (lon_model(lat_in_f3(1), lon_in_f3(2)+1).eq.0) .or. (lon_model(lat_in_f3(1), lon_in_f3(2)-1) .eq.0) ) then
+         ! ! xf3(m1_f3,i)=xf3(m1_f3,i-1)
+         ! ! yf3(m1_f3,i)=yf3(m1_f3,i-1)
+         ! ! lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
+         ! ! lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
+         ! ! zf3(m1_f3,i) = zf3(m1_f3,i-1)
+         ! ! cycle
+        ! endif
 
 
 
@@ -2759,6 +2801,36 @@ xf3(m1_f3,i),  yf3(m1_f3,i), ZPOS, OPT)
 
       endif
 
+
+       lat_model_summ=abs(lat_modelm-lat_partf3(m1_f3,i))
+       lon_model_summ=abs(lon_modelm-lon_partf3(m1_f3,i))
+
+       coord_summ=lat_model_summ + lon_model_summ
+
+       lat_inm =  minloc(coord_summ)
+       lon_inm=lat_inm
+
+       dif3 = depth(lat_inm(1), lon_inm(2))
+	   
+	   
+	    if (dif3.le.0) then
+         zf3(m1_f3,i) = zf3(m1_f3,i-1)
+         xf3(m1_f3,i) = xf3(m1_f3,i-1)
+         yf3(m1_f3,i) = yf3(m1_f3,i-1)
+         lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
+         lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
+ !       !print*, 'DI', di               
+         cycle
+
+        elseif(-zf3(m1_f3,i-1) .ge. dif3) then
+         zf3(m1_f3,i) = zf3(m1_f3,i-1)
+         xf3(m1_f3,i) = xf3(m1_f3,i-1)
+         yf3(m1_f3,i) = yf3(m1_f3,i-1)
+         lon_partf3(m1_f3,i) = lon_partf3(m1_f3,i-1)
+         lat_partf3(m1_f3,i) = lat_partf3(m1_f3,i-1)  
+         cycle
+       
+        endif
      
      enddo
  
@@ -2813,6 +2885,7 @@ if ( (massa(j,i-1).eq.0) ) then
 	   zf1(j,i)=0
 	    lon_part(j,i)=lon_part(j,i-1)
 		lat_part(j,i)=lat_part(j,i-1)
+		contind=contind+1		
        cycle
 	  		stop
  
@@ -3159,7 +3232,7 @@ ENDIF
 !   !print*, watcont(j,i)
   
 
-!   !print*, 1111111, VIS_DIN_OIL_OUT
+!   !print*,  VIS_DIN_OIL_OUT
 
 
      
@@ -3217,6 +3290,10 @@ if  (DISSOLVE.EQ.1) THEN    !!DISSOLUTION
 
 
    mass_diss(j,i) =    mass_diss(j, i-1) + (massa(j,i-1) - massa(j,i)) 
+   
+   if (counttime/(60*60*24).gt. 15) then
+	  mass_diss(j,i)=mass_diss(j, i-1)
+	endif   
    mass_diss(j,i-1) = mass_diss(j,i)
 
 !print*, 'massa', massa(j,i), Wvp
@@ -3600,6 +3677,10 @@ endif
 		 
 		 
 		 mass_diss(j,i) =    mass_diss(j, i-1) + (massa(m1,i-1) - massa(m1,i))
+		 
+		 if (counttime/(60*60*24).gt. 15) then
+	       mass_diss(j,i)=mass_diss(j, i-1)
+	     endif 
 
  !        print*,  '2', massa(m1,i)
 !		 stop
@@ -4088,7 +4169,18 @@ if (zf1(m1,i) .ge. 0) then
  endif
 
 ! !print*, 'cool', uwd, vwd, CDIF_HOR
+!print*, vol(j,i)
+       lat_model_summ=abs(lat_modelm-lat_part(j,i))
+       lon_model_summ=abs(lon_modelm-lon_part(j,i))
 
+       coord_summ=lat_model_summ + lon_model_summ
+
+       lat_inm =  minloc(coord_summ)
+       lon_inm=lat_inm
+
+       di = depth(lat_inm(1), lon_inm(2))
+       coastad = coastvalue(lat_inm(1), lon_inm(2))
+!print*, coastad
        if (di.le.0) then
 		CALL random_number(rn10)
         OPT=1
@@ -4097,8 +4189,18 @@ if (zf1(m1,i) .ge. 0) then
 !        y(j,i)=y(j,i-1)
 !        lon_part(j,i) = lon_part(j,i-1)
 !        lat_part(j,i) = lat_part(j,i-1)  
-        if (rn10 .le.  probsl) then
-         beached(j,:)=1
+!        if (rn10 .le.  probsl) then                     !prob beach
+!		print*, coastad
+		if (coastad .gt.0) then
+         beached(j,:)=1		 
+		  if(coastad.le.vol(j,i)) then
+		    coastvalue(lat_inm(1), lon_inm(2))=0
+	!		print*, 'aa'
+		  else 
+		    coastvalue(lat_inm(1), lon_inm(2))= coastvalue(lat_inm(1), lon_inm(2)) - vol(j,i)
+		  endif
+    !   coastad = coastvalue(lat_inm(1), lon_inm(2))
+		 
 !	     lon_part(j,i) = lon_part(j,i-1)
 !         lat_part(j,i) =  lat_part(j,i-1)		 
 !         lon_part(j,i) = lon_model(lat_in(1), lon_in(2))
@@ -4109,8 +4211,8 @@ if (zf1(m1,i) .ge. 0) then
 	!	 print*, rn10, probsl
 	!	 stop
   !       go to 1000 
-		else
-	     lon_part(j,i) = lon_part(j,i-1)
+		else                  !prob beach
+	     lon_part(j,i) = lon_part(j,i-1) 
          lat_part(j,i) =  lat_part(j,i-1)
          call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
          OPT=2	
@@ -4425,7 +4527,7 @@ if (zf1(m1,i) .ge. 0) then
  
  1547 continue
  !fmtr='f10.3'
-!print*, 111111,counttimeh/(60)
+!print*, counttimeh/(60)
   if (dt_h .ge. outp_h) then
 !  if (dt_h .ge. 5) then
   ! if (cont.eq.tsl-1) then
@@ -4598,9 +4700,9 @@ Lat_partf3(:,1) = Lat_partf3(:,i)
 
 enddo
 
-
+ 
 3000 if (trim(pre_end).eq.'end') then
-    !print*, 'SIMULATION TIME GREATER THAN BOUNDARY CONDITION TIME - CONTINUOUS'
+    print*, 'SIMULATION TIME GREATER THAN FORCING TIME'
   endif
 
 3888 if (trim(end_prob).eq.'finish') then
@@ -4657,6 +4759,12 @@ print *, "Simulation time:", &
 !print*, 'total', total_particles
 !print*, 'contprob', contprob
 !print*, counttime
+
+coastvalue=coastvalueb - coastvalue
+
+  do hh=1, numlatm
+   write(11111,fmt9) coastvalue(hh,:)
+  enddo
 
 !print last TS
 
