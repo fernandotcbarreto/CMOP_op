@@ -7,15 +7,16 @@ import datetime
 import datetime as dt
 import pandas as pd
 import matplotlib.dates as dates
+from scipy.interpolate import interp2d
+
 import xarray as xr
 limn=1
 
-path = '/mnt/c/Users/fernando.barreto/Desktop/boletins/current_mercator/'
+path = '/mnt/c/Users/fernando.barreto/Desktop/karooniputdata/200323/'
 
-path = '/mnt/c/Users/fernando.barreto/Downloads/'
-#path='/home/oceanpact/Desktop/datadrive/dados/corrente/'
+ds3 = xr.open_dataset('/mnt/c/Users/fernando.barreto/Desktop/karooniputdata/200323/Copernicus_current.nc')
 
-file=dat(path+'global-analysis-forecast-phy-001-024-hourly-t-u-v-ssh_1664979631192.nc')
+file=dat(path+'Copernicus_current.nc')
 #filex=xr.open_dataset(path+'global-analysis-forecast-phy-001-024-hourly-t-u-v-ssh_1664979631192.nc')
 
 yesterday = dt.datetime.today()
@@ -24,7 +25,7 @@ strys=yesterday.strftime("%Y%m%d")
 #file=dat(path+'previsao_corrente_'+strys+'.nc') # tome
 
 
-time=file['time'][::] + dates.datestr2num(file['time'].units[12:])*24   #minutes since 2021-10-02
+time=file['time'][::] + dates.datestr2num(file['time'].units[12:-4])*24   #minutes since 2021-10-02
 time=time*60
 
 lat= np.ma.filled(file['latitude'][::],fill_value=0)
@@ -99,7 +100,7 @@ coastvalue=depth.copy()
 coastvalue[coastvalue>=100]=0;
 #coastvalue[coastvalue<0]=1000
 coastvalue[coastvalue<0]=0
-
+counttimeh=np.array(0)
 with open('time_delft.txt', 'w') as f:
    np.savetxt(f, np.array(len(time_oil)).reshape(1,), fmt = '%i')
    np.savetxt(f, np.array(int(lon.shape[0])).reshape(1,), fmt = '%i')
@@ -107,7 +108,8 @@ with open('time_delft.txt', 'w') as f:
    np.savetxt(f, np.array(int(u.shape[1])).reshape(1,), fmt = '%i')      
    np.savetxt(f, time_oil,fmt='%10.4f')
    np.savetxt(f, layer,fmt='%10.4f')
-   np.savetxt(f, counttimeh,fmt='%10.4f')
+#   np.savetxt(f, counttimeh,fmt='%10.4f')
+   np.savetxt(f, np.array(int(lonm.shape[0])).reshape(1,), fmt = '%i')
    np.savetxt(f, np.array(int(lonm.shape[0])).reshape(1,), fmt = '%i')
    np.savetxt(f, np.array(int(lonm.shape[1])).reshape(1,), fmt = '%i')   
 
