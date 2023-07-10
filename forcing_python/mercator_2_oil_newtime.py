@@ -9,31 +9,32 @@ import matplotlib.dates as dates
 from scipy.interpolate import interp2d
 
 
-limn=1
+limn=50
 
 path = '/home/fernando/fernando_noronha/2020/summer/mercator/download/fma/'
 path = '/mnt/c/Users/fernando.barreto/Downloads/mercatord/'
+path = '/mnt/c/Users/fernando.barreto/Downloads/'
 
 #file=dat(path+'MYOCEAN_AZUL_FORECAST_20200413.nc')
-file=dat(path+'MYOCEAN_AZUL_FORECAST_20200108.nc')
+file=dat(path+'MYOCEAN_AZUL_FORECAST_20230625.nc')
 
 input = path+'MYOCEAN_AZUL_FORECAST_'
 endfname='.nc'
 
-dateinioil='2020-01-01 12:00:00'
+dateinioil='2023-06-24 12:00:00'
 
 dateini='2019-11-01'
 dateend='2020-04-29'
-dateini='2020-01-01'
-dateend='2020-04-01'
+dateini='2023-06-24'
+dateend='2023-06-26'
 
 a=[dateini, dateend]
 
 date=dates.datestr2num(a)
 
-ntimes=len(np.arange(date[0], date[1]))
+ntimes=len(np.arange(date[0], date[1]+1))
 
-date = np.arange(date[0], date[1])
+date = np.arange(date[0], date[1]+1)
 
 time_oil=np.arange(ntimes) + dates.datestr2num(dateini) 
 time_oil=np.arange(ntimes) + dates.datestr2num(dateinioil) 
@@ -76,7 +77,7 @@ depth=hgeb(lonm[0,:],latm[:,0])
 layer =  -np.ma.filled(file['depth'][::],fill_value=0)
 layer=layer[0:limn]
 
-GEBCO=True
+GEBCO=False
 if GEBCO:
   print('bathymetry from GEBCO')
   gebco=dat('/mnt/c/Users/fernando.barreto/Desktop/ROMS/make_grid/gebco_222.nc')
@@ -89,8 +90,8 @@ if GEBCO:
   h=hgeb(lonm[0,:],latm[:,0])
   #h=griddata((lonbat.ravel(),latbat.ravel()),gebco.ravel(),(lon.ravel(),lat.ravel())).reshape(lat.shape)
 
-plt.pcolor(depth)
-plt.savefig('/mnt/c/Users/fernando.barreto/Downloads/dep.png', dpi=200, transparent=False, bbox_inches="tight") 
+#plt.pcolor(depth)
+#plt.savefig('/mnt/c/Users/fernando.barreto/Downloads/dep.png', dpi=200, transparent=False, bbox_inches="tight") 
 
 if GEBCO:
  depth=h.copy()
@@ -104,20 +105,24 @@ coastvalue[coastvalue<0]=0
 
 
 for i in range(ntimes):
-  fileu=input +dates.num2date(date[i]+1).strftime("%Y%m%d")+endfname
-  filev=input +dates.num2date(date[i]+1).strftime("%Y%m%d")+endfname
-  filet=input +dates.num2date(date[i]+1).strftime("%Y%m%d")+endfname
-  files=input +dates.num2date(date[i]+1).strftime("%Y%m%d")+endfname
+#  fileu=input +dates.num2date(date[i]+1).strftime("%Y%m%d")+endfname
+#  filev=input +dates.num2date(date[i]+1).strftime("%Y%m%d")+endfname
+#  filet=input +dates.num2date(date[i]+1).strftime("%Y%m%d")+endfname
+#  files=input +dates.num2date(date[i]+1).strftime("%Y%m%d")+endfname
+  fileu=input +dates.num2date(date[i]).strftime("%Y%m%d")+endfname
+  filev=input +dates.num2date(date[i]).strftime("%Y%m%d")+endfname
+  filet=input +dates.num2date(date[i]).strftime("%Y%m%d")+endfname
+  files=input +dates.num2date(date[i]).strftime("%Y%m%d")+endfname  
   fileu = dat(fileu)
   filev = dat(filev)
   filet = dat(filet)
   files = dat(files)
   u = np.ma.filled(fileu['uo'][:,0:limn,::],fill_value=0)
   v = np.ma.filled(filev['vo'][:,0:limn,::],fill_value=0)
-#  t = np.ma.filled(filet['thetao'][:,0:limn,::],fill_value=20)
-#  s = np.ma.filled(files['so'][:,0:limn,::],fill_value=35)
-  t = np.zeros(u.shape)+20
-  s = np.zeros(u.shape)+35
+  t = np.ma.filled(filet['thetao'][:,0:limn,::],fill_value=20)
+  s = np.ma.filled(files['so'][:,0:limn,::],fill_value=35)
+#  t = np.zeros(u.shape)+20
+#  s = np.zeros(u.shape)+35
   utim[i,::] = u
   vtim[i,::] = v
   ttim[i,::] = t
