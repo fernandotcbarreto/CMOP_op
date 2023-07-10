@@ -53,8 +53,8 @@ implicit none
  turbed = 10000  !berry et al 
  cmax =3400    !default
  cmin = 500
-! cmax = 600
-! cmin = 500
+ cmax = 2000
+ cmin = 500
 ! print*, gravity
 
 end subroutine

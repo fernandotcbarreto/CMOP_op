@@ -830,6 +830,9 @@ double precision, dimension(:), allocatable:: MASSCOMPREF
 
    ENDIF
 
+!print*, (FRAC_MASS_OUT)
+!print*, xa, xw
+!stop
 
 FRAC_MASS_OUT_REF = FRAC_MASS_OUT
 
@@ -3165,6 +3168,7 @@ END SUBROUTINE calc_api
 
    DOUBLE PRECISION , INTENT(IN)    :: TEMP_OUT
    DOUBLE PRECISION :: T_RANK, TB
+   DOUBLE PRECISION :: KUOP , P1 , PR1 , TBR
    INTEGER :: I
 
 
@@ -3195,18 +3199,34 @@ END SUBROUTINE calc_api
    PCRI_O_COMPS(I) = DEXP(8.3634D0 - 0.0566D0/SGCOMPS(I) -(0.24244D0 + 2.2898D0/SGCOMPS(I) + 0.11857D0/SGCOMPS(I) &
 **2.D0)*1.D-3 * TB_COMPS(I)  +  	&
 		 	 (1.4685D0 + 3.648D0/SGCOMPS(I) + 0.47227D0/SGCOMPS(I)**2.D0)*1.D-7 * TB_COMPS(I)**2.D0 		& 
-			- (0.42019D0 + 1.6977D0/SGCOMPS(I)**2.D0)*1.D-10 * TB_COMPS(I)**3.D0 )					! pressao critica em psi (pounds per square inch)
+			- (0.42019D0 + 1.6977D0/SGCOMPS(I)**2.D0)*1.D-10 * TB_COMPS(I)**3.D0 )					! pressao critica em psia (pounds per square inch)
 
 
-    PCRI_O_COMPS(I) =PCRI_O_COMPS(I) + 14.696
+   ! PCRI_O_COMPS(I) =PCRI_O_COMPS(I) + 14.696
+   
 
   RED_TEMP(I)= T_RANK /  TCRI_O_COMPS(I)
+  
+  KUOP = TB_COMPS(I)**(1.D0/3.D0)/SGCOMPS(I)  ! fator de Watson
+  TBR = TB_COMPS(I) / TCRI_O_COMPS(I)! reduced boiling point temperature
+ 
+ 
+  ! Kesler and Lee Correlations:(Riazi 2005)
+   IF ( TBR .LE. 0.8D0 ) THEN
+     P1 = 14.696D0! pressao do ponto de ebuliçao normal em psia
+     PR1 = P1/PCRI_O_COMPS(I)
+
+      FAC_O = ( DLOG(PR1) - 5.92714D0 + 6.09648D0/TBR + 1.28862D0*DLOG(TBR) - 0.169347D0*TBR**6.D0 ) &
+   / (15.2518D0 - 15.6875D0/TBR - 13.4721D0*DLOG(TBR) + 0.43577D0*TBR**6.D0)! acentric factor for compounds lighter than C20
+   ELSE
+      FAC_O = -7.904D0 + 0.1352D0*KUOP - 0.007456D0*(KUOP)**2.D0 + 8.359D0*TBR + (1.408D0 - 0.01063*KUOP)/TBR! acentric factor for compounds heavier than C20
+   END IF  
 
   PC1(I) =  5.92714 - (6.09648/RED_TEMP(I)) - 1.28862*LOG(RED_TEMP(I)) + 0.169347*(RED_TEMP(I)**6) 
 
   PC2(I) =  15.2518 - (15.6875/RED_TEMP(I)) - 13.4721*LOG(RED_TEMP(I)) + 0.43577*(RED_TEMP(I)**6) 
 
-  PC(I) = (exp((PC1(I) + PC2(I))) * PCRI_O_COMPS(I)) * 0.068046
+  PC(I) = (exp((PC1(I) + FAC_O*PC2(I))) * PCRI_O_COMPS(I)) * 0.068046       !!! atm
 
  END DO
 

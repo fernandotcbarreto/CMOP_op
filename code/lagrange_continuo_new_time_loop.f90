@@ -1356,11 +1356,15 @@ do outer_l=1,1000000000
        do tc_in = inf_time, numb_lines_c
          if (counttimeh_coup .ge. time_res(tc_in)) then
 
-            read (1112,*) dummy_val, (FRAC_MASS_OUT(frac_in), frac_in=1,NCOMP_OIL)
+            read (1112,*) dummy_val, (FRAC_MASS_OUT(frac_in), frac_in=1,NCOMP_OIL), xa, xw
+! 		print*, xa, xw
+!			print*, FRAC_MASS_OUT
+!			print*, sum(FRAC_MASS_OUT)
+!			stop
 
-        xa=0.4
+!        xa=0.4
 
-        xw=0.4  !fix
+!        xw=0.4  !fix
 
             numtot=numtot+numpal
 
@@ -1654,7 +1658,7 @@ do outer_l=1,1000000000
 	   rho_e(:,i)=rho_e(:,i-1)
 	   visc_e(:,i)=visc_e(:,i-1)
 	   watf(:,i)=watf(:,i-1)
-	   zf1(:,i)=0
+	   zf1(:,i)=zf1(:,i-1)
 	    lon_part(:,i)=lon_part(:,i-1)
 		lat_part(:,i)=lat_part(:,i-1)
          go to 3000
@@ -2891,8 +2895,24 @@ if ( (massa(j,i-1).eq.0) ) then
  
  endif 
  
- 
+
+	   
  if (  (zf1(j,i-1) .lt.0) ) then
+
+
+       lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
+       lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
+
+       coord_summ=lat_model_summ + lon_model_summ
+
+       lat_inm =  minloc(coord_summ)
+       lon_inm=lat_inm
+
+       di = depth(lat_inm(1), lon_inm(2))
+!	   print*,'4', zf1(j,i-1), di
+	   if (-zf1(j,i-1) .ge. di) then
+	      zf1(j,i-1)=-di
+	   endif
 
 !print*, 'rrrrrrrrrrrrrrrr', j
               massa(j,i) =  massa(j,i-1)
@@ -4223,6 +4243,11 @@ if (zf1(m1,i) .ge. 0) then
 		endif
        
        endif
+	   
+!	   print*, zf1(j,i), di
+	   if (-zf1(j,i) .ge. di) then
+	      zf1(j,i)=-di
+	   endif
 
   
 1000   continue 
@@ -4527,6 +4552,7 @@ if (zf1(m1,i) .ge. 0) then
  
  1547 continue
  !fmtr='f10.3'
+! print*, "2", zf1(:,i)
 !print*, counttimeh/(60)
   if (dt_h .ge. outp_h) then
 !  if (dt_h .ge. 5) then
