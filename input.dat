@@ -1,0 +1,32 @@
+2020,1,30 , 0 , 0 ,  0       !   year, month, day, hour, minute, second   2020,1,1 , 12 , 0 ,  0   2023,3,20 , 2 , 32 ,  0
+'/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/bio/'
+200     !running time in hours  2160
+10                 !number of particles 200
+1                 !output frequency in hours
+-39              ! Spill longitude (decimal)   -34 -41.1  -43.2617
+-22                ! Spill latitude  (decimal)     -7 -22.9  -22.8210 
+900                 ! time step       (second)  default 900
+5                   ! Volume dischar (m3)
+1                 !DISSOLVE         0 TURN OFF DISSOLUTION
+1                 !EMULSI           0 TURN OFF EMULSIFICATION
+1                 !EVAP_TURN        0 TURN OFF EVAPORATION
+1                 !ENTRAIN          0 TURN OFF EVAPORATION
+0                 !THEORETICAL      IF THEORETICAL ACTIVATED DO NOT TURN ENTRAINMENT ON!!!!
+0                 !DISSOLVED_FASE   0 TURN OFF EVAPORATION
+20                !uwd              u-component uniform and stationay wind velocity
+20                !vwd              u-component uniform and stationay wind velocity
+0                 !avel             activate aditional velocity of object
+0                !odir             Object direction
+0.            !ovel              Object velocity
+1            !wind_theoretical   0 turn off wind_theoretical, and read wind U and V from files
+0             !reverse in time   0 turn off reverse in time. Please, turn off physical-chemical processes 
+0             !coupling. 0 turn off coupling, used for connection with blowout and multi-sources. 
+0            !time_finish  number of hours that lasts the continuous release. 0 is instantaneous
+1            !right_random
+'/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/testsurf.txt'  !path_ini_coup
+'/mnt/c/Users/fernando.barreto/Documents/CMOP_OIL_SPILL-master/fernando_noronha/testfrac.txt'     !path_frac
+0    !depth of spill in negative values
+0.035    !wind coefficient
+20    ! horizontal dispersion coefficient default 20
+'HAVIS_2012'  !Diesel Jordbaer Mandalay  Linerle  IF-30-bunker
+0.      !Duct width
