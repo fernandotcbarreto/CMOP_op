@@ -222,8 +222,13 @@ use datetime_module
  if (trim(apist) .eq. 'Linerle') then
    api=27.55361      !oscar Linerle
  endif  
-! print*, api
-  !
+ if (trim(apist) .eq. 'IF-30-bunker') then
+   api=25.84299      !oscar Linerle
+ endif  ! print*, api
+ if (trim(apist) .eq. 'HAVIS_2012') then
+   api=37.40500      !oscar Linerle
+ endif  ! print*, api
+ !
 
 !   stop
   !print*, widfc, CDIF_HOR
@@ -669,9 +674,9 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT )
 
  !stop
-! api=888
+!api=8889
  !print*, 'first', api, temp_out, spmt
- !call calc_api(api)
+! call calc_api(api)
  !stop
 
      do i=1, numpal
