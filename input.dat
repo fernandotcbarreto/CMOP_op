@@ -28,5 +28,5 @@
 0    !depth of spill in negative values
 0.035    !wind coefficient
 20    ! horizontal dispersion coefficient default 20
-'HAVIS_2012'  !Diesel Jordbaer Mandalay  Linerle  IF-30-bunker
+'HAVIS_2012'  !Diesel Jordbaer Mandalay  Linerle  IF-30-bunker HAVIS_2012
 0.      !Duct width
