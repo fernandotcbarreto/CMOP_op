@@ -15,7 +15,7 @@ Module oil_fractions
   double precision, dimension(:, :), allocatable:: massa19, massa20, massa21, massa22, massa23, massa24, massa25
   DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: rho_e, visc_e, mas_evap, mass_diss, porc_evap,  FRAC_MASS_OUT_PART, visc_f1
   DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: areaem, diamem, porc_evap_vol, vol_evap, vol_diss, porc_diss_vol
-  DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: vol_entra, porc_vol_entra, vol_left, porc_vol_left
+  DOUBLE PRECISION , DIMENSION (:, :) , ALLOCATABLE :: vol_entra, porc_vol_entra, vol_left, porc_vol_left, mass_sedi
   double precision:: XA !fraction and mass of asphaltenes
   double precision:: XW  !fraction and mass of wax
   double precision, dimension(:, :), allocatable:: area1, area2,  area3, area4, area5, area6
@@ -83,7 +83,7 @@ double precision, dimension(:), allocatable:: MASSCOMPREF
 
      double precision:: API , VAZAO_OIL_OUT,TEMP_OUT
    DOUBLE PRECISION :: TS_VC						! tensao superficial de vc
-     integer comps, DISSOLVE, EMULSI, EVAP_TURN, ENTRAIN, THEORETICAL,LOW_MEMORY, TESTE_ENTRAIN, PROBABILISTIC, three_dim
+     integer comps, DISSOLVE, EMULSI, EVAP_TURN, ENTRAIN, SEDIMENT, THEORETICAL,LOW_MEMORY, TESTE_ENTRAIN, PROBABILISTIC, three_dim
      integer right_random, probabilistic_2
 
 
@@ -547,7 +547,64 @@ double precision, dimension(:), allocatable:: MASSCOMPREF
       I = 25 ;  FRAC_MASS_OUT(I) = 0.0110D-02
 	  xa=0.05
 	  xw=0.05
-
+  ELSE IF (API .EQ. 36.09498) THEN
+		print*, "KUWAIT_2002"
+I = 1;  FRAC_MASS_OUT(I) = 3.8211D-02
+I = 2;  FRAC_MASS_OUT(I) = 1.7578D-02
+I = 3;  FRAC_MASS_OUT(I) = 1.0590D-02
+I = 4;  FRAC_MASS_OUT(I) = 0.1765D-02
+I = 5;  FRAC_MASS_OUT(I) = 1.7077D-02
+I = 6;  FRAC_MASS_OUT(I) = 0.7567D-02
+I = 7;  FRAC_MASS_OUT(I) = 2.9827D-02
+I = 8;  FRAC_MASS_OUT(I) = 0.7247D-02
+I = 9;  FRAC_MASS_OUT(I) = 2.9534D-02
+I = 10; FRAC_MASS_OUT(I) = 4.0875D-02
+I = 11; FRAC_MASS_OUT(I) = 2.9591D-02
+I = 12; FRAC_MASS_OUT(I) = 0.1020D-02
+I = 13; FRAC_MASS_OUT(I) = 3.0696D-02
+I = 14; FRAC_MASS_OUT(I) = 0.0049D-02
+I = 15; FRAC_MASS_OUT(I) = 3.3984D-02
+I = 16; FRAC_MASS_OUT(I) = 2.7398D-02
+I = 17; FRAC_MASS_OUT(I) = 0.3513D-02
+I = 18; FRAC_MASS_OUT(I) = 4.8921D-02
+I = 19; FRAC_MASS_OUT(I) = 2.6160D-02
+I = 20; FRAC_MASS_OUT(I) = 2.1042D-02
+I = 21; FRAC_MASS_OUT(I) = 3.7718D-02
+I = 22; FRAC_MASS_OUT(I) = 0.0412D-02
+I = 23; FRAC_MASS_OUT(I) = 3.4329D-02
+I = 24; FRAC_MASS_OUT(I) = 0.1488D-02
+I = 25; FRAC_MASS_OUT(I) = 50.3409D-02
+	  xa=2.35
+	  xw=3.93		  
+  ELSE IF (API .EQ. 25.88186) THEN
+		print*, "FOINAVEN (IKU)"
+I = 1;  FRAC_MASS_OUT(I) = 0.0284D-02
+I = 2;  FRAC_MASS_OUT(I) = 0.0453D-02
+I = 3;  FRAC_MASS_OUT(I) = 0.0274D-02
+I = 4;  FRAC_MASS_OUT(I) = 0.0304D-02
+I = 5;  FRAC_MASS_OUT(I) = 0.2940D-02
+I = 6;  FRAC_MASS_OUT(I) = 0.0668D-02
+I = 7;  FRAC_MASS_OUT(I) = 0.2634D-02
+I = 8;  FRAC_MASS_OUT(I) = 0.2342D-02
+I = 9;  FRAC_MASS_OUT(I) = 0.9546D-02
+I = 10; FRAC_MASS_OUT(I) = 1.1366D-02
+I = 11; FRAC_MASS_OUT(I) = 1.2850D-02
+I = 12; FRAC_MASS_OUT(I) = 0.0443D-02
+I = 13; FRAC_MASS_OUT(I) = 2.1003D-02
+I = 14; FRAC_MASS_OUT(I) = 0.0033D-02
+I = 15; FRAC_MASS_OUT(I) = 3.5676D-02
+I = 16; FRAC_MASS_OUT(I) = 3.4984D-02
+I = 17; FRAC_MASS_OUT(I) = 4.9685D-02
+I = 18; FRAC_MASS_OUT(I) = 4.3489D-02
+I = 19; FRAC_MASS_OUT(I) = 0.1884D-02
+I = 20; FRAC_MASS_OUT(I) = 4.7964D-02
+I = 21; FRAC_MASS_OUT(I) = 4.5689D-02
+I = 22; FRAC_MASS_OUT(I) = 5.5176D-02
+I = 23; FRAC_MASS_OUT(I) = 4.3993D-02
+I = 24; FRAC_MASS_OUT(I) = 0.1896D-02
+I = 25; FRAC_MASS_OUT(I) = 57.4422D-02
+	  xa=0.09
+	  xw=8	
   ELSE IF (API .EQ. 45.6747897) THEN
        print*, "Jordbaer"
       I = 1  ;  FRAC_MASS_OUT(I) = 2.6906D-02 
@@ -605,8 +662,65 @@ double precision, dimension(:), allocatable:: MASSCOMPREF
       I = 23 ;  FRAC_MASS_OUT(I) = 2.4D-03
       I = 24 ;  FRAC_MASS_OUT(I) = 0.D0
       I = 25 ;  FRAC_MASS_OUT(I) = 2.1D-01
-
+  ELSE IF (API .EQ. 25.84299) THEN
+		print*, "IF-30 BUNKER"
+      I = 1  ;  FRAC_MASS_OUT(I) = 0.0273D-02 
+      I = 2  ;  FRAC_MASS_OUT(I) = 0.0436D-02 
+      I = 3  ;  FRAC_MASS_OUT(I) = 0.0886D-02 
+      I = 4  ;  FRAC_MASS_OUT(I) = 0.0148D-02   
+      I = 5  ;  FRAC_MASS_OUT(I) = 0.1429D-02  
+      I = 6  ;  FRAC_MASS_OUT(I) = 0.0478D-02 
+      I = 7  ;  FRAC_MASS_OUT(I) = 0.1884D-02  
+      I = 8  ;  FRAC_MASS_OUT(I) = 0.0515D-02  
+      I = 9  ;  FRAC_MASS_OUT(I) = 0.2098D-02 
+      I = 10 ;  FRAC_MASS_OUT(I) = 0.4777D-02    
+      I = 11 ;  FRAC_MASS_OUT(I) = 1.2280D-02  
+      I = 12 ;  FRAC_MASS_OUT(I) = 0.0423D-02 
+      I = 13 ;  FRAC_MASS_OUT(I) = 3.5309D-02 
+      I = 14 ;  FRAC_MASS_OUT(I) = 0.0056D-02 
+      I = 15 ;  FRAC_MASS_OUT(I) = 0.2138D-02 
+      I = 16 ;  FRAC_MASS_OUT(I) = 4.2804D-02 
+      I = 17 ;  FRAC_MASS_OUT(I) = 6.6560D-02 
+      I = 18 ;  FRAC_MASS_OUT(I) = 6.0659D-02 
+      I = 19 ;  FRAC_MASS_OUT(I) = 0.2628D-02 
+      I = 20 ;  FRAC_MASS_OUT(I) = 4.5176D-02 
+      I = 21 ;  FRAC_MASS_OUT(I) = 2.6778D-02 
+      I = 22 ;  FRAC_MASS_OUT(I) = 0.0214D-02   
+      I = 23 ;  FRAC_MASS_OUT(I) = 1.7788D-02 
+      I = 24 ;  FRAC_MASS_OUT(I) = 0.1159D-02  
+      I = 25 ;  FRAC_MASS_OUT(I) = 67.3106D-02
+	  xa=0.0
+	  xw=0.0	 
 !      KUOP = 11.8
+  ELSE IF (API .EQ. 37.40500) THEN
+		print*, "HAVIS_2012"
+      I = 1  ;  FRAC_MASS_OUT(I) = 1.5000D-02 
+      I = 2  ;  FRAC_MASS_OUT(I) = 0.7000D-02 
+      I = 3  ;  FRAC_MASS_OUT(I) = 1.3320D-02 
+      I = 4  ;  FRAC_MASS_OUT(I) = 0.4680D-02   
+      I = 5  ;  FRAC_MASS_OUT(I) = 2.0000D-02  
+      I = 6  ;  FRAC_MASS_OUT(I) = 0.9670D-02 
+      I = 7  ;  FRAC_MASS_OUT(I) = 4.5330D-02  
+      I = 8  ;  FRAC_MASS_OUT(I) = 1.0630D-02  
+      I = 9  ;  FRAC_MASS_OUT(I) = 2.7310D-02 
+      I = 10 ;  FRAC_MASS_OUT(I) = 0.7060D-02    
+      I = 11 ;  FRAC_MASS_OUT(I) = 3.0000D-02  
+      I = 12 ;  FRAC_MASS_OUT(I) = 0.0400D-02 
+      I = 13 ;  FRAC_MASS_OUT(I) = 4.9600D-02 
+      I = 14 ;  FRAC_MASS_OUT(I) = 0.0000D-02 
+      I = 15 ;  FRAC_MASS_OUT(I) = 0.2610D-02 
+      I = 16 ;  FRAC_MASS_OUT(I) = 10.2390D-02 
+      I = 17 ;  FRAC_MASS_OUT(I) = 0.3420D-02 
+      I = 18 ;  FRAC_MASS_OUT(I) = 7.6580D-02 
+      I = 19 ;  FRAC_MASS_OUT(I) = 0.2050D-02 
+      I = 20 ;  FRAC_MASS_OUT(I) = 9.2950D-02 
+      I = 21 ;  FRAC_MASS_OUT(I) = 7.0000D-02 
+      I = 22 ;  FRAC_MASS_OUT(I) = 11.8030D-02   
+      I = 23 ;  FRAC_MASS_OUT(I) = 0.1970D-02 
+      I = 24 ;  FRAC_MASS_OUT(I) = 0D-02  
+      I = 25 ;  FRAC_MASS_OUT(I) = 29.0000D-02
+	  xa=0.1
+	  xw=4.5
   ELSE IF (API .EQ. 33.02352) THEN
 		print*, "Mandalay"
       I = 1  ;  FRAC_MASS_OUT(I) = 1.1370D-02 
@@ -3010,7 +3124,35 @@ PRINT*, '456'
       I = 25 ;  FRAC_MASS_OUT(I) = 68.4652D-02
 	  xa=0.77
 	  xw=0.27	  
-	
+  ELSE IF (API .EQ. 8889) THEN
+		print*, "Kuwait (IKU)"
+I = 1;  FRAC_MASS_OUT(I) = 3.8211D-02
+I = 2;  FRAC_MASS_OUT(I) = 1.7578D-02
+I = 3;  FRAC_MASS_OUT(I) = 1.0590D-02
+I = 4;  FRAC_MASS_OUT(I) = 0.1765D-02
+I = 5;  FRAC_MASS_OUT(I) = 1.7077D-02
+I = 6;  FRAC_MASS_OUT(I) = 0.7567D-02
+I = 7;  FRAC_MASS_OUT(I) = 2.9827D-02
+I = 8;  FRAC_MASS_OUT(I) = 0.7247D-02
+I = 9;  FRAC_MASS_OUT(I) = 2.9534D-02
+I = 10; FRAC_MASS_OUT(I) = 4.0875D-02
+I = 11; FRAC_MASS_OUT(I) = 2.9591D-02
+I = 12; FRAC_MASS_OUT(I) = 0.1020D-02
+I = 13; FRAC_MASS_OUT(I) = 3.0696D-02
+I = 14; FRAC_MASS_OUT(I) = 0.0049D-02
+I = 15; FRAC_MASS_OUT(I) = 3.3984D-02
+I = 16; FRAC_MASS_OUT(I) = 2.7398D-02
+I = 17; FRAC_MASS_OUT(I) = 0.3513D-02
+I = 18; FRAC_MASS_OUT(I) = 4.8921D-02
+I = 19; FRAC_MASS_OUT(I) = 2.6160D-02
+I = 20; FRAC_MASS_OUT(I) = 2.1042D-02
+I = 21; FRAC_MASS_OUT(I) = 3.7718D-02
+I = 22; FRAC_MASS_OUT(I) = 0.0412D-02
+I = 23; FRAC_MASS_OUT(I) = 3.4329D-02
+I = 24; FRAC_MASS_OUT(I) = 0.1488D-02
+I = 25; FRAC_MASS_OUT(I) = 50.3409D-02
+	  xa=2.35
+	  xw=3.93	 	
    ELSE IF (API .EQ. 36.7229556) THEN    
       print*, '45.diesel'
       I = 1  ;  FRAC_MASS_OUT(I) = 0.0291D-02
@@ -3041,63 +3183,7 @@ PRINT*, '456'
 	  xa=0.05
 	  xw=0.05
 
-   ELSE IF (API .EQ. 45.6747897) THEN
-       print*, "Jordbaer"
-      I = 1  ;  FRAC_MASS_OUT(I) = 2.6906D-02 
-      I = 2  ;  FRAC_MASS_OUT(I) = 2.9125D-02 
-      I = 3  ;  FRAC_MASS_OUT(I) = 1.7618D-02 
-      I = 4  ;  FRAC_MASS_OUT(I) = 0.2936D-02   
-      I = 5  ;  FRAC_MASS_OUT(I) = 2.8411D-02  
-      I = 6  ;  FRAC_MASS_OUT(I) = 1.3932D-02 
-      I = 7  ;  FRAC_MASS_OUT(I) = 5.4915D-02  
-      I = 8  ;  FRAC_MASS_OUT(I) = 1.5002D-02  
-      I = 9  ;  FRAC_MASS_OUT(I) = 6.1137D-02 
-      I = 10 ;  FRAC_MASS_OUT(I) = 2.9188D-02    
-      I = 11 ;  FRAC_MASS_OUT(I) = 7.6133D-02  
-      I = 12 ;  FRAC_MASS_OUT(I) = 0.2625D-02 
-      I = 13 ;  FRAC_MASS_OUT(I) = 4.2247D-02 
-      I = 14 ;  FRAC_MASS_OUT(I) = 0.0067D-02 
-      I = 15 ;  FRAC_MASS_OUT(I) = 0.5805D-02 
-      I = 16 ;  FRAC_MASS_OUT(I) = 11.6246D-02 
-      I = 17 ;  FRAC_MASS_OUT(I) = 0.4117D-02 
-      I = 18 ;  FRAC_MASS_OUT(I) = 5.7319D-02 
-      I = 19 ;  FRAC_MASS_OUT(I) = 0.2483D-02 
-      I = 20 ;  FRAC_MASS_OUT(I) = 5.6555D-02 
-      I = 21 ;  FRAC_MASS_OUT(I) = 5.9560D-02 
-      I = 22 ;  FRAC_MASS_OUT(I) = 0.1295D-02   
-      I = 23 ;  FRAC_MASS_OUT(I) = 4.7260D-02 
-      I = 24 ;  FRAC_MASS_OUT(I) = 0.2048D-02  
-      I = 25 ;  FRAC_MASS_OUT(I) = 24.7067D-02
-	  xa=0.2
-	  xw=2.5
 
-   ELSE IF (API .EQ. 45.6367254222577) THEN    
-      print*, '45.6367254222577'
-      I = 1  ;  FRAC_MASS_OUT(I) = 0.0D-02
-      I = 2  ;  FRAC_MASS_OUT(I) = 7.0D-02 
-      I = 3  ;  FRAC_MASS_OUT(I) = 11.91D-02 
-      I = 4  ;  FRAC_MASS_OUT(I) = 8.30D-02   
-      I = 5  ;  FRAC_MASS_OUT(I) = 6.73999D-02  
-      I = 6  ;  FRAC_MASS_OUT(I) = 6.89D-02 
-      I = 7  ;  FRAC_MASS_OUT(I) = 6.75D-02  
-      I = 8  ;  FRAC_MASS_OUT(I) = 3.57D-02  
-      I = 9  ;  FRAC_MASS_OUT(I) = 3.98D-02 
-      I = 10 ;  FRAC_MASS_OUT(I) = 3.56D-02    
-      I = 11 ;  FRAC_MASS_OUT(I) = 3.14D-02  
-      I = 12 ;  FRAC_MASS_OUT(I) = 3.05D-02 
-      I = 13 ;  FRAC_MASS_OUT(I) = 4.37D-02 
-      I = 14 ;  FRAC_MASS_OUT(I) = 3.41D-02 
-      I = 15 ;  FRAC_MASS_OUT(I) = 3.12D-02 
-      I = 16 ;  FRAC_MASS_OUT(I) = 3.90D-02 
-      I = 17 ;  FRAC_MASS_OUT(I) = 4.67D-02 
-      I = 18 ;  FRAC_MASS_OUT(I) = 7.85D-02 
-      I = 19 ;  FRAC_MASS_OUT(I) = 4.70D-02 
-      I = 20 ;  FRAC_MASS_OUT(I) = 2.23D-02 
-      I = 21 ;  FRAC_MASS_OUT(I) = 0.34D-02 
-      I = 22 ;  FRAC_MASS_OUT(I) = 0.26D-02   
-      I = 23 ;  FRAC_MASS_OUT(I) = 0.26D-02   
-      I = 24 ;  FRAC_MASS_OUT(I) = 0.0D-02
-      I = 25 ;  FRAC_MASS_OUT(I) = 0.0D-02
 
 
    ELSE     
@@ -3121,7 +3207,7 @@ do comps=1, NCOMP_OIL
 masscomp(:,:,comps)= masstest * FRAC_MASS_OUT(comps)
 enddo
 
-
+print*, "fm", FRAC_MASS_OUT(25)
 print*, 'API BASE', API
 
 

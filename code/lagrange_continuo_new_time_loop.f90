@@ -69,6 +69,7 @@ use datetime_module
 
   OPEN(231 , FILE = "mass_evap2.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
   OPEN(232 , FILE = "mass_disp2.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
+  OPEN(233 , FILE = "mass_sedi.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
 
   OPEN(54 , FILE = "water_frac.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
 
@@ -228,6 +229,12 @@ use datetime_module
  if (trim(apist) .eq. 'HAVIS_2012') then
    api=37.40500      !oscar Linerle
  endif  ! print*, api
+ if (trim(apist) .eq. 'FOINAVEN_(IKU)') then
+   api=25.88186      !oscar Linerle
+ endif  ! print*, api    
+ if (trim(apist) .eq. 'KUWAIT_2002') then
+   api=36.09498      !oscar Linerle   
+ endif  ! print*, api 
  !
 
 !   stop
@@ -508,7 +515,7 @@ use datetime_module
   
   allocate (vol_evap(int(b(1)),int(b(2))), vol_diss(int(b(1)),int(b(2))), porc_diss_vol(int(b(1)),int(b(2))))
 
-  allocate (mass_diss(int(b(1)),int(b(2))))
+  allocate (mass_diss(int(b(1)),int(b(2))), mass_sedi(int(b(1)),int(b(2))))
 
   allocate (area2(int(b(1)),int(b(2))), area1(int(b(1)),int(b(2))))
   
@@ -674,9 +681,9 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT )
 
  !stop
-!api=8889
+ !api=8889
  !print*, 'first', api, temp_out, spmt
-! call calc_api(api)
+ !call calc_api(api)
  !stop
 
      do i=1, numpal
@@ -1179,6 +1186,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     write(23,'(i10)') i
     write(231,'(i10)') i
     write(232,'(i10)') i
+    write(233,'(i10)') i
     write(221,'(i10)') i
     write(222,'(i10)') i
     write(54,'(i10)') i
@@ -1200,6 +1208,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     write(23,'(i10)', advance='no') i
     write(231,'(i10)', advance='no') i
     write(232,'(i10)', advance='no') i
+    write(233,'(i10)', advance='no') i
     write(221,'(i10)', advance='no') i
     write(222,'(i10)', advance='no') i
     write(54,'(i10)', advance='no') i
@@ -1256,6 +1265,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
   write(14,fmt2) massa(:,1)
   write(231,fmt2) mas_evap(:,1)
   write(232,fmt2) mass_diss(:,1)
+  write(233,fmt2) mass_sedi(:,1)
   write(15,fmt2) diam(:,1)
   write(199,fmt2) vol(:,1)
   write(198,fmt2) temps(:,1)
@@ -2869,6 +2879,12 @@ aux=0
 !print*,  '1ppp',  massa(j, i-1), zf1(j,i-1)
 
 if ( (massa(j,i-1).eq.0) ) then
+	   vol_diss(j,i)=vol_diss(j,i-1)
+	   porc_evap(j,i)=porc_evap(j,i-1)
+	   mas_evap(j,i)=mas_evap(j,i-1)
+	   mass_diss(j,i)=mass_diss(j,i-1)
+	   mass_sedi(j,i)=mass_sedi(j,i-1)
+	   
    cycle
  endif 
  
@@ -2888,6 +2904,7 @@ if ( (massa(j,i-1).eq.0) ) then
 	   porc_evap(j,i)=porc_evap(j,i-1)
 	   mas_evap(j,i)=mas_evap(j,i-1)
 	   mass_diss(j,i)=mass_diss(j,i-1)
+	   mass_sedi(j,i)=mass_sedi(j,i-1)
 	   rho_e(j,i)=rho_e(j,i-1)
 	   visc_e(j,i)=visc_e(j,i-1)
 	   watf(j,i)=watf(j,i-1)
@@ -2913,11 +2930,11 @@ if ( (massa(j,i-1).eq.0) ) then
        lat_inm =  minloc(coord_summ)
        lon_inm=lat_inm
 
-       di = depth(lat_inm(1), lon_inm(2))
+ !      di = depth(lat_inm(1), lon_inm(2))
 !	   print*,'4', zf1(j,i-1), di
-	   if (-zf1(j,i-1) .ge. di) then
-	      zf1(j,i-1)=-di
-	   endif
+	   ! if (-zf1(j,i-1) .ge. di) then
+	      ! zf1(j,i-1)=-di
+	   ! endif
 
 !print*, 'rrrrrrrrrrrrrrrr', j
               massa(j,i) =  massa(j,i-1)
@@ -2925,6 +2942,7 @@ if ( (massa(j,i-1).eq.0) ) then
               masscomp(j,i,:) = masscomp(j,i-1,:)
               diam(j,i) = diam(j,i-1)
               diamem(j,i) = diamem(j,i-1)
+               dropdiam(j,i) = dropdiam(j,i-1)			  
               area(j,i) = area(j,i-1)
               areaem(j,i) = areaem(j,i-1)
               height(j,i) = height(j,i-1)
@@ -3120,6 +3138,11 @@ call  PROP_AMBIENTE(Z , PROF_REF , temp_out , SAL_A, RO_A , VIS_DIN_A , CP_A , T
        diamem(j,:)  = 0   
        height(j,:)  = 0
        vol(j,:)     = 0
+	   vol_diss(j,i)=vol_diss(j,i-1)
+	   porc_evap(j,i)=porc_evap(j,i-1)
+	   mas_evap(j,i)=mas_evap(j,i-1)
+	   mass_diss(j,i)=mass_diss(j,i-1)
+	   mass_sedi(j,i)=mass_sedi(j,i-1)	   
 !       go to 18767     !!! go to entrainment
        cycle
    endif
@@ -3281,11 +3304,11 @@ call  PROP_AMBIENTE(Z , PROF_REF , temp_out , SAL_A, RO_A , VIS_DIN_A , CP_A , T
 
 if (emulsi.eq.0) then
 
- call VEL_ASCENSAO_BG ( dropdiam(j,i-1) , DIAM_HYD , RO_A , spmt , VIS_DIN_A  , TS_VC  , Wvp  )
+ call VEL_ASCENSAO_BG ( dropdiam(j,i) , DIAM_HYD , RO_A , spmt , VIS_DIN_A  , TS_VC  , Wvp  )
 
 else 
 
- call VEL_ASCENSAO_BG ( dropdiam(j,i-1) , DIAM_HYD , RO_A , rho_e(j,i) , VIS_DIN_A  , TS_VC  , Wvp  )
+ call VEL_ASCENSAO_BG ( dropdiam(j,i) , DIAM_HYD , RO_A , rho_e(j,i) , VIS_DIN_A  , TS_VC  , Wvp  )
 
 endif
 
@@ -3443,7 +3466,7 @@ enddo
 
    dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
 
-   dropdiam(j,i-1) = dropdiam(j,i)
+ !  dropdiam(j,i-1) = dropdiam(j,i)
 
    voldrops(j,i) = ((dropdiam(j,i)/2.)**3.) *  pi * (4./3.)
 
@@ -3469,6 +3492,11 @@ enddo
        diamem(j,:)  = 0   
        height(j,:)  = 0
        vol(j,:)     = 0
+	   vol_diss(j,i)=vol_diss(j,i-1)
+	   porc_evap(j,i)=porc_evap(j,i-1)
+	   mas_evap(j,i)=mas_evap(j,i-1)
+	   mass_diss(j,i)=mass_diss(j,i-1)
+	   mass_sedi(j,i)=mass_sedi(j,i-1)	   
 !       go to 18767      !!! go to entrainment
        cycle
    endif
@@ -3542,12 +3570,12 @@ enddo
 
 
 !!!!!! definition of droplet info
-   dropdiamax =  cmax * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+ !  dropdiamax =  cmax * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
 
-   dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+ !  dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
 
-   dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
-
+  ! dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
+!  print*, dropdiam(j,i), dropdiam(j,i-1), zf1(j,i-1)
  !  dropdiam(j,i-1) = dropdiam(j,i)
  
     if (checkb(j,i) .ne. 0) then
@@ -3567,7 +3595,7 @@ enddo
 
  ! print*, numdrops(j,i), dropdiam(j,i)
 
-!print*, 'third', dropdiam(j,i-1)
+! print*, 'third', dropdiam(j,i), zf1(j,i-1)
 !print*, ro_oil_out,  rho_e(jj,ii)
 
 !print*, '555',wvp, massa(j,i), ro_oil_out,  rho_e(jj,ii)
@@ -3604,6 +3632,11 @@ enddo
 !print*,kz, wvp
 
       call vert_disp_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
+      call size_distr_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
+!     print *, 'Random samples 2:', rand_samples
+	 
+
+!	  stop
 
     else 
 
@@ -3612,7 +3645,18 @@ enddo
 
      call vert_disp_li_2007 ( VIS_DIN_OIL_OUT, TS_VC , ro_A,RO_OIL_OUT, windspms, qd, zini, seafrac, kz, wvp)  !lietal
 
+      call size_distr_li_2007 ( VIS_DIN_OIL_OUT, TS_VC , ro_A,RO_OIL_OUT, windspms, qd, zini, seafrac, kz, wvp)  !lietal
 
+	 ! if (rand_samples(1).eq.888898) then
+        ! dropdiamax =  cmax * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+
+        ! dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+
+        ! dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001	 
+	 ! else
+	   	 ! dropdiam(j,i) = rand_samples(1) 
+	 ! endif
+	 
     endif
 
 
@@ -3696,8 +3740,24 @@ endif
        endif
 
 !        print*,  1, massa(m1,i)
-		
-		
+	!	print *, visc_e(jj,ii)
+
+	   CALL components_part2( API , VAZAO_OIL_OUT , DT , TEMP_OUT , &
+	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT , TS_A, TS_VC)
+
+		! print *, visc_e(jj,ii)
+
+! !		 stop
+	       ! if (rand_samples(1).EQ.888898) then
+             ! dropdiamax =  cmax * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+             ! dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+            ! dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001	 
+	       ! else
+		   	! call size_distr_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
+	   	    ! dropdiam(j,i) = rand_samples(1)
+	       ! endif
+
+		   
          massa(m1,i) = sum(masscomp(j,i,:)) 
 		 
 		 
@@ -3725,6 +3785,11 @@ endif
        diamem(j,:)  = 0   
        height(j,:)  = 0
        vol(j,:)     = 0
+	   vol_diss(j,i)=vol_diss(j,i-1)
+	   porc_evap(j,i)=porc_evap(j,i-1)
+	   mas_evap(j,i)=mas_evap(j,i-1)
+	   mass_diss(j,i)=mass_diss(j,i-1)
+	   mass_sedi(j,i)=mass_sedi(j,i-1)		   
  !      go to 18767      !!! go to entrainment
        cycle
    endif
@@ -3831,6 +3896,7 @@ endif
           call VEL_ASCENSAO_BG ( dropdiam(m1,i) , DIAM_HYD , RO_A , spmt , VIS_DIN_A  , TS_VC  , Wvp  )
 
         else 
+ !         call VEL_ASCENSAO_BG ( dropdiam(m1,i) , DIAM_HYD , RO_A , spmt , VIS_DIN_A  , TS_VC  , Wvp  )
 
          call VEL_ASCENSAO_BG ( dropdiam(m1,i) , DIAM_HYD , RO_A , rho_e(j,i) , VIS_DIN_A  , TS_VC  , Wvp  )
 
@@ -3844,6 +3910,7 @@ endif
        
 
         zrandom = zrandom + ( randvert * ((2.D0*kz/dt_random)**(0.5D0)) ) *dt_random + Wvp*dt_random  !!  based on Reed et al., 1995
+ !       zrandom = zrandom + ( randvert * ((2.D0*kz/dt_random)**(0.5D0)) ) *dt_random + Wvp*dt_random  !!  based on Reed et al., 1995
 
       enddo
 
@@ -3854,7 +3921,10 @@ endif
         zf1(m1,i)=zf1(m1,i-1) + wi*dt +  zrandom 
         !zf1(m1, i-1) = zf1(m1,i)
 
- !      print*, wvp, dropdiam(m1,i), zf1(m1,i), zf1(m1,i-1)
+     !  print*, wvp, zf1(m1,i), zf1(m1,i-1), dropdiam(m1,i) , randvert, randvert * ((2.D0*kz/dt_random)**(0.5D0)) , Wvp*dt_random
+ !      print*, zf1(m1,i), zf1(m1,i-1), zrandom
+ !print*, '444444', zf1(m1,i), zf1(m1,i-1), zrandom, di
+
 
        xrandom = 0 
        yrandom = 0
@@ -3897,7 +3967,7 @@ endif
 
  !print*, VIS_DIN_OIL_OUT, RO_OIL_OUT, zf1(j,i-1)
 
-
+ !print*, 'hhhhh', zf1(m1,i), zf1(m1,i-1), zrandom
    if ((qd.gt.0) .and. (zf1(j, i) .ge. 0)) then
           CALL random_number(RN1)
 !		  oil_entrainment_probability = 1 - exp(-qd* 60)
@@ -3909,7 +3979,20 @@ endif
 !            print*, "zini", zini
 !			stop
             zf1(j, i) = - zini
-          endif
+	       if (rand_samples(1).EQ.888898) then
+             dropdiamax =  cmax * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+             dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+            dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001	 
+	       else
+!		    call size_distr_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
+	   	    dropdiam(j,i) = rand_samples(1)
+	       endif
+      !     print*, 	"44444", 	   rand_samples(1)
+   !          dropdiamax =  cmax * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+    !         dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+       !      print*, 	"3333", 	   ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001	
+
+ endif
 		  
 		   
 !		  print*, oil_entrainment_probability, qd, RN1, TS_VC
@@ -4248,10 +4331,32 @@ if (zf1(m1,i) .ge. 0) then
 		endif
        
        endif
-	   
+	   SEDIMENT=1
 !	   print*, zf1(j,i), di
 	   if (-zf1(j,i) .ge. di) then
-	      zf1(j,i)=-di
+	      zf1(j,i)=-di	
+          if (SEDIMENT.EQ.1) then
+	   mass_sedi(j,i)=massa(j,i)		   		  
+       massa(j,:)= 0
+       lat_part(j,:)= 0
+       lon_part(j,:)= 0
+       dropdiam(j,:)= 0
+       voldrops(j,:)= 0
+       numdrops(j,:)= 0
+       massae(j,:)  = 0
+       area(j,:)    = 0
+       areaem(j,:)  = 0
+       diam(j,:)    = 0
+       diamem(j,:)  = 0   
+       height(j,:)  = 0
+       vol(j,:)     = 0
+	   vol_diss(j,i)=vol_diss(j,i-1)
+	   porc_evap(j,i)=porc_evap(j,i-1)
+	   mas_evap(j,i)=mas_evap(j,i-1)
+	   mass_diss(j,i)=mass_diss(j,i-1)
+ !      go to 18767      !!! go to entrainment
+       cycle		  
+          endif		  
 	   endif
 
   
@@ -4576,6 +4681,7 @@ if (zf1(m1,i) .ge. 0) then
      write(23,fmt2) porc_evap(:,i)
      write(231,fmt2) mas_evap(:,i)
      write(232,fmt2) mass_diss(:,i)
+     write(233,fmt2) mass_sedi(:,i)
      write(221,fmt2) lat_part(:,i)
      write(222,fmt2) lon_part(:,i)
      write(54,fmt2) watf(:,i) 
@@ -4681,6 +4787,7 @@ salts(:,1) =    salts(:,i)
 masscomp(:,1,:) = masscomp(:,i, :)
 mas_evap(:,1) = mas_evap(:,i)
 mass_diss(:,1) = mass_diss(:,i)
+mass_sedi(:,1) = mass_sedi(:,i)
 porc_evap(:,1) = porc_evap(:,i)
   height(:,1) =  height(:,i)
 vol_evap(:,1) =  vol_evap(:,i)
@@ -4810,6 +4917,7 @@ coastvalue=coastvalueb - coastvalue
      write(23,fmt2) porc_evap(:,i)
      write(231,fmt2) mas_evap(:,i)
      write(232,fmt2) mass_diss(:,i)
+     write(233,fmt2) mass_sedi(:,i)
      write(221,fmt2) lat_part(:,i)
      write(222,fmt2) lon_part(:,i)
 	 write(199,fmt2) vol(:,i)

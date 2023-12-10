@@ -1,12 +1,15 @@
 Module vertical_dispersion
 use processes 
+use ieee_arithmetic, only: ieee_is_finite
+use random_variables
+
 implicit none 
 
 double precision, dimension(:,:), allocatable :: dropdiam, numdrops, voldrops
 
 double precision, dimension(:), allocatable:: levelsd, deplevel, tsevol, tsevol2
 
-double precision:: dropdiamax, dropdiamin, rn4, numparcel, massparcel, ohnumb, wenumb
+double precision:: dropdiamax, dropdiamin,  numparcel, massparcel, ohnumb, wenumb
 
 double precision::  turbed, cmax, cmin   ! turbulent energy dissipation rate in breaking waves (j/m3/s)  reed et al (1995)
   
@@ -18,6 +21,7 @@ double precision, dimension (:,:), allocatable:: dropdiamf2, numdropsf2, voldrop
 
 double precision, dimension (:,:), allocatable:: xf2, yf2,zf2, lon_partf2, lat_partf2, diamf2, spmtf2
 
+double precision, dimension(1):: rand_samples
 
 integer :: numparcels
 
@@ -189,6 +193,142 @@ subroutine vert_disp_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms,
 
 end subroutine 
 
+
+
+subroutine size_distr_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms, qd, zini, seafrac&
+, kzm, wvp)
+ implicit none
+
+  double precision:: cstar, viscst, ro_a, Hsig , ustar2  , windspms, Uth, tw, dv, dd, hb
+  double precision,intent (out):: seafrac  ! fraction of sea surface hit by breaking waves
+  double precision:: S, zi,d0, delta_ro
+  double precision:: deltad, dropdiam, wvp, kzm
+  double precision:: visc, interfacial_tension, ro_oil
+  double precision, intent (out) :: qd, zini
+  double precision, dimension(:), allocatable :: droplet_spectrum_diameter, droplet_spectrum_pdf
+  double precision :: d_o, r, p, q, dV_50, sd, we, oh
+  double precision, dimension(:), allocatable :: spectrum
+  integer :: iyg, nhdh
+!  integer, parameter :: num_elements = 1000000
+  integer, parameter :: num_elements = 1000
+  double precision :: dN_50
+  logical :: is_finite_flag
+
+  allocate(droplet_spectrum_diameter(num_elements))
+!  droplet_spectrum_diameter = [(iyg * (3.0e-3 - 1.0e-6) / (num_elements - 1.0d0), iyg = 1, num_elements)]
+  droplet_spectrum_diameter = [(iyg * (3.0e-4 - 1.0e-6) / (num_elements - 1.0d0), iyg = 1, num_elements)]
+  
+  delta_ro= abs(ro_a - ro_oil)
+
+  ustar2 = 0.71 * (windspms**1.23)
+ 
+  hsig = (0.243 * ustar2) / gravity
+
+  hsig = hsig   
+  ! Compute parameters
+  d_o = 4.0d0 * sqrt(interfacial_tension / (delta_ro * gravity))
+ ! d0 = 4 * ( (interfacial_tension / (delta_ro*gravity) )**(0.5) )
+  
+  we = (ro_a * gravity * hsig * d_o) / interfacial_tension
+ ! wenumb = ro_a * gravity * hsig * d0  / interfacial_tension
+
+  oh =  visc / ( (ro_oil * interfacial_tension * d0)**(0.5) )
+
+  !oh = self.elements.viscosity * self.elements.density * (
+   !             self.elements.density * interfacial_tension *
+    !            d_o)**-0.5  
+ ! ohnumb =  visc / ( (ro_oil * interfacial_tension * d0)**(0.5) )
+  
+  r = 1.791d0
+  p = 0.460d0
+  q = -0.518d0
+  
+  ! Median droplet diameter in volume distribution
+  dV_50 = d_o * r * (1.0d0 + 10.0d0 * oh)**p * we**q
+
+  ! Log standard deviation in log10 units
+  sd = 0.4d0
+  
+  ! Log standard deviation in natural log units
+  Sd = log(10.0d0) * sd
+  
+  ! Convert number distribution to volume distribution
+  !dV_50 = mean(dV_50)
+ 
+dV_50 = 0.0d0
+do iyg = 1, num_elements
+  dV_50 = dV_50 + droplet_spectrum_diameter(iyg)
+end do
+dV_50 = dV_50 / num_elements
+ 
+  dN_50 = exp(log(dV_50) - 3.0d0 * Sd**2)  
+  
+  allocate(spectrum(num_elements))
+  do iyg = 1, num_elements
+     spectrum(iyg) = exp(-((log(droplet_spectrum_diameter(iyg)) - log(dV_50))**2) / (2.0d0 * Sd**2)) / &
+                    (droplet_spectrum_diameter(iyg) * Sd * sqrt(2.0d0 * pi))
+  end do  
+  
+!            spectrum = (np.exp(
+!                -(np.log(self.droplet_spectrum_diameter) - np.log(dV_50))**2 /
+!                (2 * Sd**2))) / (self.droplet_spectrum_diameter * Sd *
+!                                 np.sqrt(2 * np.pi))  
+
+  ! Normalize the spectrum
+  droplet_spectrum_pdf = spectrum / sum(spectrum)  
+  
+  ! Check for validity
+!  if (.not. all(isfinite(droplet_spectrum_pdf)) .or. abs(sum(droplet_spectrum_pdf) - 1.0d0) > 1.0e-6) then
+ 
+  is_finite_flag = isfinite_array(droplet_spectrum_pdf)
+ 
+  if (.not. is_finite_flag .or. abs(sum(droplet_spectrum_pdf) - 1.0d0) > 1.0e-6) then
+  
+     print *, 'Could not update droplet diameters.'
+     ! Return an array or value based on your requirements
+	 rand_samples(1)=888898
+  else
+     ! Generate random samples based on the droplet spectrum PDF
+     call random_sample(droplet_spectrum_diameter, droplet_spectrum_pdf, rand_samples)
+ !    print *, 'Random samples:', rand_samples(1)
+	! stop
+     ! Return the generated random samples
+  end if  
+
+end subroutine 
+
+
+  subroutine random_sample(choices, probabilities, samples)
+    double precision, dimension(:), intent(in) :: choices, probabilities
+    double precision, dimension(:), intent(out) :: samples
+    double precision :: ujkh
+    integer :: itr, jgh
+    
+    do itr = 1, size(samples)
+ !      ujkh = random_number()
+	   CALL random_number(ujkh)
+       jgh = 1
+       do while (ujkh > sum(probabilities(1:jgh)))
+          jgh = jgh + 1
+       end do
+       samples(itr) = choices(jgh)
+    end do
+    
+  end subroutine random_sample
+  
+  logical function isfinite_array(arr)
+    real(8), dimension(:), intent(in) :: arr
+    integer :: i
+
+    do i = 1, size(arr)
+      if (.not. ieee_is_finite(arr(i))) then
+        isfinite_array = .false.
+        return
+      end if
+    end do
+
+    isfinite_array = .true.
+  end function isfinite_array
 
 
 
