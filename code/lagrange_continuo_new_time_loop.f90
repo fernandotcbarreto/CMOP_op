@@ -234,7 +234,10 @@ use datetime_module
  endif  ! print*, api    
  if (trim(apist) .eq. 'KUWAIT_2002') then
    api=36.09498      !oscar Linerle   
- endif  ! print*, api 
+ endif  ! print*, api
+ if (trim(apist) .eq. 'Emergency') then
+   api=29.97929      !oscar Linerle   
+ endif  ! print*, api  
  !
 
 !   stop
@@ -684,7 +687,7 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
  !api=8889
  !print*, 'first', api, temp_out, spmt
  !call calc_api(api)
- !stop
+! stop
 
      do i=1, numpal
        FRAC_MASS_OUT_PART(i,:)=FRAC_MASS_OUT
@@ -1271,6 +1274,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
   write(198,fmt2) temps(:,1)
   write(197,fmt2) salts(:,1)
   write(16,fmt2) height(:,1)
+  write(17,fmt2) visc_e(:,1)
   write(221,fmt2) lat_part(:,1)
   write(222,fmt2) lon_part(:,1)
   write(54,fmt2) watf(:,1)
@@ -2884,6 +2888,7 @@ if ( (massa(j,i-1).eq.0) ) then
 	   mas_evap(j,i)=mas_evap(j,i-1)
 	   mass_diss(j,i)=mass_diss(j,i-1)
 	   mass_sedi(j,i)=mass_sedi(j,i-1)
+	   zf1(j,i)=zf1(j,i-1)
 	   
    cycle
  endif 
@@ -3575,7 +3580,7 @@ enddo
  !  dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
 
   ! dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
-!  print*, dropdiam(j,i), dropdiam(j,i-1), zf1(j,i-1)
+ ! print*, dropdiam(j,i), dropdiam(j,i-1), zf1(j,i-1)
  !  dropdiam(j,i-1) = dropdiam(j,i)
  
     if (checkb(j,i) .ne. 0) then
