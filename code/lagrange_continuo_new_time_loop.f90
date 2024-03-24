@@ -29,7 +29,7 @@ use datetime_module
   double precision, dimension(:, :), allocatable:: x, area, y, u,v, checkb
   double precision, dimension(:,:), allocatable :: diam, temps, salts
   double precision, dimension(:), allocatable:: dt_h_spr
-  double precision :: time_lim, time_lim_wind, outp_h
+  double precision :: time_lim, time_lim_wind, outp_h, watcontant
   character*20::  fmt1, x1, fmt, fmt2, fmt3, x2, fmt5, x5, fmt6, x3, fmt4, fmt7, fmt8, fmt9
 
 !!!!!! RESHAPE
@@ -209,6 +209,7 @@ use datetime_module
   read(6877,*) CDIF_HOR
   read(6877,*) apist
   read(6877,*) ductwd
+  read(6877,*) watcontant
   
  !print*, trim(apist)
  if (trim(apist) .eq. 'Diesel') then
@@ -238,9 +239,20 @@ use datetime_module
  if (trim(apist) .eq. 'Emergency') then
    api=29.97929      !oscar Linerle   
  endif  ! print*, api  
- !
-
-!   stop
+ if (trim(apist) .eq. 'Oseberg') then
+   api=33.05403      !oscar Linerle   
+ endif  ! print*, api   
+ if (trim(apist) .eq. 'Camorim') then
+   api=30.43027      !oscar Linerle   
+ endif  ! print*, api    
+ if (trim(apist) .eq. 'Balder') then
+   api=28.16920      !oscar Linerle   
+ endif  ! print*, api   
+ if (trim(apist) .eq. 'GASOIL') then
+   api=37.98144      !oscar Linerle   
+ endif  ! print*, api   
+ 
+ !   stop
   !print*, widfc, CDIF_HOR
   !print*, numparcels_dis
   !stop
@@ -684,9 +696,9 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT )
 
  !stop
- !api=8889
+!api=8889
  !print*, 'first', api, temp_out, spmt
- !call calc_api(api)
+! call calc_api(api)
 ! stop
 
      do i=1, numpal
@@ -703,6 +715,10 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
    call emulsify_parameter
 
    call entrainment_param
+   
+   watf(:,:)=watcontant
+!   print*, watf
+!   stop
 
 
 
@@ -2998,6 +3014,8 @@ if ( (massa(j,i-1).eq.0) ) then
   !          print*, '2',evap1, evapmass(j, comps)
              if (counttime/(60*60*24).gt. 15) then
 			  evap1=0
+!			  print*, counttime/(60*60*24), aux
+!			  stop
 			 endif
 
             masscomp(j,i, comps)=masscomp(j,i-1, comps)-evap1
@@ -3582,13 +3600,24 @@ enddo
   ! dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
  ! print*, dropdiam(j,i), dropdiam(j,i-1), zf1(j,i-1)
  !  dropdiam(j,i-1) = dropdiam(j,i)
- 
+  !  print*, dropdiam(j,i), "1", RN1, checkb(j,i)
+
     if (checkb(j,i) .ne. 0) then
-	 if (ductwd .gt. 0) then
-      dropdiam(j,i)=ductwd
-	 endif
+	  CALL random_number(RN1)	
+	 if ((ductwd .gt. 0) .and. (RN1 .gt. 0.5) .and. (checkb(j,i) .ne. 30)) then
+	   checkb(j,:) = 0
+       dropdiamax =  cmax * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+       dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+       dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
+	 else  
+!	  dropdiam(j,i)=ductwd
+	   dropdiam(j,:)=ductwd
+	  checkb(j,:)=30
+	  endif
     endif 
-   
+
+ !  print*, dropdiam(j,i), "fff", RN1, checkb(j,i), zf1(j,i)
+!   stop
 
    voldrops(j,i) = ((dropdiam(j,i)/2.)**3.) *  pi * (4./3.)
 
@@ -4334,11 +4363,11 @@ if (zf1(m1,i) .ge. 0) then
 !		 stop
 	!	 go to 8867
 		endif
-       
+       !
        endif
 	   SEDIMENT=1
 !	   print*, zf1(j,i), di
-	   if (-zf1(j,i) .ge. di) then
+	   if ((-zf1(j,i) .ge. di) .and. (di .gt. 0)) then
 	      zf1(j,i)=-di	
           if (SEDIMENT.EQ.1) then
 	   mass_sedi(j,i)=massa(j,i)		   		  
@@ -4948,7 +4977,7 @@ coastvalue=coastvalueb - coastvalue
      if (ENTRAIN.EQ.1) THEN 
        write(223,fmt2) lat_partf2(:,i)
        write(224,fmt2) lon_partf2(:,i)
-       write(331,fmt2) dropdiamf2(:,i)
+       write(331,fmt2) dropdiam(:,i)
        write(332,fmt2) spmtf2(:,i)       
        write(141,fmt2) massaf2(:,i)
      ENDIF
