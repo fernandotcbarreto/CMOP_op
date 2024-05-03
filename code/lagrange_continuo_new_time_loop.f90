@@ -251,7 +251,12 @@ use datetime_module
  if (trim(apist) .eq. 'GASOIL') then
    api=37.98144      !oscar Linerle   
  endif  ! print*, api   
- 
+ if (trim(apist) .eq. 'VIGDIS') then
+   api=33.9184      !oscar Linerle   
+ endif  ! print*, api
+ if (trim(apist) .eq. 'EMBLA_2000') then
+   api=36.0713      !oscar Linerle   
+ endif  ! print*, api 
  !   stop
   !print*, widfc, CDIF_HOR
   !print*, numparcels_dis
@@ -698,8 +703,8 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
  !stop
 !api=8889
  !print*, 'first', api, temp_out, spmt
-! call calc_api(api)
-! stop
+ !call calc_api(api)
+ !stop
 
      do i=1, numpal
        FRAC_MASS_OUT_PART(i,:)=FRAC_MASS_OUT
