@@ -1,19 +1,38 @@
-#List of Oils
+#LIST OF OILS
 
-Oil                     API                    Type
+Oil                     API                     Type                     Density
 
-IF-30-bunker           19.17            	Heavy Bunker
+IF-30-bunker            19.17            	 Heavy Bunker                 0.936
 
-Diesel                   0                 Marine Diesel
+Diesel                   0                   Marine Diesel                0.843
 
-Jordbaer                44.9                   Crude
+Jordbaer                 44.9                   Crude                     0.802
 
-Mandalay                20.3                   Crude
+Mandalay                 20.3                   Crude                     0.932
 
-Linerle                  17                    Crude
+Linerle                  17                     Crude                     0.953
 
-HAVIS_2012               35                    Crude
+HAVIS_2012               35                     Crude                     0.850
+ 
+FOINAVEN_(IKU)           25.2                   Crude                     0.902
+ 
+KUWAIT_2002              30.3                   Crude                     0.875
 
-FOINAVEN_(IKU)           25.2                    Crude
+Emergency                29                     Crude                     0.881 
 
-KUWAIT_2002              30.3                   Crude
+Oseberg                  34.4                   Crude                     0.853 
+
+Camorim                  28.5                   Crude                     0.884
+
+Balder                   23.3                   Crude                     0.914
+
+GASOIL                   33                  Refined dist.                0.860
+
+VIGDIS                   36.8                   Crude                     0.841
+
+EMBLA_2000               41.8                   Crude                     0.816
+
+
+
+
+
