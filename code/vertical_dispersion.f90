@@ -206,17 +206,29 @@ subroutine size_distr_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms
   double precision:: visc, interfacial_tension, ro_oil
   double precision, intent (out) :: qd, zini
   double precision, dimension(:), allocatable :: droplet_spectrum_diameter, droplet_spectrum_pdf
-  double precision :: d_o, r, p, q, dV_50, sd, we, oh
+  double precision :: d_o, r, p, q, dV_50, sd, we, oh, min_val, max_val, step
   double precision, dimension(:), allocatable :: spectrum
   integer :: iyg, nhdh
 !  integer, parameter :: num_elements = 1000000
-  integer, parameter :: num_elements = 1000
+  integer, parameter :: num_elements =  10000
   double precision :: dN_50
   logical :: is_finite_flag
 
   allocate(droplet_spectrum_diameter(num_elements))
 !  droplet_spectrum_diameter = [(iyg * (3.0e-3 - 1.0e-6) / (num_elements - 1.0d0), iyg = 1, num_elements)]
-  droplet_spectrum_diameter = [(iyg * (3.0e-4 - 1.0e-6) / (num_elements - 1.0d0), iyg = 1, num_elements)]
+ ! droplet_spectrum_diameter = [(iyg * (3.0e-4 - 1.0e-6) / (num_elements - 1.0d0), iyg = 1, num_elements)] !mais correto
+ min_val = 1.0e-6
+ max_val = 3.0e-4 !mais correto
+ max_val = 3.0e-5 !mais oleo na coluna de agua
+! max_val = 3.0e-3 ! da velocidades negativas de wvp
+ 
+ 
+!num_elements = 1000000
+step = (max_val - min_val) / (num_elements - 1)
+
+do iyg = 1, num_elements
+    droplet_spectrum_diameter(iyg) = min_val + (iyg - 1) * step
+end do
   
   delta_ro= abs(ro_a - ro_oil)
 

@@ -22,7 +22,7 @@ use datetime_module
   double precision:: al, kl, spm, b(2), c(100,100), areat, diamt, ui(1,1), vi(1,1), ti(1,1), si(1,1),mwf, lo,wvp, rrr
   double precision:: scft, kf, rn1, rn2, voldis, odir, ovel, counttimeh_r0, probsl, rn10, ductwd
   integer i,a,j,cont, tsl, itsl, freq, ts_lim, cont_ts, outer_l, zlayer,  avel, reverse, depvi
-  integer :: ts, numpalm, turn_off_mask, year11, month11, day11, hour11, minute11, secon11
+  integer :: ts, numpalm, turn_off_mask, year11, month11, day11, hour11, minute11, secon11, deg_turn
   character:: g(100)
   double precision:: dt,vf, vft, x_model(100,100), y_model(100,100), u_model(100,100), x_mask(100,100), v_model(100,100)  !vf eh vel func
   double precision:: y_mask(100,100), mask(100,100), maskt(1,1)
@@ -70,6 +70,7 @@ use datetime_module
   OPEN(231 , FILE = "mass_evap2.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
   OPEN(232 , FILE = "mass_disp2.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
   OPEN(233 , FILE = "mass_sedi.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
+  OPEN(268 , FILE = "mass_deg.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
 
   OPEN(54 , FILE = "water_frac.txt" , STATUS= 'UNKNOWN', FORM= 'FORMATTED ' )
 
@@ -210,6 +211,7 @@ use datetime_module
   read(6877,*) apist
   read(6877,*) ductwd
   read(6877,*) watcontant
+!  read(6877,*) deg_turn
   
  !print*, trim(apist)
  if (trim(apist) .eq. 'Diesel') then
@@ -257,7 +259,24 @@ use datetime_module
  if (trim(apist) .eq. 'EMBLA_2000') then
    api=36.0713      !oscar Linerle   
  endif  ! print*, api 
- !   stop
+ if (trim(apist) .eq. 'Njord_2002') then
+   api=38.3566      !oscar Linerle   
+ endif  ! print*, api  
+ if (trim(apist) .eq. 'If_180_SHELL') then
+   api=20.9615      !oscar Linerle   
+ endif  ! print*, api   
+ if (trim(apist) .eq. 'Arab_light_Battelle') then
+   api=35.6941      !oscar Linerle   
+ endif  ! print*, api    
+ if (trim(apist) .eq. 'Gyda_2000') then
+   api=33.3001      !oscar Linerle   
+ endif  ! print*, api     !   stop
+ if (trim(apist) .eq. 'Hago_4ss_LA_IKL') then
+   api=28.6312      !oscar Linerle   
+ endif  ! print*, api     !   stop 
+ if (trim(apist) .eq. 'russian_crude') then
+   api=31.6583      !oscar Linerle   
+ endif  ! print*, api     !   stop  
   !print*, widfc, CDIF_HOR
   !print*, numparcels_dis
   !stop
@@ -328,13 +347,15 @@ use datetime_module
 		!print*, freq
   else 
 		freq=(time_finish*60*60)/dt
-		!print*, freq
+!		print*, freq
   endif 
-  !stop
-   !print*,numpal, ts - freq*tsl
-   !stop
+!  stop
+!   print*,numpal, ts - freq*tsl
 
-!   !print*, ts
+
+!   print*, ts, tsl, itsl
+!   stop
+
    if (coupling_ind .eq. 1) then
       go to 2534
    endif
@@ -342,19 +363,21 @@ use datetime_module
 
    if (PROBABILISTIC.eq.0) then
           
-     ! if ( (ts - freq*tsl) .eq.0) then
+ !    if ( (ts - freq*tsl) .eq.0) then
+    if ((ts - freq * tsl) .eq. 0 .or. time_finish .eq. 0) then
+	 
         !print*, '00000'
         allocate(x(int(numpal*freq ),int(ts_lim)), y(int(numpal*freq),int(ts_lim)))
         fmt= '(I10)'
         write (x1,fmt) numpal*freq 
         write (x3,fmt) numparcels_dis
-     ! else 
-        ! !print*, 'not000'
-        ! allocate(x(int(numpal*freq + numpal ),int(ts_lim)), y(int(numpal*freq + numpal ),int(ts_lim)))
-        ! fmt= '(I10)'
-        ! write (x1,fmt) numpal*freq + numpal 
-        ! write (x3,fmt) numparcels_dis
-     ! endif
+     else 
+        !print*, 'not000'
+        allocate(x(int(numpal*freq + numpal ),int(ts_lim)), y(int(numpal*freq + numpal ),int(ts_lim)))
+        fmt= '(I10)'
+        write (x1,fmt) numpal*freq + numpal 
+        write (x3,fmt) numparcels_dis
+     endif
    else 
 
         allocate(x(int(numpal),int(ts_lim)), y(int(numpal),int(ts_lim)))
@@ -535,7 +558,7 @@ use datetime_module
   
   allocate (vol_evap(int(b(1)),int(b(2))), vol_diss(int(b(1)),int(b(2))), porc_diss_vol(int(b(1)),int(b(2))))
 
-  allocate (mass_diss(int(b(1)),int(b(2))), mass_sedi(int(b(1)),int(b(2))))
+  allocate (mass_diss(int(b(1)),int(b(2))), mass_sedi(int(b(1)),int(b(2))), mass_degr(int(b(1)),int(b(2))))
 
   allocate (area2(int(b(1)),int(b(2))), area1(int(b(1)),int(b(2))))
   
@@ -701,10 +724,10 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT )
 
  !stop
-!api=8889
- !print*, 'first', api, temp_out, spmt
- !call calc_api(api)
- !stop
+! api=88899
+! print*, 'first', api, temp_out, spmt
+! call calc_api(api)
+! stop
 
      do i=1, numpal
        FRAC_MASS_OUT_PART(i,:)=FRAC_MASS_OUT
@@ -1211,6 +1234,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     write(231,'(i10)') i
     write(232,'(i10)') i
     write(233,'(i10)') i
+    write(268,'(i10)') i
     write(221,'(i10)') i
     write(222,'(i10)') i
     write(54,'(i10)') i
@@ -1233,6 +1257,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
     write(231,'(i10)', advance='no') i
     write(232,'(i10)', advance='no') i
     write(233,'(i10)', advance='no') i
+    write(268,'(i10)', advance='no') i
     write(221,'(i10)', advance='no') i
     write(222,'(i10)', advance='no') i
     write(54,'(i10)', advance='no') i
@@ -1290,6 +1315,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
   write(231,fmt2) mas_evap(:,1)
   write(232,fmt2) mass_diss(:,1)
   write(233,fmt2) mass_sedi(:,1)
+  write(268,fmt2) mass_degr(:,1)
   write(15,fmt2) diam(:,1)
   write(199,fmt2) vol(:,1)
   write(198,fmt2) temps(:,1)
@@ -1314,7 +1340,7 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
  IF (ENTRAIN.EQ.1) THEN
    write(223,fmt2) lat_partf2(:,1)
    write(224,fmt2) lon_partf2(:,1) 
-   write(331,fmt2) dropdiamf2(:,1)
+   write(331,fmt2) dropdiam(:,1)
    write(332,fmt2) spmtf2(:,1)
    write(141,fmt2) massaf2(:,1)
  ENDIF
@@ -2902,6 +2928,23 @@ aux=0
 
 
 !print*,  '1ppp',  massa(j, i-1), zf1(j,i-1)
+deg_turn=1
+if (deg_turn .eq. 1) then
+ if (mass_diss(j, i-1) .NE. 0) then
+    ! Ação a ser executada se a e b não forem iguais
+
+       tau = 12.0 * (3.0 ** ((20.0 - ti(1,1)) / 10.0))
+
+    ! Calcular a fração biodegradada
+       fraction_biodegraded = 1.0 - exp((-counttime/(60*60*24)) / tau)
+	   
+!      print*, counttime/(60*60*24), ti(1,1), mass_diss(j,i-1), mass_diss(j,i-1)*fraction_biodegraded
+         
+		mass_degr(j,i) =    mass_degr(j, i-1) + mass_diss(j,i-1)*fraction_biodegraded
+        mass_diss(j,i) =    mass_diss(j, i-1)  - mass_diss(j,i-1)*fraction_biodegraded
+		mass_diss(j, i-1)=mass_diss(j,i)
+ end if		
+endif 
 
 if ( (massa(j,i-1).eq.0) ) then
 	   vol_diss(j,i)=vol_diss(j,i-1)
@@ -2909,6 +2952,7 @@ if ( (massa(j,i-1).eq.0) ) then
 	   mas_evap(j,i)=mas_evap(j,i-1)
 	   mass_diss(j,i)=mass_diss(j,i-1)
 	   mass_sedi(j,i)=mass_sedi(j,i-1)
+	   mass_degr(j,i)=mass_degr(j,i-1)
 	   zf1(j,i)=zf1(j,i-1)
 	   
    cycle
@@ -2931,6 +2975,7 @@ if ( (massa(j,i-1).eq.0) ) then
 	   mas_evap(j,i)=mas_evap(j,i-1)
 	   mass_diss(j,i)=mass_diss(j,i-1)
 	   mass_sedi(j,i)=mass_sedi(j,i-1)
+	   mass_degr(j,i)=mass_degr(j,i-1)
 	   rho_e(j,i)=rho_e(j,i-1)
 	   visc_e(j,i)=visc_e(j,i-1)
 	   watf(j,i)=watf(j,i-1)
@@ -3002,7 +3047,14 @@ if ( (massa(j,i-1).eq.0) ) then
 		     masscomp(j,i, comps)=0
               cycle
            endif
+           
+		   IF (windsp.le.0) THEN
+		     windsp=0.1*3600
+		     windsp=10
+           endif
+!		   print*, windsp
 
+		   
            kf1=(0.0292*(windsp**0.78)*(diam(j,i-1)**(-0.11))*(scf**(-0.67))*(((PM_COMP_OIL(comps)+29.)/(PM_COMP_OIL(comps)))**0.5))  !unit grams, hours
 
            evap1=(((((kf1*PC(comps)*area(j,i-1))/(r*temp))*(PM_COMP_OIL(comps)*FRAC_MASS_OUT_PART(j,comps)))*0.001)/3600.)*dt   !0.001 is to convert from grams to kg    !betancout et al 2005+
@@ -3171,6 +3223,7 @@ call  PROP_AMBIENTE(Z , PROF_REF , temp_out , SAL_A, RO_A , VIS_DIN_A , CP_A , T
 	   mas_evap(j,i)=mas_evap(j,i-1)
 	   mass_diss(j,i)=mass_diss(j,i-1)
 	   mass_sedi(j,i)=mass_sedi(j,i-1)	   
+	   mass_degr(j,i)=mass_degr(j,i-1)	   
 !       go to 18767     !!! go to entrainment
        cycle
    endif
@@ -3257,6 +3310,9 @@ endif
 !print*, '88', i, massa(j,i)
 
 
+ 	
+	
+	
  IF (EMULSI.EQ.1) THEN
 
 
@@ -3525,6 +3581,7 @@ enddo
 	   mas_evap(j,i)=mas_evap(j,i-1)
 	   mass_diss(j,i)=mass_diss(j,i-1)
 	   mass_sedi(j,i)=mass_sedi(j,i-1)	   
+	   mass_degr(j,i)=mass_degr(j,i-1)	   
 !       go to 18767      !!! go to entrainment
        cycle
    endif
@@ -3609,7 +3666,8 @@ enddo
 
     if (checkb(j,i) .ne. 0) then
 	  CALL random_number(RN1)	
-	 if ((ductwd .gt. 0) .and. (RN1 .gt. 0.5) .and. (checkb(j,i) .ne. 30)) then
+!	 if ((ductwd .gt. 0) .and. (RN1 .gt. 0.5) .and. (checkb(j,i) .ne. 30)) then
+	 if ((ductwd .gt. 0) .and. (RN1 .gt. 0.9) .and. (checkb(j,i) .ne. 30)) then
 	   checkb(j,:) = 0
        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
@@ -3805,6 +3863,10 @@ endif
 		 if (counttime/(60*60*24).gt. 15) then
 	       mass_diss(j,i)=mass_diss(j, i-1)
 	     endif 
+       
+	    mass_diss(j,i-1) = mass_diss(j,i)
+
+  
 
  !        print*,  '2', massa(m1,i)
 !		 stop
@@ -3829,6 +3891,7 @@ endif
 	   mas_evap(j,i)=mas_evap(j,i-1)
 	   mass_diss(j,i)=mass_diss(j,i-1)
 	   mass_sedi(j,i)=mass_sedi(j,i-1)		   
+	   mass_degr(j,i)=mass_degr(j,i-1)		   
  !      go to 18767      !!! go to entrainment
        cycle
    endif
@@ -3917,6 +3980,7 @@ endif
 
          call VEL_ASCENSAO_BG ( dropdiam(m1,i) , DIAM_HYD , RO_A , rho_e(j,i) , VIS_DIN_A  , TS_VC  , Wvp  )
 
+
         endif	
   !     !print*, '444', spmt, spmtf2(m1,i-1)
 
@@ -3936,8 +4000,11 @@ endif
 
         else 
  !         call VEL_ASCENSAO_BG ( dropdiam(m1,i) , DIAM_HYD , RO_A , spmt , VIS_DIN_A  , TS_VC  , Wvp  )
+  !        dropdiam(m1,i)=10
 
          call VEL_ASCENSAO_BG ( dropdiam(m1,i) , DIAM_HYD , RO_A , rho_e(j,i) , VIS_DIN_A  , TS_VC  , Wvp  )
+
+   !     print*, 'jdjdjdjdj', wvp, dropdiam(m1,i), rho_e(j,i)
 
         endif	
 		
@@ -3954,7 +4021,7 @@ endif
       enddo
 
 
-!      print*, 'fift0', Wvp, rho_e(j,i), spmt, rho_e(j,i-1)
+!       print*, 'fift0', Wvp
 !	  stop
 
         zf1(m1,i)=zf1(m1,i-1) + wi*dt +  zrandom 
@@ -4005,7 +4072,8 @@ endif
 !print*, 'qd', qd, zf1(j, i-1)
 
  !print*, VIS_DIN_OIL_OUT, RO_OIL_OUT, zf1(j,i-1)
-
+ 
+ 
  !print*, 'hhhhh', zf1(m1,i), zf1(m1,i-1), zrandom
    if ((qd.gt.0) .and. (zf1(j, i) .ge. 0)) then
           CALL random_number(RN1)
@@ -4024,6 +4092,8 @@ endif
             dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001	 
 	       else
 !		    call size_distr_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
+!            print*, rand_samples(1)
+!			stop
 	   	    dropdiam(j,i) = rand_samples(1)
 	       endif
       !     print*, 	"44444", 	   rand_samples(1)
@@ -4049,6 +4119,7 @@ endif
  !print*, 'qd', qd*dt*area(j,i), massa(j,i-1)
  !stop
 
+ !      mass_degr(j,i-1) = mass_degr(j,i)
 ! 546 continue
  !  if (partcont .ge. 1) then
 
@@ -4393,6 +4464,7 @@ if (zf1(m1,i) .ge. 0) then
 	   porc_evap(j,i)=porc_evap(j,i-1)
 	   mas_evap(j,i)=mas_evap(j,i-1)
 	   mass_diss(j,i)=mass_diss(j,i-1)
+	   mass_degr(j,i)=mass_degr(j,i-1)
  !      go to 18767      !!! go to entrainment
        cycle		  
           endif		  
@@ -4721,6 +4793,7 @@ if (zf1(m1,i) .ge. 0) then
      write(231,fmt2) mas_evap(:,i)
      write(232,fmt2) mass_diss(:,i)
      write(233,fmt2) mass_sedi(:,i)
+     write(268,fmt2) mass_degr(:,i)
      write(221,fmt2) lat_part(:,i)
      write(222,fmt2) lon_part(:,i)
      write(54,fmt2) watf(:,i) 
@@ -4744,7 +4817,7 @@ if (zf1(m1,i) .ge. 0) then
      if (ENTRAIN.EQ.1) THEN 
        write(223,fmt2) lat_partf2(:,i)
        write(224,fmt2) lon_partf2(:,i)
-       write(331,fmt2) dropdiamf2(:,i)
+       write(331,fmt2) dropdiam(:,i)
        write(332,fmt2) spmtf2(:,i)       
        write(141,fmt2) massaf2(:,i)
      ENDIF
@@ -4827,6 +4900,7 @@ masscomp(:,1,:) = masscomp(:,i, :)
 mas_evap(:,1) = mas_evap(:,i)
 mass_diss(:,1) = mass_diss(:,i)
 mass_sedi(:,1) = mass_sedi(:,i)
+mass_degr(:,1) = mass_degr(:,i)
 porc_evap(:,1) = porc_evap(:,i)
   height(:,1) =  height(:,i)
 vol_evap(:,1) =  vol_evap(:,i)
@@ -4957,6 +5031,7 @@ coastvalue=coastvalueb - coastvalue
      write(231,fmt2) mas_evap(:,i)
      write(232,fmt2) mass_diss(:,i)
      write(233,fmt2) mass_sedi(:,i)
+     write(268,fmt2) mass_degr(:,i)
      write(221,fmt2) lat_part(:,i)
      write(222,fmt2) lon_part(:,i)
 	 write(199,fmt2) vol(:,i)

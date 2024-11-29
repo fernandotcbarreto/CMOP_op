@@ -57,7 +57,9 @@ Module processes
 
      !print*, kem
 	 !stop
-      kem =  0.0000005   !VALUE USED IN EMULFICATION VALIDATION
+     kem =  0.0000005   !VALUE USED IN EMULFICATION VALIDATION
+!    kem =  0.0000001   !VALUE USED IN EMULFICATION VALIDATION
+	  
      ! kem = 0.000001   !Value used to validate VISCOSITY
      !kem =  0.000002  !
 
@@ -140,7 +142,8 @@ END SUBROUTINE
 
      ! kem =  0.000001   !Value used to validate VISCOSITY
 
-     kem =  0.000002  !
+!    kem =  0.000002  !
+     kem =  0.0000005   !VALUE USED IN EMULFICATION VALIDATION
 
      k1N = 0.8
 
@@ -555,6 +558,7 @@ END SUBROUTINE
 
 		WP = (VIS_A) * MO**(-0.149D0) * (J - 0.857D0) /(RO_A * DIAM)
 
+		WP = 0.711D0*(GRAVITY*DIAM*(RO_A - RO_P)/RO_A)**0.5D0  !acrescentei essa linha de baixo, dava vel negativa nos tamanhos 
 
            ELSE
 		WP = 0.711D0*(GRAVITY*DIAM*(RO_A - RO_P)/RO_A)**0.5D0
