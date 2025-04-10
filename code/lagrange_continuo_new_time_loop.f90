@@ -277,6 +277,12 @@ use datetime_module
  if (trim(apist) .eq. 'russian_crude') then
    api=31.6583      !oscar Linerle   
  endif  ! print*, api     !   stop  
+  if (trim(apist) .eq. 'IF-180-ESSO') then
+   api=21.9213      !oscar Linerle   
+ endif  ! print*, api     !   stop  
+  if (trim(apist) .eq. 'IF-180-JOHN-R') then
+   api=23.3207      !oscar Linerle   
+ endif  ! print*, api     !   stop   
   !print*, widfc, CDIF_HOR
   !print*, numparcels_dis
   !stop
@@ -1572,6 +1578,57 @@ do outer_l=1,1000000000
        CALL random_number(RN1)
        CALL random_number(RN2)
 
+if ( (massa(j,i-1).eq.0) ) then
+	   vol_diss(j,i)=vol_diss(j,i-1)
+	   porc_evap(j,i)=porc_evap(j,i-1)
+	   mas_evap(j,i)=mas_evap(j,i-1)
+	   mass_diss(j,i)=mass_diss(j,i-1)
+	   mass_sedi(j,i)=mass_sedi(j,i-1)
+	   mass_degr(j,i)=mass_degr(j,i-1)
+	   zf1(j,i)=zf1(j,i-1)
+	   
+   cycle
+ endif 
+       lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
+       lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
+
+       coord_summ=lat_model_summ + lon_model_summ
+
+       lat_inm =  minloc(coord_summ)
+       lon_inm=lat_inm
+
+       di = depth(lat_inm(1), lon_inm(2))
+	   
+!print*, zf1(j,i-1),zf1(j,i), di, lat_part(j,i-1), lat_part(j,i)
+!stop
+	   SEDIMENT=1
+!	   print*, zf1(j,i), di
+	   if ((-zf1(j,i-1) .gt. di) .and. (di .gt. 0)) then
+	      zf1(j,i)=-di	
+          if (SEDIMENT.EQ.1) then
+	   mass_sedi(j,i)=massa(j,i)		   		  
+       massa(j,:)= 0
+       lat_part(j,:)= 0
+       lon_part(j,:)= 0
+       dropdiam(j,:)= 0
+       voldrops(j,:)= 0
+       numdrops(j,:)= 0
+       massae(j,:)  = 0
+       area(j,:)    = 0
+       areaem(j,:)  = 0
+       diam(j,:)    = 0
+       diamem(j,:)  = 0   
+       height(j,:)  = 0
+       vol(j,:)     = 0
+	   vol_diss(j,i)=vol_diss(j,i-1)
+	   porc_evap(j,i)=porc_evap(j,i-1)
+	   mas_evap(j,i)=mas_evap(j,i-1)
+	   mass_diss(j,i)=mass_diss(j,i-1)
+	   mass_degr(j,i)=mass_degr(j,i-1)
+ !      go to 18767      !!! go to entrainment
+       cycle		  
+          endif		  
+	   endif
 !       !print*, x(j,i-1), y(j,i-1)
 !       !print*, x_model(1,:)
 
@@ -2987,8 +3044,8 @@ if ( (massa(j,i-1).eq.0) ) then
 	  		stop
  
  endif 
- 
 
+	   
 	   
  if (  (zf1(j,i-1) .lt.0) ) then
 
@@ -3667,15 +3724,93 @@ enddo
     if (checkb(j,i) .ne. 0) then
 	  CALL random_number(RN1)	
 !	 if ((ductwd .gt. 0) .and. (RN1 .gt. 0.5) .and. (checkb(j,i) .ne. 30)) then
-	 if ((ductwd .gt. 0) .and. (RN1 .gt. 0.9) .and. (checkb(j,i) .ne. 30)) then
-	   checkb(j,:) = 0
-       dropdiamax =  cmax * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
-       dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
-       dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
-	 else  
+!	 if ((ductwd .gt. 0) .and. (RN1 .gt. 0.7) .and. (checkb(j,i) .ne. 30)) then
+!	   checkb(j,:) = 0
+!       dropdiamax =  cmax * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+!       dropdiamin =  cmin * (((VIS_DIN_OIL_OUT /RO_OIL_OUT) * 1000000) ** (0.34) ) *  ( turbed**(-0.4)  )
+!       dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
+!	   dropdiam(j,:)=ductwd/50
+	   
+    if ((ductwd .gt. 0) .and. (RN1 .gt. 0.9) .and. (RN1 .le. 1.0) .and. (checkb(j,i) .ne. 30)) then
+ ! 	   print*, "entrou1"
+       checkb(j,:) = 0
+        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
+!        dropdiam(j,:) = ductwd / 50
+  !     print*, 'default', dropdiam(j,i)
+    else if ((ductwd .gt. 0) .and. (RN1 .gt. 0.8) .and. (RN1 .le. 0.9) .and. (checkb(j,i) .ne. 30)) then
+ ! 	   print*, "entrou2"
+       checkb(j,:) = 0
+        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiam(j,:) = ductwd / 80
+	!	       print*,  'duct', dropdiam(j,i)
+
+    else if ((ductwd .gt. 0) .and. (RN1 .gt. 0.7) .and. (RN1 .le. 0.8) .and. (checkb(j,i) .ne. 30)) then
+ ! 	   print*, "entrou3"
+       checkb(j,:) = 0
+        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiam(j,:) = ductwd / 70		
+     else if ((ductwd .gt. 0) .and. (RN1 .gt. 0.6) .and. (RN1 .le. 0.7) .and. (checkb(j,i) .ne. 30)) then
+  !	   print*, "entrou4"
+       checkb(j,:) = 0
+        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiam(j,:) = ductwd / 60		
+     else if ((ductwd .gt. 0) .and. (RN1 .gt. 0.5) .and. (RN1 .le. 0.6) .and. (checkb(j,i) .ne. 30)) then
+ !	   print*, "entrou5"
+        checkb(j,:) = 0
+        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiam(j,:) = ductwd / 50	 
+     else if ((ductwd .gt. 0) .and. (RN1 .gt. 0.4) .and. (RN1 .le. 0.5) .and. (checkb(j,i) .ne. 30)) then
+! 	   print*, "entrou6"
+       checkb(j,:) = 0
+        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiam(j,:) = ductwd / 40	 
+     else if ((ductwd .gt. 0) .and. (RN1 .gt. 0.3) .and. (RN1 .le. 0.4) .and. (checkb(j,i) .ne. 30)) then
+        checkb(j,:) = 0
+        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiam(j,:) = ductwd / 30	 
+     else if ((ductwd .gt. 0) .and. (RN1 .gt. 0.2) .and. (RN1 .le. 0.3) .and. (checkb(j,i) .ne. 30)) then
+!	   print*, "entrou7"
+        checkb(j,:) = 0
+        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiam(j,:) = ductwd / 20	 
+     else if ((ductwd .gt. 0) .and. (RN1 .gt. 0.1) .and. (RN1 .le. 0.2) .and. (checkb(j,i) .ne. 30)) then
+        checkb(j,:) = 0
+        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiam(j,:) = ductwd / 10		
+!		       print*,  'duct2', dropdiam(j,i)
+		
+ !	   print*, "entrou8"
+    ! else if ((ductwd .gt. 0) .and. (RN1 .gt. 0.4) .and. (RN1 .lt. 0.7) .and. (checkb(j,i) .ne. 30)) then
+        ! ! Mantém as outras condições anteriores
+	    ! checkb(j,:) = 0		
+        ! dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        ! dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        ! dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001
+ ! !       dropdiam(j,:) = ductwd / 40	  
+        ! dropdiam(j,i) = ductwd / 40	  
+    else if (ductwd .eq. 0) then
+        ! Mantém as outras condições anteriores
+	    checkb(j,:) = 0		
+        dropdiamax =  cmax * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiamin =  cmin * (((VIS_DIN_OIL_OUT / RO_OIL_OUT) * 1000000) ** (0.34)) * (turbed**(-0.4))
+        dropdiam(j,i) = ((dropdiamax - dropdiamin)/2. + dropdiamin) * 0.000001 	
+	else  
+!	   print*, "entrou"
 !	  dropdiam(j,i)=ductwd
-	   dropdiam(j,:)=ductwd
-	  checkb(j,:)=30
+!	   dropdiam(j,:)=ductwd/5
+	   dropdiam(j,i)=ductwd/5
+!	  checkb(j,:)=30
+	  checkb(j,:)=0
 	  endif
     endif 
 
