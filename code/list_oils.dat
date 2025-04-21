@@ -2,7 +2,7 @@
 
 Oil                     API                     Type                     Density
 
-IF-30-bunker            19.17            	 Heavy Bunker                 0.936
+IF-30-bunker            19.7            	 Heavy Bunker                 0.936
 
 Diesel                   0                   Marine Diesel                0.843
 
@@ -32,7 +32,20 @@ VIGDIS                   36.8                   Crude                     0.841
 
 EMBLA_2000               41.8                   Crude                     0.816
 
+Njord_2002				 43.8					Crude				      0.807
 
+If_180_SHELL             14.0                  Heavy Bunker               0.973
 
+Arab_light_Battelle      32.3                   Crude                     0.864
 
+Gyda_2000                39.3                   Crude                     0.828
 
+Hago_4ss_LA_IKL          25                   Refined dist.               0.904
+
+russian_crude            26.6                   Crude.                    0.904
+
+IF-180-ESSO		         17.9		         Heavy Bunker 		          0.947		
+
+IF-180-JOHN-R		     17.9		         Heavy Bunker 		          0.947	
+
+PERENCO_22.5_PPG		 22.5		         Crude 		                  0.915		

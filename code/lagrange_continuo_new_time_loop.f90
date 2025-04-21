@@ -283,7 +283,9 @@ use datetime_module
   if (trim(apist) .eq. 'IF-180-JOHN-R') then
    api=23.3207      !oscar Linerle   
  endif  ! print*, api     !   stop   
-  !print*, widfc, CDIF_HOR
+  if (trim(apist) .eq. 'PERENCO_22.5_PPG') then
+   api=26.5909      !oscar Linerle   
+ endif   !print*, widfc, CDIF_HOR
   !print*, numparcels_dis
   !stop
 !  print*, year11, month11, day11, hour11, minute11, secon11
@@ -730,10 +732,10 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT )
 
  !stop
-! api=88899
+ !api=8883499
 ! print*, 'first', api, temp_out, spmt
-! call calc_api(api)
-! stop
+ !call calc_api(api)
+ !stop
 
      do i=1, numpal
        FRAC_MASS_OUT_PART(i,:)=FRAC_MASS_OUT

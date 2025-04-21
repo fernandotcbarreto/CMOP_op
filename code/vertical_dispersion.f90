@@ -143,7 +143,8 @@ subroutine vert_disp_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms,
 
   d0 = 4 * ( (interfacial_tension / (delta_ro*gravity) )**(0.5) )
 
-  Uth = 5                                                           !threshold 10 m wind speed for onset of breaking waves assumed 5 m/s
+  Uth = 5                                                           !threshold 10 m wind speed for onset of breaking waves assumed 5 m/s   Delvigne and Sweeney(1988)
+  Uth = 2.5                                                         !threshold 10 m wind speed for onset of breaking waves assumed 2.5 m/s  Lehr and Simecek-Beatty (2000) and Lehr et al. (2002)
   tw = 8.13 * (windspms / gravity)                                   !significant wave period and assuming a fully-developed sea
   !tw=2*pi/(0.877*9.81/(1.17*windspms))
   s = 1                                                           !fraction of sea covered by oil
