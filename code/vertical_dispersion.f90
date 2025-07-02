@@ -175,6 +175,10 @@ subroutine vert_disp_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms,
 
   ohnumb =  visc / ( (ro_oil * interfacial_tension * d0)**(0.5) )
 
+
+  
+ ! print*,"li",  ohnumb, wenumb, visc, ro_oil, interfacial_tension, d0
+ ! stop
  !print*, '44',  tw, pi
 
  ! qd =  4.604e-10 * ( wenumb**(1.805) ) * ( ohnumb**(-1.023) ) * seafrac * ro_oil * 0.0002
@@ -204,7 +208,7 @@ subroutine size_distr_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms
   double precision,intent (out):: seafrac  ! fraction of sea surface hit by breaking waves
   double precision:: S, zi,d0, delta_ro
   double precision:: deltad, dropdiam, wvp, kzm
-  double precision:: visc, interfacial_tension, ro_oil
+  double precision:: visc, interfacial_tension, ro_oil, d_ref
   double precision, intent (out) :: qd, zini
   double precision, dimension(:), allocatable :: droplet_spectrum_diameter, droplet_spectrum_pdf
   double precision :: d_o, r, p, q, dV_50, sd, we, oh, min_val, max_val, step
@@ -219,10 +223,14 @@ subroutine size_distr_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms
 !  droplet_spectrum_diameter = [(iyg * (3.0e-3 - 1.0e-6) / (num_elements - 1.0d0), iyg = 1, num_elements)]
  ! droplet_spectrum_diameter = [(iyg * (3.0e-4 - 1.0e-6) / (num_elements - 1.0d0), iyg = 1, num_elements)] !mais correto
  min_val = 1.0e-6
- max_val = 3.0e-4 !mais correto
- max_val = 3.0e-5 !mais oleo na coluna de agua
-! max_val = 3.0e-3 ! da velocidades negativas de wvp
+! max_val = 3.0e-4 !mais correto
+! max_val = 1.0e-4 !mais correto
+! max_val = 3.0e-5 !mais oleo na coluna de agua
+ max_val = 3.0e-3 ! da velocidades negativas de wvp
  
+  if (windspms.eq.0) then
+    windspms=0.01
+ endif 
  
 !num_elements = 1000000
 step = (max_val - min_val) / (num_elements - 1)
@@ -237,16 +245,26 @@ end do
  
   hsig = (0.243 * ustar2) / gravity
 
-  hsig = hsig   
+  hsig = hsig      !Mar não desenvolvido, input dinâmico do vento 
+  
+ !print*, hsig
+ ! hsig=(0.0246*windspms**2)/gravity   !Mar desenvolvido  opendrift
+ ! print*, (0.0246*windspms**2)/gravity, (0.243 * ustar2) / gravity
   ! Compute parameters
   d_o = 4.0d0 * sqrt(interfacial_tension / (delta_ro * gravity))
  ! d0 = 4 * ( (interfacial_tension / (delta_ro*gravity) )**(0.5) )
   
   we = (ro_a * gravity * hsig * d_o) / interfacial_tension
+  !we = (ro_a * gravity * hsig) / interfacial_tension
  ! wenumb = ro_a * gravity * hsig * d0  / interfacial_tension
 
-  oh =  visc / ( (ro_oil * interfacial_tension * d0)**(0.5) )
-
+  oh =  visc / ( (ro_oil * interfacial_tension * d_o)**(0.5) )
+  !d_ref = 1.0d-4   ! por exemplo, 100 μm
+ 
+  !oh = visc / sqrt(ro_oil * interfacial_tension * d_ref)
+  
+  !print*,"particle",  oh, we, visc, ro_oil, interfacial_tension, d_o
+  !stop
   !oh = self.elements.viscosity * self.elements.density * (
    !             self.elements.density * interfacial_tension *
     !            d_o)**-0.5  
@@ -257,7 +275,8 @@ end do
   q = -0.518d0
   
   ! Median droplet diameter in volume distribution
-  dV_50 = d_o * r * (1.0d0 + 10.0d0 * oh)**p * we**q
+ ! dV_50 = d_o * r * (1.0d0 + 10.0d0 * oh)**p * we**q
+  dV_50 = d_o * r * oh**p * we**q
 
   ! Log standard deviation in log10 units
   sd = 0.4d0
@@ -267,12 +286,18 @@ end do
   
   ! Convert number distribution to volume distribution
   !dV_50 = mean(dV_50)
- 
-dV_50 = 0.0d0
-do iyg = 1, num_elements
-  dV_50 = dV_50 + droplet_spectrum_diameter(iyg)
-end do
-dV_50 = dV_50 / num_elements
+ ! print*, dV_50, d_o , r ,  1.0d0 + 10.0d0 * oh, oh,p, we, q
+ ! stop
+!dV_50 = 0.0d0
+!do iyg = 1, num_elements
+!  dV_50 = dV_50 + droplet_spectrum_diameter(iyg)
+!end do
+!dV_50 = dV_50 / num_elements
+!  print*, dV_50
+
+!  print*, 'wind =', windspms, 'we =', we, 'oh =', oh, 'dV_50 =', dV_50, "inter", interfacial_tension, "visc", visc , "ro",ro_oil
+
+ !stop
  
   dN_50 = exp(log(dV_50) - 3.0d0 * Sd**2)  
   
@@ -307,7 +332,11 @@ dV_50 = dV_50 / num_elements
 	! stop
      ! Return the generated random samples
   end if  
+ 
+   !  print *, 'Random samples:', rand_samples(1), dV_50,d_o
+   ! print*, interfacial_tension
 
+	! stop
 end subroutine 
 
 

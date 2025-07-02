@@ -29,7 +29,7 @@ use datetime_module
   double precision, dimension(:, :), allocatable:: x, area, y, u,v, checkb
   double precision, dimension(:,:), allocatable :: diam, temps, salts
   double precision, dimension(:), allocatable:: dt_h_spr
-  double precision :: time_lim, time_lim_wind, outp_h, watcontant
+  double precision :: time_lim, time_lim_wind, outp_h, watcontant, dkdz, dkdzs
   character*20::  fmt1, x1, fmt, fmt2, fmt3, x2, fmt5, x5, fmt6, x3, fmt4, fmt7, fmt8, fmt9
 
 !!!!!! RESHAPE
@@ -286,6 +286,9 @@ use datetime_module
   if (trim(apist) .eq. 'PERENCO_22.5_PPG') then
    api=26.5909      !oscar Linerle   
  endif   !print*, widfc, CDIF_HOR
+  if (trim(apist) .eq. 'BP_29_Tupinamba') then
+   api=26.6842      !oscar Linerle   
+ endif   !print*, widfc, CDIF_HOR 
   !print*, numparcels_dis
   !stop
 !  print*, year11, month11, day11, hour11, minute11, secon11
@@ -3093,7 +3096,8 @@ if ( (massa(j,i-1).eq.0) ) then
 
 
           CALL vapour_pressure(TEMP_OUT)
-
+!          print*, PC
+!		  stop
 !print*, '5555555555555555', sum(masscomp(j,i-1,:))
 !print*, "dia", counttime/(60*60*24)
 
@@ -3865,8 +3869,11 @@ enddo
  !   call vert_disp (viscstem, ro_A, windspms, deltad, dropdiam(j,i-1)/2, wvp, qd, zini, kz, seafrac)   !delvi
 !print*,kz, wvp
 
-      call vert_disp_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
-      call size_distr_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
+  !    call vert_disp_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
+      call vert_disp_li_2007 ( VIS_DIN_OIL_OUT, TS_VC , ro_A,RO_OIL_OUT, windspms, qd, zini, seafrac, kz, wvp)  !lietal
+ !     call size_distr_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
+      call size_distr_li_2007 ( VIS_DIN_OIL_OUT, TS_VC , ro_A,RO_OIL_OUT, windspms, qd, zini, seafrac, kz, wvp)  !lietal
+ !     call size_distr_li_2007 ( VIS_DIN_OIL_OUT, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
 !     print *, 'Random samples 2:', rand_samples
 	 
 
@@ -3923,7 +3930,7 @@ else
 
 endif	   
 	   
-
+!print*, dropdiam(m1,i), Wvp
   !     call VEL_ASCENSAO_BG ( dropdiam(M1,i-1) , DIAM_HYD , RO_A , spmt, VIS_DIN_A  , TS_VC  , Wvp  )
 
 !print*, 'm1', m1, spmt
@@ -4088,8 +4095,9 @@ endif
 
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! INTERACTION OF DROPLETS WITH HARD SURFACES 
 
-   
-
+ !  print*, 'zrandom', zrandom
+   dkdz = 0.001
+   dkdzs=0
      !!!!!!!!!!!!!!!!!!!!!!!!advection + random fase2
    if (right_random .eq. 0) then
 
@@ -4151,23 +4159,26 @@ endif
 
         randvert = -1. + 2.*RN3
        
-
+        dkdzs=dkdzs - dkdz*dt_random 
+ !       zrandom = zrandom + ( randvert * ((2.D0*kz/dt_random)**(0.5D0)) ) *dt_random + Wvp*dt_random  - dkdz*dt_random!!  based on Reed et al., 1995
         zrandom = zrandom + ( randvert * ((2.D0*kz/dt_random)**(0.5D0)) ) *dt_random + Wvp*dt_random  !!  based on Reed et al., 1995
+ !       zrandom = zrandom + ( randvert * ((2.D0*kz/dt_random)**(0.5D0)) ) *dt_random  !!  based on Reed et al., 1995
  !       zrandom = zrandom + ( randvert * ((2.D0*kz/dt_random)**(0.5D0)) ) *dt_random + Wvp*dt_random  !!  based on Reed et al., 1995
-
+       !print*, ( randvert * ((2.D0*kz/dt_random)**(0.5D0)) ) *dt_random, Wvp*dt_random
       enddo
 
-
-!       print*, 'fift0', Wvp
+!      print*, zrandom, dkdzs, wvp, dropdiam(m1,i)
 !	  stop
 
-        zf1(m1,i)=zf1(m1,i-1) + wi*dt +  zrandom 
+  !      zf1(m1,i)=zf1(m1,i-1) + wi*dt +  zrandom  + dkdzs
+        zf1(m1,i)=zf1(m1,i-1) + wi*dt +  zrandom  
+!        zf1(m1,i)=zf1(m1,i-1) + wi*dt +  zrandom  + Wvp*dt 
         !zf1(m1, i-1) = zf1(m1,i)
-
+!        print*, 'fift1' 
+!		print*, 'fift0', zrandom, Wvp*dt , zf1(m1,i)
      !  print*, wvp, zf1(m1,i), zf1(m1,i-1), dropdiam(m1,i) , randvert, randvert * ((2.D0*kz/dt_random)**(0.5D0)) , Wvp*dt_random
  !      print*, zf1(m1,i), zf1(m1,i-1), zrandom
  !print*, '444444', zf1(m1,i), zf1(m1,i-1), zrandom, di
-
 
        xrandom = 0 
        yrandom = 0
@@ -4434,7 +4445,8 @@ if (zf1(m1,i) .ge. 0) then
 !         zrandom = zrandom + ( randvert * ((2.D0*kz/dt_random)**(0.5D0)) ) *dt_random  !!  based on Reed et al., 1995
       enddo
 
-!print*, CDIF_HOR
+!print*,           (RN1 * ((2.D0*CDIF_HOR/dt_random)**(0.5D0)) * COS(2.D0*PI*RN2) ) *  dt_random, CDIF_HOR, XRANDOM, RN1, RN2
+
 !stop
 !!print*, 'hh', uwd, vwd
 !!print*, x(j,i-1) + ui(1,1)*dt +  xrandom, y(j,i-1) + vi(1,1)*dt +  yrandom
