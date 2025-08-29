@@ -212,7 +212,9 @@ use datetime_module
   read(6877,*) ductwd
   read(6877,*) watcontant
 !  read(6877,*) deg_turn
-  
+ if (trim(apist) .eq. 'evap_teste_45') then
+   API=45.6367254222577  
+ endif
  !print*, trim(apist)
  if (trim(apist) .eq. 'Diesel') then
    API=36.7229556  !diesel
@@ -288,6 +290,9 @@ use datetime_module
  endif   !print*, widfc, CDIF_HOR
   if (trim(apist) .eq. 'BP_29_Tupinamba') then
    api=26.6842      !oscar Linerle   
+ endif   !print*, widfc, CDIF_HOR 
+   if (trim(apist) .eq. 'Ekofisk') then
+   api=34.8477      !oscar Linerle   
  endif   !print*, widfc, CDIF_HOR 
   !print*, numparcels_dis
   !stop
@@ -735,7 +740,7 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT )
 
  !stop
- !api=8883499
+! api=8883499
 ! print*, 'first', api, temp_out, spmt
  !call calc_api(api)
  !stop
@@ -1678,6 +1683,8 @@ if ( (massa(j,i-1).eq.0) ) then
            moil=massa(j,i-1)
 
            FRAC_TOT=sum(FRAC_MASS_OUT)
+		   
+	!	   spmt = 1000
 
           CALL components_part2( API , VAZAO_OIL_OUT , DT , TEMP_OUT , &
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT,TS_A, TS_VC )
@@ -1747,6 +1754,8 @@ if ( (massa(j,i-1).eq.0) ) then
 
        ui=0.5
        vi=0.5
+	   si=35
+	   ti=20
        kz=0.001
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!DELFT
@@ -3100,6 +3109,8 @@ if ( (massa(j,i-1).eq.0) ) then
 !		  stop
 !print*, '5555555555555555', sum(masscomp(j,i-1,:))
 !print*, "dia", counttime/(60*60*24)
+!print*, temp, temp-273.15
+!stop
 
  IF (EVAP_TURN.EQ.1) THEN
        do comps=1, NCOMP_OIL
@@ -3243,6 +3254,8 @@ call  PROP_AMBIENTE(Z , PROF_REF , temp_out , SAL_A, RO_A , VIS_DIN_A , CP_A , T
 
 
       VOL(j,i-1) = VOL(j,i)
+	  
+	   
 
    CALL components_part2( API , VAZAO_OIL_OUT , DT , TEMP_OUT , &
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT,TS_A, TS_VC )
@@ -3399,7 +3412,8 @@ endif
  !  call visc_emulsion(VIS_DIN_OIL_OUT)
 
    call visc_emulsion(VIS_DIN_OIL_OUT*1000)  !in cP
-
+  ! print*, ro_a
+  ! stop
    call rho_emulsion(spmt)
 
 
@@ -3659,6 +3673,7 @@ end if
 
  18767 continue
 
+!print*, comps, masscomp(j,i-1,3), masscomp(j,i,3)
 
 
 CALL PROPRIEDADES_COMP_OIL ( TEMP_OUT , PM_COMP_OIL(:)	 , &
@@ -3871,8 +3886,8 @@ enddo
 
   !    call vert_disp_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
       call vert_disp_li_2007 ( VIS_DIN_OIL_OUT, TS_VC , ro_A,RO_OIL_OUT, windspms, qd, zini, seafrac, kz, wvp)  !lietal
- !     call size_distr_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
-      call size_distr_li_2007 ( VIS_DIN_OIL_OUT, TS_VC , ro_A,RO_OIL_OUT, windspms, qd, zini, seafrac, kz, wvp)  !lietal
+  !    call size_distr_li_2007 ( visc_e(jj,ii)/1000, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
+       call size_distr_li_2007 ( VIS_DIN_OIL_OUT, TS_VC , ro_A,RO_OIL_OUT, windspms, qd, zini, seafrac, kz, wvp)  !lietal
  !     call size_distr_li_2007 ( VIS_DIN_OIL_OUT, TS_VC , ro_A,rho_e(jj,ii), windspms, qd, zini, seafrac, kz, wvp)  !lietal
 !     print *, 'Random samples 2:', rand_samples
 	 
@@ -3967,7 +3982,7 @@ endif
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT , TS_A, TS_VC)
 
 
-
+!print*, sum(masscomp(j,i,:))
         IF (DISSOLVE.EQ.1) THEN
 
   !		  call DISSOLVE_OIL_fase2(watcont(j,i), VIS_DIN_A, RO_A, spmt, dropdiam(M1,i-1), abs(Wvp), VIS_DIN_OIL_OUT, TS_VC, &    !use last watcont and diam cause they ve been already modified, in thesis. 
@@ -3982,10 +3997,68 @@ endif
 
 !        print*,  1, massa(m1,i)
 	!	print *, visc_e(jj,ii)
+!print*, sum(masscomp(j,i,:))
+!print*, TEMP_OUT
+!exit
 
-	   CALL components_part2( API , VAZAO_OIL_OUT , DT , TEMP_OUT , &
+ massa(m1,i) = sum(masscomp(j,i,:)) 
+ 
+ 
+CALL PROPRIEDADES_COMP_OIL ( TEMP_OUT , PM_COMP_OIL(:)	 , &
+		         TEB_COMP_OIL(:) , RO_COMP_OIL_15(:) , &
+		         RO_COMP_OIL(:) , CP_COMP_OIL(:) )
+
+
+      aux=0
+      do comps=1, NCOMP_OIL
+       aux=aux + masscomp(j,i,comps)/RO_COMP_OIL(comps)
+      enddo
+ 
+    spmt=massa(j,i)/aux
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+do comps=1, NCOMP_OIL
+
+   MOL_COMP(comps)=masscomp(j,i, comps)* 1000.D0/PM_COMP_OIL(comps)
+
+   FRAC_MASS_OUT(comps)=masscomp(j,i, comps)/massa(j,i)
+
+   V_COMP(comps) = masscomp(j,i, comps)/ RO_COMP_OIL(comps)
+
+enddo
+
+     call  PROP_AMBIENTE(Z , PROF_REF , temp_out , SAL_A, RO_A , VIS_DIN_A , CP_A , TS_A)
+
+!!print*, 'visc', RO_A , VIS_DIN_A
+!!print*, VIS_DIN_A/RO_A
+!!print*, cos(pi)
+   ! !print*, 'VIS_DIN_A', VIS_DIN_A
+!   print*, spmt
+
+
+      MOL_TOT=sum(mol_comp)
+
+       V_TOT=massa(j,i)/spmt
+ 
+      VOL(j,i)=massa(j,i)/spmt
+
+      VOL(j,i-1) = VOL(j,i)
+
+      moil=massa(j,i)
+
+     FRAC_TOT=sum(FRAC_MASS_OUT)
+
+
+
+         CALL components_part2( API , VAZAO_OIL_OUT , DT , TEMP_OUT , &
 	         	RO_OIL_OUT , PM_OIL_OUT , TS_OIL_OUT , VIS_DIN_OIL_OUT , TS_A, TS_VC)
 
+
+ !    print*, m1, j
+	 
+		
+!		print*, TEMP_OUT
 		! print *, visc_e(jj,ii)
 
 ! !		 stop

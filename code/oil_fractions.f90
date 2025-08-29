@@ -1396,7 +1396,35 @@ I = 25; FRAC_MASS_OUT(I) = 53.0209D-02
       I = 25 ;  FRAC_MASS_OUT(I) = 0.0D-02
 
 
-
+  ELSE IF (API .EQ. 34.8477) THEN
+		print*, "Ekofisk"
+I = 1;  FRAC_MASS_OUT(I) = 0.0000D-02
+I = 2;  FRAC_MASS_OUT(I) = 0.9600D-02
+I = 3;  FRAC_MASS_OUT(I) = 2.3110D-02
+I = 4;  FRAC_MASS_OUT(I) = 0.2090D-02
+I = 5;  FRAC_MASS_OUT(I) = 5.6300D-02
+I = 6;  FRAC_MASS_OUT(I) = 0.7980D-02
+I = 7;  FRAC_MASS_OUT(I) = 5.8320D-02
+I = 8;  FRAC_MASS_OUT(I) = 1.0440D-02
+I = 9;  FRAC_MASS_OUT(I) = 7.0580D-02
+I = 10; FRAC_MASS_OUT(I) = 0.7280D-02
+I = 11; FRAC_MASS_OUT(I) = 4.0700D-02
+I = 12; FRAC_MASS_OUT(I) = 0.0520D-02
+I = 13; FRAC_MASS_OUT(I) = 5.6390D-02
+I = 14; FRAC_MASS_OUT(I) = 0.0890D-02
+I = 15; FRAC_MASS_OUT(I) = 0.4320D-02
+I = 16; FRAC_MASS_OUT(I) = 6.5780D-02
+I = 17; FRAC_MASS_OUT(I) = 0.6300D-02
+I = 18; FRAC_MASS_OUT(I) = 8.1300D-02
+I = 19; FRAC_MASS_OUT(I) = 0.3900D-02
+I = 20; FRAC_MASS_OUT(I) = 5.9500D-02
+I = 21; FRAC_MASS_OUT(I) = 6.9200D-02
+I = 22; FRAC_MASS_OUT(I) = 0.0000D-02
+I = 23; FRAC_MASS_OUT(I) = 7.6300D-02
+I = 24; FRAC_MASS_OUT(I) = 0.4600D-02
+I = 25; FRAC_MASS_OUT(I) = 28.4600D-02
+	  xa=0.07
+	  xw=4.93
 
 
    ELSE IF (API .EQ. 45.6367254222577) THEN     !!!!temp 7 wind 15.8 m/s  validation EVAP
@@ -1427,7 +1455,8 @@ I = 25; FRAC_MASS_OUT(I) = 53.0209D-02
       I = 24 ;  FRAC_MASS_OUT(I) = 0.0D-02
       I = 25 ;  FRAC_MASS_OUT(I) = 0.0D-02
 
-
+	  xa=0.07
+	  xw=4.93
 
    ELSE     
 
@@ -1444,16 +1473,47 @@ FRAC_MASS_OUT_REF = FRAC_MASS_OUT
 
 !!!!Calculation API
   
-mas_ref = 100.  !kg
 
- DO I = 1 , NCOMP_OIL
-  mass_test= mass_test + FRAC_MASS_OUT(I) * mas_ref
+! DO I = 1 , NCOMP_OIL
+ ! mass_test= mass_test + FRAC_MASS_OUT(I) * mas_ref
 
-  vol_test = vol_test + ((FRAC_MASS_OUT(I) * mas_ref) / RO_COMP_OIL_15(I))
- enddo
-
+  !vol_test = vol_test + ((FRAC_MASS_OUT(I) * mas_ref) / RO_COMP_OIL_15(I))
+ !enddo
 
 
+! --------------
+
+  CALL PROPRIEDADES_COMP_OIL ( TEMP_OUT , PM_COMP_OIL(:)	 , &
+		         TEB_COMP_OIL(:) , RO_COMP_OIL_15(:) , &
+		         RO_COMP_OIL(:) , CP_COMP_OIL(:) )
+
+! --------------
+!print*, API
+
+!!!!!!!!!!!!!!!!!!!!!!test
+
+masstest = 100.  !kg
+
+do comps=1, NCOMP_OIL
+masscomp(:,:,comps)= masstest * FRAC_MASS_OUT(comps)
+enddo
+
+
+massa(:,:)=sum(masscomp(1,1,:))
+
+ aux=0
+do comps=1, NCOMP_OIL
+  aux=aux + masscomp(1,1,comps)/RO_COMP_OIL(comps)
+enddo
+
+spmt=massa(1,1)/aux
+
+ API =  (141.5D0 / (spmt / 999.041D0)) - 131.5D0
+
+
+!print*, 'api and sum', api, sum(frac_mass_out)
+
+!stop
 
    MOL_TOT = 0.D0
    V_TOT 	= 0.D0
@@ -1468,16 +1528,15 @@ mas_ref = 100.  !kg
 
    RO_OIL = SG * 999.041D0                       ! densidade inicial do oleo em kg/m3 com base no api inicial
 
+!print*, ro_oil
+!stop
+
 !   MOIL = VAZAO * DT * RO_OIL                    ! massa total do oleo em VC em kg   
-
-  !print*, SG
-  !stop
-
 
 
    MOIL = vol(1,1) * RO_OIL         !all particles at first step are equal
 
-
+ !print*, SG
 
 !print*, vol(1,1), moil, ro_oil
 
@@ -1491,7 +1550,7 @@ mas_ref = 100.  !kg
 
 !---- fazer o PM do componente com base na densidade e na TEB
       TB = TEB_COMP_OIL(I) + 459.67D0				! ponto de ebulicao normal em graus Rankine (1°Rankine = 1F + 459.67)
-      SG = RO_COMP_OIL_15(I) / 999.041D0 			! gravidade especifica 60F/60F                       
+ !     SG = RO_COMP_OIL_15(I) / 999.041D0 			! gravidade especifica 60F/60F                       
 
 
       TB_COMPS(I) = TEB_COMP_OIL(I) + 459.67D0
@@ -1499,15 +1558,37 @@ mas_ref = 100.  !kg
 
    ENDDO
 
+ !print*, SG
 
-! --------------
 
-  CALL PROPRIEDADES_COMP_OIL ( TEMP_OUT , PM_COMP_OIL(:)	 , &
-		         TEB_COMP_OIL(:) , RO_COMP_OIL_15(:) , &
-		         RO_COMP_OIL(:) , CP_COMP_OIL(:) )
+ !print*, SG
+ 
+ !stop
+ 
+ masstest=100.
 
-! --------------
 
+!!!!!!!!!!!!!!!!!!!!!!test
+do comps=1, NCOMP_OIL
+masscomp(:,:,comps)= masstest * FRAC_MASS_OUT(comps)
+enddo
+
+
+massa(:,:)=sum(masscomp(1,1,:))
+
+
+
+ aux=0
+do comps=1, NCOMP_OIL
+  aux=aux + masscomp(1,1,comps)/RO_COMP_OIL(comps)
+enddo
+
+spmt=massa(1,1)/aux
+
+
+ !print*, SG, API, spmt,RO_OIL, spmt/999.041D0,  (141.5D0 / (spmt / 1000.D0)) - 131.5D0, (141.5D0 / (spmt / 999.041D0)) - 131.5D0
+
+ !stop
 
 !-----------------------------------------------------------------------------------
    DO I = 1 , NCOMP_OIL
@@ -2079,7 +2160,57 @@ acen=0.01
    I = 25 ;  PM_COMP_OIL(I)  = 465.D0    ;  SOLU_COMP_OIL(I) = 0.0000001D-03   ;  RO_COMP_OIL_15(I) = 950.D0 ;  
 	     TEB_COMP_OIL(I) = 761.D0    ;  CP_COMP_OIL(I)   = 0.2399D0
 
-		 
+! correct
+   I = 1  ;  PM_COMP_OIL(I)  = 37.D0     ;  SOLU_COMP_OIL(I) = 40.D-03       ;  RO_COMP_OIL_15(I) = 615.D0   ;  
+             TEB_COMP_OIL(I) = -112.D0   ;  CP_COMP_OIL(I)   = 0.3431D0
+   I = 2  ;  PM_COMP_OIL(I)  = 66.D0     ;  SOLU_COMP_OIL(I) = 95.D-03       ;  RO_COMP_OIL_15(I) = 673.D0   ;  
+             TEB_COMP_OIL(I) = 100.4D0   ;  CP_COMP_OIL(I)   = 0.4137D0
+   I = 3  ;  PM_COMP_OIL(I)  = 80.5D0    ;  SOLU_COMP_OIL(I) = 32.5D-03      ;  RO_COMP_OIL_15(I) = 697.D0   ;  
+             TEB_COMP_OIL(I) = 158.D0  	 ;  CP_COMP_OIL(I)   = 0.4776D0
+   I = 4  ;  PM_COMP_OIL(I)  = 78.D0     ;  SOLU_COMP_OIL(I) = 1780.D-03     ;  RO_COMP_OIL_15(I) = 884.D0   ;  
+	     TEB_COMP_OIL(I) = 176.D0  	 ;  CP_COMP_OIL(I)   = 0.4113D0	     
+   I = 5  ;  PM_COMP_OIL(I)  = 99.D0     ;  SOLU_COMP_OIL(I) = 4.D-03        ;  RO_COMP_OIL_15(I) = 711.5D0  ;  
+	     TEB_COMP_OIL(I) = 194.D0    ;  CP_COMP_OIL(I)   = 0.4854D0
+   I = 6  ;  PM_COMP_OIL(I)  = 92.D0     ;  SOLU_COMP_OIL(I) = 515.D-03      ;  RO_COMP_OIL_15(I) = 880.D0   ;  
+	     TEB_COMP_OIL(I) = 230.D0    ;  CP_COMP_OIL(I)   = 0.3995D0     
+   I = 7  ;  PM_COMP_OIL(I)  = 113.D0    ;  SOLU_COMP_OIL(I) = 1.D-03        ;  RO_COMP_OIL_15(I) = 753.D0   ; 
+ 	     TEB_COMP_OIL(I) = 242.6D0   ;  CP_COMP_OIL(I)   = 0.4407D0 	      
+   I = 8  ;  PM_COMP_OIL(I)  = 106.D0    ;  SOLU_COMP_OIL(I) = 175.D-03      ;  RO_COMP_OIL_15(I) = 874.5D0  ;  
+	     TEB_COMP_OIL(I) = 284.D0    ;  CP_COMP_OIL(I)   = 0.4057D0          
+   I = 9  ;  PM_COMP_OIL(I)  = 127.D0    ;  SOLU_COMP_OIL(I) = 0.205D-03     ;  RO_COMP_OIL_15(I) = 764.D0   ;  
+	     TEB_COMP_OIL(I) = 296.6D0   ;  CP_COMP_OIL(I)   = 0.4999D0	     
+   I = 10 ;  PM_COMP_OIL(I)  = 120.D0    ;  SOLU_COMP_OIL(I) = 57.5D-03      ;  RO_COMP_OIL_15(I) = 875.D0   ;  
+	     TEB_COMP_OIL(I) = 320.D0    ;  CP_COMP_OIL(I)   = 0.4131D0	     
+   I = 11 ;  PM_COMP_OIL(I)  = 140.5D0   ;  SOLU_COMP_OIL(I) = 0.0001D-03    ;  RO_COMP_OIL_15(I) = 772.5D0  ;  
+	     TEB_COMP_OIL(I) = 356.D0    ;  CP_COMP_OIL(I)   = 0.4549D0	     
+   I = 12 ;  PM_COMP_OIL(I)  = 141.5D0   ;  SOLU_COMP_OIL(I) = 12.5D-03      ;  RO_COMP_OIL_15(I) = 879.5D0  ;  
+	     TEB_COMP_OIL(I) = 368.6D0   ;  CP_COMP_OIL(I)   = 0.4312D0	     
+   I = 13 ;  PM_COMP_OIL(I)  = 156.5D0   ;  SOLU_COMP_OIL(I) = 0.00001D-03   ;  RO_COMP_OIL_15(I) = 809.5D0  ;  
+	     TEB_COMP_OIL(I) = 401.D0    ;  CP_COMP_OIL(I)   = 0.4378D0	      
+   I = 14 ;  PM_COMP_OIL(I)  = 130.D0    ;  SOLU_COMP_OIL(I) = 51000.D-03    ;  RO_COMP_OIL_15(I) = 986.D0   ;  
+	     TEB_COMP_OIL(I) = 419.D0    ;  CP_COMP_OIL(I)   = 0.4872D0	     
+   I = 15 ;  PM_COMP_OIL(I)  = 135.D0    ;  SOLU_COMP_OIL(I) = 27.5D-03      ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
+	     TEB_COMP_OIL(I) = 449.6D0   ;  CP_COMP_OIL(I)   = 0.3707D0	     
+   I = 16 ;  PM_COMP_OIL(I)  = 185.5D0   ;  SOLU_COMP_OIL(I) = 0.000005D-03  ;  RO_COMP_OIL_15(I) = 815.5D0  ;  
+	     TEB_COMP_OIL(I) = 473.D0    ;  CP_COMP_OIL(I)   = 0.4461D0	     
+   I = 17 ;  PM_COMP_OIL(I)  = 163.D0    ;  SOLU_COMP_OIL(I) = 5.5D-03       ;  RO_COMP_OIL_15(I) = 1016.D0  ;  
+	     TEB_COMP_OIL(I) = 521.6D0   ;  CP_COMP_OIL(I)   = 0.3722D0	     
+   I = 18 ;  PM_COMP_OIL(I)  = 215.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03  ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
+	     TEB_COMP_OIL(I) = 536.D0    ;  CP_COMP_OIL(I)   = 0.4813D0	     
+   I = 19 ;  PM_COMP_OIL(I)  = 177.D0    ;  SOLU_COMP_OIL(I) = 3.65D-03      ;  RO_COMP_OIL_15(I) = 980.D0   ;  
+	     TEB_COMP_OIL(I) = 563.D0    ;  CP_COMP_OIL(I)   = 0.2399D0	     
+   I = 20 ;  PM_COMP_OIL(I)  = 238.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03  ;  RO_COMP_OIL_15(I) = 827.5D0  ;  
+	     TEB_COMP_OIL(I) = 590.D0    ;  CP_COMP_OIL(I)   = 0.4592D0	     
+   I = 21 ;  PM_COMP_OIL(I)  = 273.D0    ;  SOLU_COMP_OIL(I) = 0.000001D-03  ;  RO_COMP_OIL_15(I) = 817.5D0  ;  
+	     TEB_COMP_OIL(I) = 638.6D0   ;  CP_COMP_OIL(I)   = 0.4541D0	     
+   I = 22 ;  PM_COMP_OIL(I)  = 215.D0    ;  SOLU_COMP_OIL(I) = 0.001D-03     ;  RO_COMP_OIL_15(I) = 1015.D0  ;  
+	     TEB_COMP_OIL(I) = 662.D0    ;  CP_COMP_OIL(I)   = 0.2248D0	     
+   I = 23 ;  PM_COMP_OIL(I)  = 317.5D0   ;  SOLU_COMP_OIL(I) = 0.000001D-03  ;  RO_COMP_OIL_15(I) = 822.5D0  ;  
+	     TEB_COMP_OIL(I) = 698.D0    ;  CP_COMP_OIL(I)   = 0.4430D0	     
+   I = 24 ;  PM_COMP_OIL(I)  = 222.5D0   ;  SOLU_COMP_OIL(I) = 0.101D-03     ;  RO_COMP_OIL_15(I) = 980.D0   ;   
+	     TEB_COMP_OIL(I) = 752.D0    ;  CP_COMP_OIL(I)   = 0.2379D0	     
+   I = 25 ;  PM_COMP_OIL(I)  = 465.D0    ;  SOLU_COMP_OIL(I) = 0.0000001D-03 ;  RO_COMP_OIL_15(I) = 950.D0   ;  
+	     TEB_COMP_OIL(I) = 761.D0    ;  CP_COMP_OIL(I)   = 0.3607D0			 
 		 
    ! I = 1  ;  PM_COMP_OIL(I)  = 37.D0     ;  SOLU_COMP_OIL(I) = 40.D-08   ;  RO_COMP_OIL_15(I) = 615.D0  ;  
              ! TEB_COMP_OIL(I) = -112.D0   ;  CP_COMP_OIL(I)   = 0.3431D0
@@ -2176,7 +2307,20 @@ acen=0.01
 
 
 
+! --------------
 
+  CALL PROPRIEDADES_COMP_OIL ( TEMP_OUT , PM_COMP_OIL(:)	 , &
+		         TEB_COMP_OIL(:) , RO_COMP_OIL_15(:) , &
+		         RO_COMP_OIL(:) , CP_COMP_OIL(:) )
+
+
+! --------------
+!  print*, spmt
+!print*, SG
+!stop
+
+ 
+ !
 
 !   MOL_TOT = 0.D0
 !   V_TOT 	= 0.D0
@@ -2187,14 +2331,17 @@ acen=0.01
 
 
 ! --------------
-   SG = 141.5D0 / (API + 131.5D0)                ! gravidade especifica do oleo inicial 
+!   SG = 141.5D0 / (API + 131.5D0)                ! gravidade especifica do oleo inicial 
 
-   RO_OIL = SG * 999.041D0                       ! densidade inicial do oleo em kg/m3 com base no api inicial
-
+ !  RO_OIL = SG *                        ! densidade inicial do oleo em kg/m3 com base no api inicial
+   RO_OIL=spmt
+   
+   SG  = RO_OIL/999.041D0
 !   MOIL = VAZAO * DT * RO_OIL                    ! massa total do oleo em VC em kg   
 
 
-
+!print*, SG
+!stop
 !   MOIL = vol(1,1) * RO_OIL 
 
 
@@ -2208,28 +2355,20 @@ acen=0.01
 
 !---- fazer o PM do componente com base na densidade e na TEB
       TB = TEB_COMP_OIL(I) + 459.67D0				! ponto de ebulicao normal em graus Rankine (1°Rankine = 1F + 459.67)
-      SG = RO_COMP_OIL_15(I) / 999.041D0 			! gravidade especifica 60F/60F                       
+  !    SG = RO_COMP_OIL_15(I) / 999.041D0 			! gravidade especifica 60F/60F                       
 
    ENDDO
 
 
-! --------------
-
-  CALL PROPRIEDADES_COMP_OIL ( TEMP_OUT , PM_COMP_OIL(:)	 , &
-		         TEB_COMP_OIL(:) , RO_COMP_OIL_15(:) , &
-		         RO_COMP_OIL(:) , CP_COMP_OIL(:) )
-
-
-! --------------
 
 
 !  print*, 2444444444
 !  print*, sum(mol_comp)
-!  print*,  MOL_TOT
+!  print*,  'mol_tot', MOL_TOT
 !  print*, v_tot
 !  print*, moil
 !----------------------------------------------------------------------------------
-
+!stop
 
 !!!!
 
@@ -2563,6 +2702,7 @@ acen=0.01
 	P_PC = 6.162D6 * DEXP(-4.725D-3*TB -4.8014*SG + 3.1939D-3*TB*SG) * TB**(-0.4844D0) * SG**(4.0846D0)  		! pressao pseudocritica em lb/in2
 	P_PC = P_PC / 14.696D0										  		! pressao pseudocritica em atm
 
+ !   print*, SG
 
 ! usar condicoes a 15celsius para calcular ZRA
 	TEMP_R = (273.15D0 + 15.5D0) 
@@ -2862,7 +3002,7 @@ masstest=100.
 
 !---- fazer o PM do componente com base na densidade e na TEB
       TB = TEB_COMP_OIL(I) + 459.67D0				! ponto de ebulicao normal em graus Rankine (1°Rankine = 1F + 459.67)
-      SG = RO_COMP_OIL_15(I) / 999.041D0 			! gravidade especifica 60F/60F                       
+  !    SG = RO_COMP_OIL_15(I) / 999.041D0 			! gravidade especifica 60F/60F                       
 
 
       TB_COMPS(I) = TEB_COMP_OIL(I) + 459.67D0
@@ -2894,7 +3034,7 @@ enddo
 
 spmt=massa(numtot,1)/aux
 
- API =  (141.5D0 / (spmt / 1000.D0)) - 131.5D0
+ API =  (141.5D0 / (spmt / 999.041D0)) - 131.5D0
 
 !print*, api, 'ggg',  vol(:,1)
 
@@ -2939,7 +3079,7 @@ spmt=massa(numtot,1)/aux
 
 !---- fazer o PM do componente com base na densidade e na TEB
       TB = TEB_COMP_OIL(I) + 459.67D0				! ponto de ebulicao normal em graus Rankine (1°Rankine = 1F + 459.67)
-      SG = RO_COMP_OIL_15(I) / 999.041D0 			! gravidade especifica 60F/60F                       
+!      SG = RO_COMP_OIL_15(I) / 999.041D0 			! gravidade especifica 60F/60F                       
 
 
       TB_COMPS(I) = TEB_COMP_OIL(I) + 459.67D0
@@ -3916,6 +4056,7 @@ enddo
 
 spmt=massa(1,1)/aux
 
+print*, "ro", RO_COMP_OIL
 
 print*, sum(frac_mass_out)
 print*, 'API', (141.5D0 / (spmt / 1000.D0)) - 131.5D0
@@ -3957,7 +4098,7 @@ END SUBROUTINE calc_api
 
 !---- fazer o PM do componente com base na densidade e na TEB
       TB = TEB_COMP_OIL(I) + 459.67D0				! ponto de ebulicao normal em graus Rankine (1°Rankine = 1F + 459.67)
-      SG = RO_COMP_OIL_15(I) / 999.041D0 			! gravidade especifica 60F/60F                       
+ !     SG = RO_COMP_OIL_15(I) / 999.041D0 			! gravidade especifica 60F/60F                       
 
 
       TB_COMPS(I) = TEB_COMP_OIL(I) + 459.67D0

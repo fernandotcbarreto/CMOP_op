@@ -226,7 +226,8 @@ subroutine size_distr_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms
 ! max_val = 3.0e-4 !mais correto
 ! max_val = 1.0e-4 !mais correto
 ! max_val = 3.0e-5 !mais oleo na coluna de agua
- max_val = 3.0e-3 ! da velocidades negativas de wvp
+! max_val = 3.0e-3 ! da velocidades 
+ max_val = 1.0e-3 ! da velocidades
  
   if (windspms.eq.0) then
     windspms=0.01
@@ -293,7 +294,7 @@ end do
 !  dV_50 = dV_50 + droplet_spectrum_diameter(iyg)
 !end do
 !dV_50 = dV_50 / num_elements
-!  print*, dV_50
+ ! print*, dV_50
 
 !  print*, 'wind =', windspms, 'we =', we, 'oh =', oh, 'dV_50 =', dV_50, "inter", interfacial_tension, "visc", visc , "ro",ro_oil
 
@@ -316,6 +317,20 @@ end do
   droplet_spectrum_pdf = spectrum / sum(spectrum)  
   
   ! Check for validity
+ ! print*, spectrum
+  open(unit=10, file='spectrum_data.txt', status='replace', action='write', form='formatted')
+
+! Escrever cabeçalho
+  write(10,*) 'diameter_m', 'spectrum'
+
+! Escrever todos os dados
+  do iyg = 1, num_elements
+    write(10,'(2E20.12)') droplet_spectrum_diameter(iyg), droplet_spectrum_pdf(iyg)
+  end do
+
+! Fechar arquivo
+  close(10)
+  stop
 !  if (.not. all(isfinite(droplet_spectrum_pdf)) .or. abs(sum(droplet_spectrum_pdf) - 1.0d0) > 1.0e-6) then
  
   is_finite_flag = isfinite_array(droplet_spectrum_pdf)
