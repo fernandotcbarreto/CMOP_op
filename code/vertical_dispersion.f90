@@ -318,19 +318,19 @@ end do
   
   ! Check for validity
  ! print*, spectrum
-  open(unit=10, file='spectrum_data.txt', status='replace', action='write', form='formatted')
+!  open(unit=10, file='spectrum_data.txt', status='replace', action='write', form='formatted')
 
 ! Escrever cabeçalho
-  write(10,*) 'diameter_m', 'spectrum'
+!  write(10,*) 'diameter_m', 'spectrum'
 
 ! Escrever todos os dados
-  do iyg = 1, num_elements
-    write(10,'(2E20.12)') droplet_spectrum_diameter(iyg), droplet_spectrum_pdf(iyg)
-  end do
+!  do iyg = 1, num_elements
+!    write(10,'(2E20.12)') droplet_spectrum_diameter(iyg), droplet_spectrum_pdf(iyg)
+!  end do
 
 ! Fechar arquivo
-  close(10)
-  stop
+ ! close(10)
+ ! stop
 !  if (.not. all(isfinite(droplet_spectrum_pdf)) .or. abs(sum(droplet_spectrum_pdf) - 1.0d0) > 1.0e-6) then
  
   is_finite_flag = isfinite_array(droplet_spectrum_pdf)
