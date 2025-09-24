@@ -249,6 +249,7 @@ end do
   hsig = hsig      !Mar não desenvolvido, input dinâmico do vento 
   
  !print*, hsig
+ !print*, windspms
  ! hsig=(0.0246*windspms**2)/gravity   !Mar desenvolvido  opendrift
  ! print*, (0.0246*windspms**2)/gravity, (0.243 * ustar2) / gravity
   ! Compute parameters
