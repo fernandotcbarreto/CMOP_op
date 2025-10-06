@@ -211,6 +211,9 @@ use datetime_module
   read(6877,*) apist
   read(6877,*) ductwd
   read(6877,*) watcontant
+  read(6877,*) uteo1, uteo2, salteo, tempteo
+
+
 !  read(6877,*) deg_turn
  if (trim(apist) .eq. 'evap_teste_45') then
    API=45.6367254222577  
@@ -806,9 +809,15 @@ allocate(lat_part_sum(int(b(1))),  lon_part_sum(int(b(1))), coord_sum_f2(int(b(1
  ! print*, counttimeh_r
 !  stop
   if (counttimeh_r .lt. time_vec(1)) then
+    IF (THEORETICAL.EQ.1) THEN
+	  go to 83744 
+    else
      print*, 'ERROR:INIT TIME BEFORE FORCING TIME', counttimeh_r, time_vec(1)
 	 go to 8856
+	endif
    endif
+   
+  83744  continue 
 
  time_lim = time_vec(numtime)*60 - itsl*60 - dt
 
@@ -1752,11 +1761,14 @@ if ( (massa(j,i-1).eq.0) ) then
 
        vi=v_model(minloc(abs(y_model(:,1)-y(j,i-1))), minloc(abs(x_model(1,:)-x(j,i-1))))
 
-       ui=0.5
-       vi=0.5
-	   si=35
-	   ti=20
+       ui=uteo1
+       vi=uteo2
+	   si=salteo
+	   ti=tempteo
        kz=0.001
+	   
+!	   print*, 'ww',uteo1, uteo2, salteo, tempteo
+!	   stop
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!DELFT
   ELSE
