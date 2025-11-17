@@ -297,6 +297,9 @@ use datetime_module
    if (trim(apist) .eq. 'Ekofisk') then
    api=34.8477      !oscar Linerle   
  endif   !print*, widfc, CDIF_HOR 
+   if (trim(apist) .eq. 'KUWAIT_2002_EVAP1998') then
+   api=54.95867      !oscar Linerle   
+ endif   !print*, widfc, CDIF_HOR  
   !print*, numparcels_dis
   !stop
 !  print*, year11, month11, day11, hour11, minute11, secon11
