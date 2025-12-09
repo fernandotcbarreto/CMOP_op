@@ -21,7 +21,7 @@ use datetime_module
 
   double precision:: al, kl, spm, b(2), c(100,100), areat, diamt, ui(1,1), vi(1,1), ti(1,1), si(1,1),mwf, lo,wvp, rrr
   double precision:: scft, kf, rn1, rn2, voldis, odir, ovel, counttimeh_r0, probsl, rn10, ductwd
-  integer i,a,j,cont, tsl, itsl, freq, ts_lim, cont_ts, outer_l, zlayer,  avel, reverse, depvi
+  integer i,a,j,cont, tsl, itsl, freq, ts_lim, cont_ts, outer_l, zlayer,  avel, reverse, depvi, regi
   integer :: ts, numpalm, turn_off_mask, year11, month11, day11, hour11, minute11, secon11, deg_turn
   character:: g(100)
   double precision:: dt,vf, vft, x_model(100,100), y_model(100,100), u_model(100,100), x_mask(100,100), v_model(100,100)  !vf eh vel func
@@ -42,6 +42,18 @@ use datetime_module
 
   integer indexlon, indexlat
 
+! inicialização variaveis grade "corrente", batimetria (final m), e vento (finale)
+  double precision :: GRID_LON_MIN, GRID_LON_MAX, GRID_LON_MINm, GRID_LON_MAXm
+  double precision :: GRID_LAT_MIN, GRID_LAT_MAX,  GRID_LAT_MINm, GRID_LAT_MAXm  
+  double precision :: GRID_DELTA_LON, GRID_DELTA_LAT, GRID_DELTA_LONm, GRID_DELTA_LATm
+  integer :: GRID_N_LAT, GRID_N_LON, GRID_N_LATm, GRID_N_LONm
+  integer :: idx_lat_calc, idx_lon_calc, idx_lat_calcm, idx_lon_calcm
+  double precision :: GRID_LON_MINe, GRID_LON_MAXe
+  double precision :: GRID_LAT_MINe, GRID_LAT_MAXe  
+  double precision :: GRID_DELTA_LONe, GRID_DELTA_LATe
+  integer :: GRID_N_LATe, GRID_N_LONe
+  integer :: idx_lat_calce, idx_lon_calce
+  
   NCOMP_OIL=25
 
   open(12,file='x_part.txt', status='UNKNOWN')
@@ -212,7 +224,7 @@ use datetime_module
   read(6877,*) ductwd
   read(6877,*) watcontant
   read(6877,*) uteo1, uteo2, salteo, tempteo
-
+  read(6877,*) regi
 
 !  read(6877,*) deg_turn
  if (trim(apist) .eq. 'evap_teste_45') then
@@ -852,6 +864,12 @@ counttimeh_r0=counttimeh_r
 !     read (111,*) (depth(i,j), j=1,numlon) 
 !     read (3766,*) (area_grid(i,j), j=1,numlon) 
  enddo
+ 
+
+ 
+
+
+ 
  do i=1,numlatm
      read (14555,*) (lat_modelm(i,j), j=1,numlonm)
      read (14666,*) (lon_modelm(i,j), j=1,numlonm)
@@ -863,6 +881,29 @@ counttimeh_r0=counttimeh_r
  close(111)
  close(14555)
  close(14666)
+
+  if (regi .eq. 1) then
+   GRID_LAT_MIN = minval(lat_model)
+   GRID_LAT_MAX = maxval(lat_model)
+   GRID_LON_MIN = minval(lon_model)
+   GRID_LON_MAX = maxval(lon_model)
+   GRID_DELTA_LAT = abs(lat_model(2,1) - lat_model(1,1))
+   GRID_DELTA_LON = abs(lon_model(1,2) - lon_model(1,1))
+   GRID_LAT_MINm = minval(lat_modelm)
+   GRID_LAT_MAXm = maxval(lat_modelm)
+   GRID_LON_MINm = minval(lon_modelm)
+   GRID_LON_MAXm = maxval(lon_modelm)
+   GRID_DELTA_LATm = abs(lat_modelm(2,1) - lat_modelm(1,1))
+   GRID_DELTA_LONm = abs(lon_modelm(1,2) - lon_modelm(1,1))  
+   GRID_N_LAT = size(lat_model, 1)
+   GRID_N_LON = size(lon_model, 2)  
+   GRID_N_LATm = size(lat_modelm, 1)
+   GRID_N_LONm = size(lon_modelm, 2)    
+ endif
+ 
+! print*, GRID_DELTA_LAT, GRID_DELTA_LON, GRID_DELTA_LATm, GRID_DELTA_LONm
+! stop 
+ 
  
  coastvalueb=coastvalue
 !print*, maxval(coastvalueb)
@@ -935,7 +976,17 @@ allocate(prob_time_sum(numlat, numlon  ) )
 
     close(687)
     close(787)
-
+    if (regi .eq. 1) then
+      GRID_LAT_MINe = minval(lat_era)
+      GRID_LAT_MAXe = maxval(lat_era)
+      GRID_LON_MINe = minval(lon_era)
+      GRID_LON_MAXe = maxval(lon_era)
+      GRID_DELTA_LATe = abs(lat_era(2,1) - lat_era(1,1))
+      GRID_DELTA_LONe = abs(lon_era(1,2) - lon_era(1,1))  
+      GRID_N_LATe = size(lat_era, 1)
+      GRID_N_LONe = size(lon_era, 2)    
+   endif
+ 
     time_lim_wind = time_vec_era(num_time_era)*60 - itsl*60 - dt
   endif
 
@@ -1176,8 +1227,6 @@ allocate(prob_time_sum(numlat, numlon  ) )
  endif
  ! !print*, x(10,1)
  ! !print*, (x_model(1,:)-x(10,1))
- ! !print*, minloc(abs(x_model(1,:)-x(10,1)))
- ! !print*, x_model(1,minloc(abs(x_model(1,:)-x(10,1))))
 
 !!!!!!!!!!!!!!!!!!!!!!Variable height
 
@@ -1241,7 +1290,6 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
  ! !print*, 'pp'
  ! !print*, y(10,1)
  ! !print*, abs(y_model(:,1) - y(10,1))
- !   !print*, y_model(minloc(abs(y_model(:,1) - y(10,1))), 1)
 !  !print*, y_model(1,:)
 
 
@@ -1611,6 +1659,22 @@ if ( (massa(j,i-1).eq.0) ) then
 	   
    cycle
  endif 
+ 
+        if (regi .eq. 1) then
+                ! PATCH: O(1) index calculation instead of minloc O(n)
+      idx_lat_calcm = int((lat_part(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
+      idx_lon_calcm = int((lon_part(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
+      if (idx_lat_calcm < 1) idx_lat_calcm = 1
+      if (idx_lat_calcm > GRID_N_LATm) idx_lat_calcm = GRID_N_LATm
+      if (idx_lon_calcm < 1) idx_lon_calcm = 1
+      if (idx_lon_calcm > GRID_N_LONm) idx_lon_calcm = GRID_N_LONm
+      lat_inm(1) = idx_lat_calcm
+      lat_inm(2) = idx_lon_calcm
+      lon_inm = lat_inm 
+!print*, "index2", idx_lat_calcm, idx_lon_calcm, GRID_N_LATm, GRID_N_LONm, GRID_N_LATe, GRID_N_LONe
+!stop  
+        else 
+ 
        lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
        lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
 
@@ -1618,6 +1682,9 @@ if ( (massa(j,i-1).eq.0) ) then
 
        lat_inm =  minloc(coord_summ)
        lon_inm=lat_inm
+		
+        endif
+
 
        di = depth(lat_inm(1), lon_inm(2))
 	   
@@ -1655,7 +1722,6 @@ if ( (massa(j,i-1).eq.0) ) then
 !       !print*, x_model(1,:)
 
 !       !print*, y_model(:,1)
-!       !print*, x_model(1,minloc(abs(x_model(1,:)-x(j,i-1))))
 
 
         if (( height(j,i-1) .gt. height_value)) then
@@ -1744,7 +1810,7 @@ if ( (massa(j,i-1).eq.0) ) then
             height(j,i) = height(j,i-1)
  
         endif
-!        !print*, y_model(minloc(abs(y_model(:,1) - y(j,i-1))), 1)
+!        !print*, y_model((abs(y_model(:,1) - y(j,i-1))), 1)
 
   tsevol2(contind) = i
   tsevol(contind) = i
@@ -1759,11 +1825,6 @@ if ( (massa(j,i-1).eq.0) ) then
   endif
  
   IF (THEORETICAL.EQ.1) THEN
-       ui=u_model(minloc(abs(y_model(:,1)-y(j,i-1))), minloc(abs(x_model(1,:)-x(j,i-1))))
-
-
-       vi=v_model(minloc(abs(y_model(:,1)-y(j,i-1))), minloc(abs(x_model(1,:)-x(j,i-1))))
-
        ui=uteo1
        vi=uteo2
 	   si=salteo
@@ -2035,14 +2096,30 @@ if ( (massa(j,i-1).eq.0) ) then
 !!print*, lat_model, lat_part(j,i-1), lon_part(j,i-1), lon_in, lat_in
 !!print*, lon_in, lat_in
 
+
+        if (regi .eq. 1) then
+                ! PATCH: O(1) index calculation instead of minloc O(n)
+      idx_lat_calc = int((lat_part(j,i-1) - GRID_LAT_MIN) / GRID_DELTA_LAT) + 1
+      idx_lon_calc = int((lon_part(j,i-1) - GRID_LON_MIN) / GRID_DELTA_LON) + 1
+      if (idx_lat_calc < 1) idx_lat_calc = 1
+      if (idx_lat_calc > GRID_N_LAT) idx_lat_calc = GRID_N_LAT
+      if (idx_lon_calc < 1) idx_lon_calc = 1
+      if (idx_lon_calc > GRID_N_LON) idx_lon_calc = GRID_N_LON
+      lat_in(1) = idx_lat_calc
+      lat_in(2) = idx_lon_calc
+      lon_in = lat_in 
+!print*, "index3", idx_lat_calcm, idx_lon_calcm, GRID_N_LATm, GRID_N_LONm, GRID_N_LAT, GRID_N_LON
+!stop  
+        else 
+ 
        lat_model_sum=abs(lat_model-lat_part(j,i-1))
        lon_model_sum=abs(lon_model-lon_part(j,i-1))
 
        coord_sum=lat_model_sum + lon_model_sum
 
        lat_in =  minloc(coord_sum)
-       lon_in=lat_in
-
+       lon_in=lat_in		
+        endif
        ! lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
        ! lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
 
@@ -2053,13 +2130,30 @@ if ( (massa(j,i-1).eq.0) ) then
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ERA 5
      if (wind_theoretical.ne.1) then
 
+        if (regi .eq. 1) then
+                ! PATCH: O(1) index calculation instead of minloc O(n)
+      idx_lat_calce = int((lat_part(j,i-1) - GRID_LAT_MINe) / GRID_DELTA_LATe) + 1
+      idx_lon_calce = int((lon_part(j,i-1) - GRID_LON_MINe) / GRID_DELTA_LONe) + 1
+      if (idx_lat_calce < 1) idx_lat_calce = 1
+      if (idx_lat_calce > GRID_N_LATe) idx_lat_calce = GRID_N_LATe
+      if (idx_lon_calce < 1) idx_lon_calce = 1
+      if (idx_lon_calce > GRID_N_LONe) idx_lon_calce = GRID_N_LONe
+      lat_in_era(1) = idx_lat_calce
+      lat_in_era(2) = idx_lon_calce
+      lon_in_era = lat_in_era 
+!print*, "index2", idx_lat_calcm, idx_lon_calcm, GRID_N_LATm, GRID_N_LONm, GRID_N_LAT, GRID_N_LON
+!stop  
+        else 
+
        lat_era_sum=abs(lat_era-lat_part(j,i-1))
        lon_era_sum=abs(lon_era-lon_part(j,i-1))
 
        coord_sum_era = lat_era_sum + lon_era_sum
 
        lat_in_era =  minloc(coord_sum_era)
-       lon_in_era = lat_in_era
+       lon_in_era = lat_in_era		
+        endif		
+	
 
 
        if(linear_interp.eq.1) then
@@ -2455,10 +2549,10 @@ if ( (massa(j,i-1).eq.0) ) then
   ENDIF
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111DELFT
 
-!       !print*, ui, vi
+ !      print*, ui, vi
 !       !print*, ui
- !      !print*, minloc(abs(x_model(1,:)-x(j,i-1)))
- !      !print*, minloc(abs(y_model(:,1)-y(j,i-1)))
+ !      !print*, (abs(x_model(1,:)-x(j,i-1)))
+ !      !print*, (abs(y_model(:,1)-y(j,i-1)))
  !      !print*, x_model(1,:)-x(j,i-1)
        wanglex=wanglex*(pi/180)
        wangley=wangley*(pi/180)
@@ -2495,11 +2589,41 @@ if ( (massa(j,i-1).eq.0) ) then
 
      do m1_f3=1,parcel_dis_cont
 
-       lat_model_sum=abs(lat_model-lat_partf3(m1_f3,i-1))
-       lon_model_sum=abs(lon_model-lon_partf3(m1_f3,i-1))
+        if (regi .eq. 1) then
+                ! PATCH: O(1) index calculation instead of minloc O(n)
+      idx_lat_calcm = int((lat_partf3(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
+      idx_lon_calcm = int((lon_partf3(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
+      if (idx_lat_calcm < 1) idx_lat_calcm = 1
+      if (idx_lat_calcm > GRID_N_LATm) idx_lat_calcm = GRID_N_LATm
+      if (idx_lon_calcm < 1) idx_lon_calcm = 1
+      if (idx_lon_calcm > GRID_N_LONm) idx_lon_calcm = GRID_N_LONm
+      lat_in_f3(1) = idx_lat_calcm
+      lat_in_f3(2) = idx_lon_calcm
+      lon_in_f3 = lat_in_f3 
+!print*, "index2", idx_lat_calcm, idx_lon_calcm, GRID_N_LATm, GRID_N_LONm, GRID_N_LAT, GRID_N_LON
+!stop  
+        else 
+ 
+!       lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
+!       lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
+
+!       coord_summ=lat_model_summ + lon_model_summ
+
+!       lat_inm =  minloc(coord_summ)
+!       lon_inm=lat_inm
+
+       lat_model_sum=abs(lat_modelm-lat_partf3(m1_f3,i-1))
+       lon_model_sum=abs(lon_modelm-lon_partf3(m1_f3,i-1))
        coord_sum=lat_model_sum + lon_model_sum
        lat_in_f3 =  minloc(coord_sum)
-       lon_in_f3=lat_in_f3
+       lon_in_f3=lat_in_f3		
+        endif
+
+
+
+
+
+
 
        if (zlayer .eq. 1) then
          deplevel = levelsd
@@ -2546,7 +2670,29 @@ if ( (massa(j,i-1).eq.0) ) then
          ! ! cycle
         ! endif
 
+        if (regi .eq. 1) then
+                ! PATCH: O(1) index calculation instead of minloc O(n)
+      idx_lat_calc = int((lat_partf3(j,i-1) - GRID_LAT_MIN) / GRID_DELTA_LAT) + 1
+      idx_lon_calc = int((lon_partf3(j,i-1) - GRID_LON_MIN) / GRID_DELTA_LON) + 1
+      if (idx_lat_calc < 1) idx_lat_calc = 1
+      if (idx_lat_calc > GRID_N_LAT) idx_lat_calc = GRID_N_LAT
+      if (idx_lon_calc < 1) idx_lon_calc = 1
+      if (idx_lon_calc > GRID_N_LON) idx_lon_calc = GRID_N_LON
+      lat_in_f3(1) = idx_lat_calc
+      lat_in_f3(2) = idx_lon_calc
+      lon_in_f3 = lat_in_f3 
+!print*, "index2", idx_lat_calcm, idx_lon_calcm, GRID_N_LATm, GRID_N_LONm, GRID_N_LAT, GRID_N_LON
+!stop  
+        else 
+ 
 
+       lat_model_sum=abs(lat_model-lat_partf3(m1_f3,i-1))
+       lon_model_sum=abs(lon_model-lon_partf3(m1_f3,i-1))
+       coord_sum=lat_model_sum + lon_model_sum
+       lat_in_f3 =  minloc(coord_sum)
+       lon_in_f3=lat_in_f3		
+        endif
+		
 
   if(linear_interp.eq.1) then
 
@@ -2732,13 +2878,38 @@ lat_partf3(m1_f3,i-1), out_int_2 )
 
        if (wind_theoretical.ne.1) then
 
-        lat_era_sum=abs(lat_era-lat_partf3(m1_f3,i-1))
-        lon_era_sum=abs(lon_era-lon_partf3(m1_f3,i-1))
+!        lat_era_sum=abs(lat_era-lat_partf3(m1_f3,i-1))
+!        lon_era_sum=abs(lon_era-lon_partf3(m1_f3,i-1))
  
-        coord_sum_era = lat_era_sum + lon_era_sum
+!        coord_sum_era = lat_era_sum + lon_era_sum
 
-        lat_in_era =  minloc(coord_sum_era)
-        lon_in_era = lat_in_era
+!        lat_in_era =  minloc(coord_sum_era)
+!        lon_in_era = lat_in_era
+
+        if (regi .eq. 1) then
+                ! PATCH: O(1) index calculation instead of minloc O(n)
+      idx_lat_calce = int((lat_partf3(j,i-1) - GRID_LAT_MINe) / GRID_DELTA_LATe) + 1
+      idx_lon_calce = int((lon_partf3(j,i-1) - GRID_LON_MINe) / GRID_DELTA_LONe) + 1
+      if (idx_lat_calce < 1) idx_lat_calce = 1
+      if (idx_lat_calce > GRID_N_LATe) idx_lat_calce = GRID_N_LATe
+      if (idx_lon_calce < 1) idx_lon_calce = 1
+      if (idx_lon_calce > GRID_N_LONe) idx_lon_calce = GRID_N_LONe
+      lat_in_era(1) = idx_lat_calce
+      lat_in_era(2) = idx_lon_calce
+      lon_in_era = lat_in_era 
+!print*, "index2", idx_lat_calcm, idx_lon_calcm, GRID_N_LATm, GRID_N_LONm, GRID_N_LAT, GRID_N_LON
+!stop  
+        else 
+
+       lat_era_sum=abs(lat_era-lat_partf3(j,i-1))
+       lon_era_sum=abs(lon_era-lon_partf3(j,i-1))
+
+       coord_sum_era = lat_era_sum + lon_era_sum
+
+       lat_in_era =  minloc(coord_sum_era)
+       lon_in_era = lat_in_era		
+        endif
+
 
 
 
@@ -2957,7 +3128,25 @@ xf3(m1_f3,i),  yf3(m1_f3,i), ZPOS, OPT)
 
       endif
 
-
+        if (regi .eq. 1) then
+                ! PATCH: O(1) index calculation instead of minloc O(n)
+      idx_lat_calcm = int((lat_partf3(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
+      idx_lon_calcm = int((lon_partf3(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
+      if (idx_lat_calcm < 1) idx_lat_calcm = 1
+      if (idx_lat_calcm > GRID_N_LATm) idx_lat_calcm = GRID_N_LATm
+      if (idx_lon_calcm < 1) idx_lon_calcm = 1
+      if (idx_lon_calcm > GRID_N_LONm) idx_lon_calcm = GRID_N_LONm
+      lat_inm(1) = idx_lat_calcm
+      lat_inm(2) = idx_lon_calcm
+      lon_inm = lat_inm 
+!print*, "index2", idx_lat_calcm, idx_lon_calcm, GRID_N_LATm, GRID_N_LONm, GRID_N_LAT, GRID_N_LON
+!stop  
+        else 
+!       lat_model_summ=abs(lat_modelm-lat_partf3(j,i-1))
+!       lon_model_summ=abs(lon_modelm-lon_partf3(j,i-1))
+!       coord_summ=lat_model_summ + lon_model_summ
+!       lat_inm =  minloc(coord_summ)
+!       lon_inm=lat_inm
        lat_model_summ=abs(lat_modelm-lat_partf3(m1_f3,i))
        lon_model_summ=abs(lon_modelm-lon_partf3(m1_f3,i))
 
@@ -2965,6 +3154,10 @@ xf3(m1_f3,i),  yf3(m1_f3,i), ZPOS, OPT)
 
        lat_inm =  minloc(coord_summ)
        lon_inm=lat_inm
+	   
+        endif	
+		
+
 
        dif3 = depth(lat_inm(1), lon_inm(2))
 	   
@@ -3079,6 +3272,30 @@ if ( (massa(j,i-1).eq.0) ) then
  if (  (zf1(j,i-1) .lt.0) ) then
 
 
+ !      lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
+ !      lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
+
+!       coord_summ=lat_model_summ + lon_model_summ
+
+ !      lat_inm =  minloc(coord_summ)
+  !     lon_inm=lat_inm
+
+
+        if (regi .eq. 1) then
+                ! PATCH: O(1) index calculation instead of minloc O(n)
+      idx_lat_calcm = int((lat_part(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
+      idx_lon_calcm = int((lon_part(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
+      if (idx_lat_calcm < 1) idx_lat_calcm = 1
+      if (idx_lat_calcm > GRID_N_LATm) idx_lat_calcm = GRID_N_LATm
+      if (idx_lon_calcm < 1) idx_lon_calcm = 1
+      if (idx_lon_calcm > GRID_N_LONm) idx_lon_calcm = GRID_N_LONm
+      lat_inm(1) = idx_lat_calcm
+      lat_inm(2) = idx_lon_calcm
+      lon_inm = lat_inm 
+!print*, "index2", idx_lat_calcm, idx_lon_calcm, GRID_N_LATm, GRID_N_LONm, GRID_N_LAT, GRID_N_LON
+!stop  
+        else 
+ 
        lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
        lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
 
@@ -3086,7 +3303,8 @@ if ( (massa(j,i-1).eq.0) ) then
 
        lat_inm =  minloc(coord_summ)
        lon_inm=lat_inm
-
+		
+        endif
  !      di = depth(lat_inm(1), lon_inm(2))
 !	   print*,'4', zf1(j,i-1), di
 	   ! if (-zf1(j,i-1) .ge. di) then
@@ -4625,14 +4843,37 @@ if (zf1(m1,i) .ge. 0) then
 
 ! !print*, 'cool', uwd, vwd, CDIF_HOR
 !print*, vol(j,i)
-       lat_model_summ=abs(lat_modelm-lat_part(j,i))
-       lon_model_summ=abs(lon_modelm-lon_part(j,i))
+!       lat_model_summ=abs(lat_modelm-lat_part(j,i))
+!       lon_model_summ=abs(lon_modelm-lon_part(j,i))
+
+!       coord_summ=lat_model_summ + lon_model_summ
+
+ !      lat_inm =  minloc(coord_summ)
+ !      lon_inm=lat_inm
+        if (regi .eq. 1) then
+                ! PATCH: O(1) index calculation instead of minloc O(n)
+      idx_lat_calcm = int((lat_part(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
+      idx_lon_calcm = int((lon_part(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
+      if (idx_lat_calcm < 1) idx_lat_calcm = 1
+      if (idx_lat_calcm > GRID_N_LATm) idx_lat_calcm = GRID_N_LATm
+      if (idx_lon_calcm < 1) idx_lon_calcm = 1
+      if (idx_lon_calcm > GRID_N_LONm) idx_lon_calcm = GRID_N_LONm
+      lat_inm(1) = idx_lat_calcm
+      lat_inm(2) = idx_lon_calcm
+      lon_inm = lat_inm 
+!print*, "index2", idx_lat_calcm, idx_lon_calcm, GRID_N_LATm, GRID_N_LONm, GRID_N_LAT, GRID_N_LON
+!stop  
+        else 
+ 
+       lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
+       lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
 
        coord_summ=lat_model_summ + lon_model_summ
 
        lat_inm =  minloc(coord_summ)
        lon_inm=lat_inm
-
+		
+        endif
        di = depth(lat_inm(1), lon_inm(2))
        coastad = coastvalue(lat_inm(1), lon_inm(2))
 !print*, coastad
@@ -4712,13 +4953,13 @@ if (zf1(m1,i) .ge. 0) then
 
  !      !print*, cont, tsl
 
-        lat_model_sum=abs(lat_model-lat_part(j,i))
-        lon_model_sum=abs(lon_model-lon_part(j,i))
+ !       lat_model_sum=abs(lat_model-lat_part(j,i))
+  !      lon_model_sum=abs(lon_model-lon_part(j,i))
 
-        coord_sum=lat_model_sum + lon_model_sum 
+   !     coord_sum=lat_model_sum + lon_model_sum 
 
-        lat_in =  minloc(coord_sum)
-        lon_in=lat_in
+    !    lat_in =  minloc(coord_sum)
+     !   lon_in=lat_in
 
 
         if (partcontmap_2(lat_in(1), lon_in(2)).eq.0) then
@@ -4730,35 +4971,35 @@ if (zf1(m1,i) .ge. 0) then
 
 
 
-       if (cont.eq.tsl-1) then
+  !     if (cont.eq.tsl-1) then
 
   !          !print*, 'entrou'
   
-        lat_model_sum=abs(lat_model-lat_part(j,i))
-        lon_model_sum=abs(lon_model-lon_part(j,i))
+   !     lat_model_sum=abs(lat_model-lat_part(j,i))
+   !     lon_model_sum=abs(lon_model-lon_part(j,i))
 
-        coord_sum=lat_model_sum + lon_model_sum 
+   !     coord_sum=lat_model_sum + lon_model_sum 
 
-        lat_in =  minloc(coord_sum)
-        lon_in=lat_in
+  !      lat_in =  minloc(coord_sum)
+  !      lon_in=lat_in
 
-        partcontmap(lat_in(1), lon_in(2)) = partcontmap(lat_in(1), lon_in(2)) + 1
+  !      partcontmap(lat_in(1), lon_in(2)) = partcontmap(lat_in(1), lon_in(2)) + 1
 
-        mass_dist(lat_in(1), lon_in(2)) = mass_dist(lat_in(1), lon_in(2)) + massa(j,i)
+   !     mass_dist(lat_in(1), lon_in(2)) = mass_dist(lat_in(1), lon_in(2)) + massa(j,i)
 
-       endif
+   !    endif
 
 
 
        !!!! HEIGHT LOOP
-        lat_model_sum_height=abs(lat_height-lat_part(j,i))
-        lon_model_sum_height=abs(lon_height-lon_part(j,i))
-        coord_sum_height=lat_model_sum_height + lon_model_sum_height 
+ !       lat_model_sum_height=abs(lat_height-lat_part(j,i))
+ !       lon_model_sum_height=abs(lon_height-lon_part(j,i))
+ !       coord_sum_height=lat_model_sum_height + lon_model_sum_height 
 
-        lat_in_height =  minloc(coord_sum_height)
-        lon_in_height=lat_in_height
+  !      lat_in_height =  minloc(coord_sum_height)
+  !      lon_in_height=lat_in_height
 
-        height_map(lat_in_height(1), lon_in_height(2))= height_map(lat_in_height(1), lon_in_height(2)) + vol(j,i)
+   !     height_map(lat_in_height(1), lon_in_height(2))= height_map(lat_in_height(1), lon_in_height(2)) + vol(j,i)
 !        !print*, height_map(lat_in_height(1), lon_in_height(2)), vol(j,i)
 !        !print*, lat_in_height(1), lon_in_height(2), lat_part(j,i), lat_height(1,1), lat_height(239, 239)
 !        !print*, lat_height(:,1)
@@ -4967,11 +5208,11 @@ if (zf1(m1,i) .ge. 0) then
            visc_e(m,i) = VIS_DIN_OIL_OUT*1000   !in cP
            rho_e(m,i) = RO_OIL_OUT
 
-           lat_model_sum=abs(lat_model-lat_part(m,i))
-           lon_model_sum=abs(lon_model-lon_part(m,i))
-           coord_sum=lat_model_sum + lon_model_sum 
-           lat_in =  minloc(coord_sum)
-           lon_in=lat_in
+ !          lat_model_sum=abs(lat_model-lat_part(m,i))
+ !          lon_model_sum=abs(lon_model-lon_part(m,i))
+ !          coord_sum=lat_model_sum + lon_model_sum 
+ !          lat_in =  minloc(coord_sum)
+ !          lon_in=lat_in
            if (partcontmap_2(lat_in(1), lon_in(2)).eq.0) then
              partcontmap_2(lat_in(1), lon_in(2))=1
            endif

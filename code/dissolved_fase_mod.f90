@@ -4,7 +4,7 @@ Module dissolved_fase_mod
 
  double precision, dimension (:,:), allocatable:: xf3, yf3,zf3, lon_partf3, lat_partf3, massaf3
 
- integer, parameter :: numparcels_dis = 5
+ integer, parameter :: numparcels_dis = 100
 
  integer:: parcel_dis_cont, m1_f3
 
