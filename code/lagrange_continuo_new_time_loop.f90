@@ -1483,6 +1483,7 @@ do outer_l=1,1000000000
  !print*, 'EXECUTION FASE'
   do i=2,ts_lim
   print*, 'TS', cont_ts
+  call random_seed()
 
    if (PROBABILISTIC.eq.1 .and. cont.eq.tsl) then 
      go to 468
@@ -1644,7 +1645,7 @@ do outer_l=1,1000000000
   
      do j=1,NUMTOT
 
-       call random_seed()
+!       call random_seed()
        CALL random_number(RN1)
        CALL random_number(RN2)
 
@@ -1662,8 +1663,8 @@ if ( (massa(j,i-1).eq.0) ) then
  
         if (regi .eq. 1) then
                 ! PATCH: O(1) index calculation instead of minloc O(n)
-      idx_lat_calcm = int((lat_part(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
-      idx_lon_calcm = int((lon_part(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
+      idx_lat_calcm = nint((lat_part(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
+      idx_lon_calcm = nint((lon_part(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
       if (idx_lat_calcm < 1) idx_lat_calcm = 1
       if (idx_lat_calcm > GRID_N_LATm) idx_lat_calcm = GRID_N_LATm
       if (idx_lon_calcm < 1) idx_lon_calcm = 1
@@ -1691,7 +1692,7 @@ if ( (massa(j,i-1).eq.0) ) then
 !print*, zf1(j,i-1),zf1(j,i), di, lat_part(j,i-1), lat_part(j,i)
 !stop
 	   SEDIMENT=1
-!	   print*, zf1(j,i), di
+!	   print*, zf1(j,i), di                                 ! Check in the beginning to evaluate particles "inside" sediment layer
 	   if ((-zf1(j,i-1) .gt. di) .and. (di .gt. 0)) then
 	      zf1(j,i)=-di	
           if (SEDIMENT.EQ.1) then
@@ -2099,8 +2100,8 @@ if ( (massa(j,i-1).eq.0) ) then
 
         if (regi .eq. 1) then
                 ! PATCH: O(1) index calculation instead of minloc O(n)
-      idx_lat_calc = int((lat_part(j,i-1) - GRID_LAT_MIN) / GRID_DELTA_LAT) + 1
-      idx_lon_calc = int((lon_part(j,i-1) - GRID_LON_MIN) / GRID_DELTA_LON) + 1
+      idx_lat_calc = nint((lat_part(j,i-1) - GRID_LAT_MIN) / GRID_DELTA_LAT) + 1
+      idx_lon_calc = nint((lon_part(j,i-1) - GRID_LON_MIN) / GRID_DELTA_LON) + 1
       if (idx_lat_calc < 1) idx_lat_calc = 1
       if (idx_lat_calc > GRID_N_LAT) idx_lat_calc = GRID_N_LAT
       if (idx_lon_calc < 1) idx_lon_calc = 1
@@ -2110,6 +2111,7 @@ if ( (massa(j,i-1).eq.0) ) then
       lon_in = lat_in 
 !print*, "index3", idx_lat_calcm, idx_lon_calcm, GRID_N_LATm, GRID_N_LONm, GRID_N_LAT, GRID_N_LON
 !stop  
+ !     print*, lat_in(1), lon_in(2)
         else 
  
        lat_model_sum=abs(lat_model-lat_part(j,i-1))
@@ -2118,7 +2120,10 @@ if ( (massa(j,i-1).eq.0) ) then
        coord_sum=lat_model_sum + lon_model_sum
 
        lat_in =  minloc(coord_sum)
-       lon_in=lat_in		
+       lon_in=lat_in	
+
+!      print*, lat_in(1), lon_in(2)
+	   
         endif
        ! lat_model_summ=abs(lat_modelm-lat_part(j,i-1))
        ! lon_model_summ=abs(lon_modelm-lon_part(j,i-1))
@@ -2132,8 +2137,8 @@ if ( (massa(j,i-1).eq.0) ) then
 
         if (regi .eq. 1) then
                 ! PATCH: O(1) index calculation instead of minloc O(n)
-      idx_lat_calce = int((lat_part(j,i-1) - GRID_LAT_MINe) / GRID_DELTA_LATe) + 1
-      idx_lon_calce = int((lon_part(j,i-1) - GRID_LON_MINe) / GRID_DELTA_LONe) + 1
+      idx_lat_calce = nint((lat_part(j,i-1) - GRID_LAT_MINe) / GRID_DELTA_LATe) + 1
+      idx_lon_calce = nint((lon_part(j,i-1) - GRID_LON_MINe) / GRID_DELTA_LONe) + 1
       if (idx_lat_calce < 1) idx_lat_calce = 1
       if (idx_lat_calce > GRID_N_LATe) idx_lat_calce = GRID_N_LATe
       if (idx_lon_calce < 1) idx_lon_calce = 1
@@ -2591,8 +2596,8 @@ if ( (massa(j,i-1).eq.0) ) then
 
         if (regi .eq. 1) then
                 ! PATCH: O(1) index calculation instead of minloc O(n)
-      idx_lat_calcm = int((lat_partf3(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
-      idx_lon_calcm = int((lon_partf3(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
+      idx_lat_calcm = nint((lat_partf3(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
+      idx_lon_calcm = nint((lon_partf3(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
       if (idx_lat_calcm < 1) idx_lat_calcm = 1
       if (idx_lat_calcm > GRID_N_LATm) idx_lat_calcm = GRID_N_LATm
       if (idx_lon_calcm < 1) idx_lon_calcm = 1
@@ -2672,8 +2677,8 @@ if ( (massa(j,i-1).eq.0) ) then
 
         if (regi .eq. 1) then
                 ! PATCH: O(1) index calculation instead of minloc O(n)
-      idx_lat_calc = int((lat_partf3(j,i-1) - GRID_LAT_MIN) / GRID_DELTA_LAT) + 1
-      idx_lon_calc = int((lon_partf3(j,i-1) - GRID_LON_MIN) / GRID_DELTA_LON) + 1
+      idx_lat_calc = nint((lat_partf3(j,i-1) - GRID_LAT_MIN) / GRID_DELTA_LAT) + 1
+      idx_lon_calc = nint((lon_partf3(j,i-1) - GRID_LON_MIN) / GRID_DELTA_LON) + 1
       if (idx_lat_calc < 1) idx_lat_calc = 1
       if (idx_lat_calc > GRID_N_LAT) idx_lat_calc = GRID_N_LAT
       if (idx_lon_calc < 1) idx_lon_calc = 1
@@ -2888,8 +2893,8 @@ lat_partf3(m1_f3,i-1), out_int_2 )
 
         if (regi .eq. 1) then
                 ! PATCH: O(1) index calculation instead of minloc O(n)
-      idx_lat_calce = int((lat_partf3(j,i-1) - GRID_LAT_MINe) / GRID_DELTA_LATe) + 1
-      idx_lon_calce = int((lon_partf3(j,i-1) - GRID_LON_MINe) / GRID_DELTA_LONe) + 1
+      idx_lat_calce = nint((lat_partf3(j,i-1) - GRID_LAT_MINe) / GRID_DELTA_LATe) + 1
+      idx_lon_calce = nint((lon_partf3(j,i-1) - GRID_LON_MINe) / GRID_DELTA_LONe) + 1
       if (idx_lat_calce < 1) idx_lat_calce = 1
       if (idx_lat_calce > GRID_N_LATe) idx_lat_calce = GRID_N_LATe
       if (idx_lon_calce < 1) idx_lon_calce = 1
@@ -3130,8 +3135,8 @@ xf3(m1_f3,i),  yf3(m1_f3,i), ZPOS, OPT)
 
         if (regi .eq. 1) then
                 ! PATCH: O(1) index calculation instead of minloc O(n)
-      idx_lat_calcm = int((lat_partf3(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
-      idx_lon_calcm = int((lon_partf3(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
+      idx_lat_calcm = nint((lat_partf3(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
+      idx_lon_calcm = nint((lon_partf3(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
       if (idx_lat_calcm < 1) idx_lat_calcm = 1
       if (idx_lat_calcm > GRID_N_LATm) idx_lat_calcm = GRID_N_LATm
       if (idx_lon_calcm < 1) idx_lon_calcm = 1
@@ -3283,8 +3288,8 @@ if ( (massa(j,i-1).eq.0) ) then
 
         if (regi .eq. 1) then
                 ! PATCH: O(1) index calculation instead of minloc O(n)
-      idx_lat_calcm = int((lat_part(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
-      idx_lon_calcm = int((lon_part(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
+      idx_lat_calcm = nint((lat_part(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
+      idx_lon_calcm = nint((lon_part(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
       if (idx_lat_calcm < 1) idx_lat_calcm = 1
       if (idx_lat_calcm > GRID_N_LATm) idx_lat_calcm = GRID_N_LATm
       if (idx_lon_calcm < 1) idx_lon_calcm = 1
@@ -4852,8 +4857,8 @@ if (zf1(m1,i) .ge. 0) then
  !      lon_inm=lat_inm
         if (regi .eq. 1) then
                 ! PATCH: O(1) index calculation instead of minloc O(n)
-      idx_lat_calcm = int((lat_part(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
-      idx_lon_calcm = int((lon_part(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
+      idx_lat_calcm = nint((lat_part(j,i-1) - GRID_LAT_MINm) / GRID_DELTA_LATm) + 1
+      idx_lon_calcm = nint((lon_part(j,i-1) - GRID_LON_MINm) / GRID_DELTA_LONm) + 1
       if (idx_lat_calcm < 1) idx_lat_calcm = 1
       if (idx_lat_calcm > GRID_N_LATm) idx_lat_calcm = GRID_N_LATm
       if (idx_lon_calcm < 1) idx_lon_calcm = 1
