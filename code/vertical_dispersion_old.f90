@@ -214,29 +214,10 @@ subroutine size_distr_li_2007 (visc, interfacial_tension, ro_a, ro_oil, windspms
   double precision :: d_o, r, p, q, dV_50, sd, we, oh, min_val, max_val, step
   double precision, dimension(:), allocatable :: spectrum
   integer :: iyg, nhdh
-
-
-
-!═══════════════════════════════════════════════════════════════════════════════
-! OTIMIZAÇÃO #1: Reduzir num_elements de 10000 para 1000
-! SPEEDUP: 10x 
-!═══════════════════════════════════════════════════════════════════════════════
 !  integer, parameter :: num_elements = 1000000
-!  integer, parameter :: num_elements =  10000  ! ← (LENTO!)
-  integer, parameter :: num_elements =  1000    ! ← OTIMIZADO
-
-
+  integer, parameter :: num_elements =  10000
   double precision :: dN_50
   logical :: is_finite_flag
-
-!═══════════════════════════════════════════════════════════════════════════════
-! OTIMIZAÇÃO #2: Constantes pré-calculadas
-! SPEEDUP: 5-10% adicional
-!═══════════════════════════════════════════════════════════════════════════════
-  double precision, parameter :: sqrt_2pi = 2.506628274631000502d0
-  double precision, parameter :: log_10 = 2.302585092994045684d0
-  double precision :: log_dV_50, two_Sd_sq, denominator_const
-
 
   allocate(droplet_spectrum_diameter(num_elements))
 !  droplet_spectrum_diameter = [(iyg * (3.0e-3 - 1.0e-6) / (num_elements - 1.0d0), iyg = 1, num_elements)]
@@ -322,28 +303,10 @@ end do
  
   dN_50 = exp(log(dV_50) - 3.0d0 * Sd**2)  
   
-!═══════════════════════════════════════════════════════════════════════════════
-! OTIMIZAÇÃO #2 (continuação): Pré-calcular valores para o loop
-!═══════════════════════════════════════════════════════════════════════════════
-  log_dV_50 = log(dV_50)
-  two_Sd_sq = 2.0d0 * Sd**2
-  denominator_const = Sd * sqrt_2pi
-  
   allocate(spectrum(num_elements))
-  
-!═══════════════════════════════════════════════════════════════════════════════
-! Loop otimizado com constantes pré-calculadas
-! ANTES: Recalculava log(dV_50), 2*Sd**2, sqrt(2*pi) a cada iteração
-! DEPOIS: Usa valores pré-calculados
-!═══════════════════════════════════════════════════════════════════════════════
   do iyg = 1, num_elements
-     ! VERSÃO OTIMIZADA com constantes pré-calculadas:
-     spectrum(iyg) = exp(-((log(droplet_spectrum_diameter(iyg)) - log_dV_50)**2) / two_Sd_sq) / &
-                    (droplet_spectrum_diameter(iyg) * denominator_const)
-     
-     ! VERSÃO ORIGINAL (comentada - LENTA!):
-     ! spectrum(iyg) = exp(-((log(droplet_spectrum_diameter(iyg)) - log(dV_50))**2) / (2.0d0 * Sd**2)) / &
-     !                (droplet_spectrum_diameter(iyg) * Sd * sqrt(2.0d0 * pi))
+     spectrum(iyg) = exp(-((log(droplet_spectrum_diameter(iyg)) - log(dV_50))**2) / (2.0d0 * Sd**2)) / &
+                    (droplet_spectrum_diameter(iyg) * Sd * sqrt(2.0d0 * pi))
   end do  
   
 !            spectrum = (np.exp(
@@ -393,73 +356,23 @@ end do
 end subroutine 
 
 
-!═══════════════════════════════════════════════════════════════════════════════
-! OTIMIZAÇÃO #3: random_sample reescrito, maior gargalo visível!
-! SPEEDUP: 100-1000x nesta função!
-!
-! ANTES: Busca linear O(n²) - recalculava sum(probabilities(1:jgh)) a cada iteração!
-! DEPOIS: Busca binária O(log n) - usa cumulative sum pré-calculado!
-!═══════════════════════════════════════════════════════════════════════════════
   subroutine random_sample(choices, probabilities, samples)
     double precision, dimension(:), intent(in) :: choices, probabilities
     double precision, dimension(:), intent(out) :: samples
-    double precision, dimension(:), allocatable :: cumsum
     double precision :: ujkh
-    integer :: itr, n, low, high, mid
+    integer :: itr, jgh
     
-    n = size(probabilities)
-    allocate(cumsum(n))
-    
-    ! Pré-calcular soma cumulativa UMA VEZ (antes era feito milhões de vezes!)
-    cumsum(1) = probabilities(1)
-    do itr = 2, n
-       cumsum(itr) = cumsum(itr-1) + probabilities(itr)
-    end do
-    
-    ! Gerar amostras usando busca binária (O(log n) em vez de O(n)!)
     do itr = 1, size(samples)
-       CALL random_number(ujkh)
-       
-       ! Busca binária no cumsum (MUITO mais rápida!)
-       low = 1
-       high = n
-       
-       do while (low < high)
-          mid = (low + high) / 2
-          if (ujkh > cumsum(mid)) then
-             low = mid + 1
-          else
-             high = mid
-          end if
+ !      ujkh = random_number()
+	   CALL random_number(ujkh)
+       jgh = 1
+       do while (ujkh > sum(probabilities(1:jgh)))
+          jgh = jgh + 1
        end do
-       
-       samples(itr) = choices(low)
+       samples(itr) = choices(jgh)
     end do
-    
-    deallocate(cumsum)
     
   end subroutine random_sample
-  
-  
-! CÓDIGO ORIGINAL (COMENTADO - NÃO APAGAR PARA REFERÊNCIA!)
-!  subroutine random_sample(choices, probabilities, samples)
-!    double precision, dimension(:), intent(in) :: choices, probabilities
-!    double precision, dimension(:), intent(out) :: samples
-!    double precision :: ujkh
-!    integer :: itr, jgh
-!    
-!    do itr = 1, size(samples)
-! !      ujkh = random_number()
-!	   CALL random_number(ujkh)
-!       jgh = 1
-!       ! GARGALO: sum(probabilities(1:jgh)) recalculado a cada iteração! O(n²)!
-!       do while (ujkh > sum(probabilities(1:jgh)))
-!          jgh = jgh + 1
-!       end do
-!       samples(itr) = choices(jgh)
-!    end do
-!    
-!  end subroutine random_sample
   
   logical function isfinite_array(arr)
     real(8), dimension(:), intent(in) :: arr
@@ -478,33 +391,3 @@ end subroutine
 
 
 End Module
-
-
-!═══════════════════════════════════════════════════════════════════════════════
-! RESUMO DAS OTIMIZAÇÕES IMPLEMENTADAS
-!═══════════════════════════════════════════════════════════════════════════════
-!
-! OTIMIZAÇÃO #1: num_elements 10000 → 1000
-!   Linha: 218
-!   Speedup: 10x
-!   Risco: BAIXO (distribuição lognormal é suave, 1000 pontos é suficiente)
-!
-! OTIMIZAÇÃO #2: Pré-cálculo de constantes
-!   Linhas: Declarações + antes do loop
-!   Speedup: 5-10%
-!   Risco: ZERO (matematicamente equivalente)
-!
-! OTIMIZAÇÃO #3: random_sample com cumsum + busca binária
-!   Linhas: 359-375 (subroutine completa reescrita)
-!   Speedup: 100-1000x nesta função
-!   Risco: ZERO (algoritmo equivalente, apenas mais eficiente)
-!
-! SPEEDUP TOTAL ESTIMADO: ~100x
-!
-!
-! PRÓXIMAS OTIMIZAÇÕES (Possibilidade) (FASE 2):
-!   Sistema de cache para evitar recalcular espectros idênticos
-!   Speedup adicional estimado: 5-10x
-!   Total com Fase 2: ~500-800x
-!
-!═══════════════════════════════════════════════════════════════════════════════
