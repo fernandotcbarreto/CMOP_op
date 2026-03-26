@@ -312,7 +312,9 @@ use datetime_module
    if (trim(apist) .eq. 'KUWAIT_2002_EVAP1998') then
    api=54.95867      !oscar Linerle   
  endif   !print*, widfc, CDIF_HOR  
-  !print*, numparcels_dis
+   if (trim(apist) .eq. 'OsebergBlend2006') then
+   api=45.77766      !oscar Linerle   
+ endif   !print*, widfc, CDIF_HOR    !print*, numparcels_dis
   !stop
 !  print*, year11, month11, day11, hour11, minute11, secon11
 !  print*, coupling_ind
@@ -5490,7 +5492,7 @@ enddo
 print *, "Simulation time:", &
       (stop_time - start_time)/60., "minutes"
 
-!print*, 'total', total_particles
+!print*, stop_time, start_time
 !print*, 'contprob', contprob
 !print*, counttime
 

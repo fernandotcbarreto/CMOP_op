@@ -1487,7 +1487,36 @@ I = 25; FRAC_MASS_OUT(I) = 28.4600D-02
 
 	  xa=0.07
 	  xw=4.93
+   ELSE IF (API .EQ. 45.77766) THEN     !
+      print*, 'OsebergBlend2006'
+      I = 1  ;  FRAC_MASS_OUT(I) = 3.73D-02
+      I = 2  ;  FRAC_MASS_OUT(I) = 2.15D-02
+      I = 3  ;  FRAC_MASS_OUT(I) = 2.56D-02
+      I = 4  ;  FRAC_MASS_OUT(I) = 0.02D-02
+      I = 5  ;  FRAC_MASS_OUT(I) = 3.39D-02
+      I = 6  ;  FRAC_MASS_OUT(I) = 0.085D-02
+      I = 7  ;  FRAC_MASS_OUT(I) = 4.23D-02
+      I = 8  ;  FRAC_MASS_OUT(I) = 0.31D-02
+      I = 9  ;  FRAC_MASS_OUT(I) = 8.99D-02
+      I = 10 ;  FRAC_MASS_OUT(I) = 0.36D-02
+      I = 11 ;  FRAC_MASS_OUT(I) = 6.10D-02
+      I = 12 ;  FRAC_MASS_OUT(I) = 0.17D-02
+      I = 13 ;  FRAC_MASS_OUT(I) = 3.74D-02
+      I = 14 ;  FRAC_MASS_OUT(I) = 0.039D-02
+      I = 15 ;  FRAC_MASS_OUT(I) = 0.20D-02
+      I = 16 ;  FRAC_MASS_OUT(I) = 5.55D-02
+      I = 17 ;  FRAC_MASS_OUT(I) = 0.35D-02
+      I = 18 ;  FRAC_MASS_OUT(I) = 7.48D-02
+      I = 19 ;  FRAC_MASS_OUT(I) = 0.28D-02
+      I = 20 ;  FRAC_MASS_OUT(I) = 6.71D-02
+      I = 21 ;  FRAC_MASS_OUT(I) = 4.99D-02
+      I = 22 ;  FRAC_MASS_OUT(I) = 0.0D-02
+      I = 23 ;  FRAC_MASS_OUT(I) = 4.37D-02
+      I = 24 ;  FRAC_MASS_OUT(I) = 0.35D-02
+      I = 25 ;  FRAC_MASS_OUT(I) = 33.83D-02
 
+	  xa=0.2
+	  xw=2.67
    ELSE     
 
       I = 1  ;  FRAC_MASS_OUT(I) = 1
