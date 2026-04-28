@@ -23,6 +23,9 @@ use datetime_module
   double precision:: scft, kf, rn1, rn2, voldis, odir, ovel, counttimeh_r0, probsl, rn10, ductwd
   integer i,a,j,cont, tsl, itsl, freq, ts_lim, cont_ts, outer_l, zlayer,  avel, reverse, depvi, regi
   integer :: ts, numpalm, turn_off_mask, year11, month11, day11, hour11, minute11, secon11, deg_turn
+  integer, dimension(:), allocatable:: index_buffer
+  integer :: chunk_start, chunk_end, n_chunk, chunk_i
+  integer, parameter :: chunk_size = 5000    
   character:: g(100)
   double precision:: dt,vf, vft, x_model(100,100), y_model(100,100), u_model(100,100), x_mask(100,100), v_model(100,100)  !vf eh vel func
   double precision:: y_mask(100,100), mask(100,100), maskt(1,1)
@@ -31,11 +34,6 @@ use datetime_module
   double precision, dimension(:), allocatable:: dt_h_spr
   double precision :: time_lim, time_lim_wind, outp_h, watcontant, dkdz, dkdzs
   character*20::  fmt1, x1, fmt, fmt2, fmt3, x2, fmt5, x5, fmt6, x3, fmt4, fmt7, fmt8, fmt9
-
-! ====== RK4 advection variables ======
-  double precision :: k1u_rk, k1v_rk, k2u_rk, k2v_rk, k3u_rk, k3v_rk, k4u_rk, k4v_rk
-  double precision :: x_rk, y_rk, u_rk, v_rk, wind_u_rk, wind_v_rk, uwd_rk, vwd_rk
-! ====================================
 
 !!!!!! RESHAPE
   double precision, dimension(:), allocatable:: res_ar
@@ -317,9 +315,7 @@ use datetime_module
    if (trim(apist) .eq. 'KUWAIT_2002_EVAP1998') then
    api=54.95867      !oscar Linerle   
  endif   !print*, widfc, CDIF_HOR  
-   if (trim(apist) .eq. 'OsebergBlend2006') then
-   api=45.77766      !oscar Linerle   
- endif   !print*, widfc, CDIF_HOR    !print*, numparcels_dis  !print*, numparcels_dis
+  !print*, numparcels_dis
   !stop
 !  print*, year11, month11, day11, hour11, minute11, secon11
 !  print*, coupling_ind
@@ -1298,99 +1294,103 @@ coord_sum_height(num_sp*2-1,num_sp*2-1))
  ! !print*, y(10,1)
  ! !print*, abs(y_model(:,1) - y(10,1))
 !  !print*, y_model(1,:)
-
-
- do i=1, int(b(1))
-    if (i.eq.int(b(1))) then
-    write(12,'(i10)') i
-    write(13,'(i10)') i
-    write(14,'(i10)') i
-    write(15,'(i10)') i     
-    write(199,'(i10)') i     
-    write(198,'(i10)') i     
-    write(197,'(i10)') i     
-    write(16,'(i10)') i 
-    write(17,'(i10)') i 
-    write(18,'(i10)') i
-    write(19,'(i10)') i
-    write(23,'(i10)') i
-    write(231,'(i10)') i
-    write(232,'(i10)') i
-    write(233,'(i10)') i
-    write(268,'(i10)') i
-    write(221,'(i10)') i
-    write(222,'(i10)') i
-    write(54,'(i10)') i
-	write(2254,'(i10)') i
-    write(225,'(i10)') i
-
-     else 
-    write(12,'(i10)', advance='no') i
-    write(13,'(i10)', advance='no') i
-    write(14,'(i10)', advance='no') i
-    write(15,'(i10)', advance='no') i
-    write(199,'(i10)', advance='no') i
-    write(198,'(i10)', advance='no') i
-    write(197,'(i10)', advance='no') i
-    write(16,'(i10)', advance='no') i
-    write(17,'(i10)', advance='no') i
-    write(18,'(i10)', advance='no') i
-    write(19,'(i10)', advance='no') i
-    write(23,'(i10)', advance='no') i
-    write(231,'(i10)', advance='no') i
-    write(232,'(i10)', advance='no') i
-    write(233,'(i10)', advance='no') i
-    write(268,'(i10)', advance='no') i
-    write(221,'(i10)', advance='no') i
-    write(222,'(i10)', advance='no') i
-    write(54,'(i10)', advance='no') i
-	write(2254,'(i10)', advance='no') i
-    write(225,'(i10)', advance='no') i
-    endif 
- enddo
-
- if(dissolved_fase .eq. 1) then
-  do i = 1, int(numparcels_dis)
-
-    if (i.eq.int(numparcels_dis)) then
-
-       write(226,'(i10)') i
-       write(227,'(i10)') i
-       write(228,'(i10)') i
-
-    else 
-       write(226,'(i10)', advance='no') i
-       write(227,'(i10)', advance='no') i
-       write(228,'(i10)', advance='no') i
-
-    endif
-
-  enddo
-
- endif
-
-
- IF (ENTRAIN.EQ.1) THEN
-  do i=1, int(b(1))
-    if (i.eq.int(b(1))) then
-
-       write(223,'(i10)') i
-       write(224,'(i10)') i
-       write(141,'(i10)') i
-       write(331,'(i10)') i
-       write(332,'(i10)') i
-       
-    else 
-       write(223,'(i10)', advance='no') i
-       write(224,'(i10)', advance='no') i
-       write(141,'(i10)', advance='no') i
-       write(331,'(i10)', advance='no') i
-       write(332,'(i10)', advance='no') i
+ do chunk_start = 1, int(b(1)), chunk_size
+   ! Calcular fim do chunk
+   if (chunk_start + chunk_size - 1 < int(b(1))) then
+      chunk_end = chunk_start + chunk_size - 1
+   else
+      chunk_end = int(b(1))
+   endif
+   n_chunk = chunk_end - chunk_start + 1
+   
+   ! Alocar buffer para este chunk
+   allocate(index_buffer(n_chunk))
+   
+   ! Preencher índices
+   do chunk_i = 1, n_chunk
+      index_buffer(chunk_i) = chunk_start + chunk_i - 1
+   enddo
+   
+   ! Determinar se é último chunk
+   if (chunk_end == int(b(1))) then
+      ! ÚLTIMO CHUNK - com newline
+      write(12,'(100000i10)') index_buffer
+      write(13,'(100000i10)') index_buffer
+      write(14,'(100000i10)') index_buffer
+      write(15,'(100000i10)') index_buffer
+      write(199,'(100000i10)') index_buffer
+      write(198,'(100000i10)') index_buffer
+      write(197,'(100000i10)') index_buffer
+      write(16,'(100000i10)') index_buffer
+      write(17,'(100000i10)') index_buffer
+      write(18,'(100000i10)') index_buffer
+      write(19,'(100000i10)') index_buffer
+      write(23,'(100000i10)') index_buffer
+      write(231,'(100000i10)') index_buffer
+      write(232,'(100000i10)') index_buffer
+      write(233,'(100000i10)') index_buffer
+      write(268,'(100000i10)') index_buffer
+      write(221,'(100000i10)') index_buffer
+      write(222,'(100000i10)') index_buffer
+      write(54,'(100000i10)') index_buffer
+      write(2254,'(100000i10)') index_buffer
+      write(225,'(100000i10)') index_buffer
       
-    endif
-
-  enddo
- ENDIF
+      if (dissolved_fase .eq. 1) then
+         write(226,'(100000i10)') index_buffer
+         write(227,'(100000i10)') index_buffer
+         write(228,'(100000i10)') index_buffer
+      endif
+      
+      if (ENTRAIN.EQ.1) then
+         write(223,'(100000i10)') index_buffer
+         write(224,'(100000i10)') index_buffer
+         write(141,'(100000i10)') index_buffer
+         write(331,'(100000i10)') index_buffer
+         write(332,'(100000i10)') index_buffer
+      endif
+   else
+      ! CHUNKS INTERMEDIÁRIOS - SEM newline (advance='no')
+      write(12,'(100000i10)', advance='no') index_buffer
+      write(13,'(100000i10)', advance='no') index_buffer
+      write(14,'(100000i10)', advance='no') index_buffer
+      write(15,'(100000i10)', advance='no') index_buffer
+      write(199,'(100000i10)', advance='no') index_buffer
+      write(198,'(100000i10)', advance='no') index_buffer
+      write(197,'(100000i10)', advance='no') index_buffer
+      write(16,'(100000i10)', advance='no') index_buffer
+      write(17,'(100000i10)', advance='no') index_buffer
+      write(18,'(100000i10)', advance='no') index_buffer
+      write(19,'(100000i10)', advance='no') index_buffer
+      write(23,'(100000i10)', advance='no') index_buffer
+      write(231,'(100000i10)', advance='no') index_buffer
+      write(232,'(100000i10)', advance='no') index_buffer
+      write(233,'(100000i10)', advance='no') index_buffer
+      write(268,'(100000i10)', advance='no') index_buffer
+      write(221,'(100000i10)', advance='no') index_buffer
+      write(222,'(100000i10)', advance='no') index_buffer
+      write(54,'(100000i10)', advance='no') index_buffer
+      write(2254,'(100000i10)', advance='no') index_buffer
+      write(225,'(100000i10)', advance='no') index_buffer
+      
+      if (dissolved_fase .eq. 1) then
+         write(226,'(100000i10)', advance='no') index_buffer
+         write(227,'(100000i10)', advance='no') index_buffer
+         write(228,'(100000i10)', advance='no') index_buffer
+      endif
+      
+      if (ENTRAIN.EQ.1) then
+         write(223,'(100000i10)', advance='no') index_buffer
+         write(224,'(100000i10)', advance='no') index_buffer
+         write(141,'(100000i10)', advance='no') index_buffer
+         write(331,'(100000i10)', advance='no') index_buffer
+         write(332,'(100000i10)', advance='no') index_buffer
+      endif
+   endif
+   
+   ! Liberar memória do chunk
+   deallocate(index_buffer)
+enddo
  
   write(12,fmt2) x(:,1)
   write(13,fmt2) y(:,1)
@@ -4742,39 +4742,9 @@ if (zf1(m1,i) .ge. 0) then
 !         W_ALEA = randvert * ((2.D0*kz/dt)**(0.5D0))    !!  based on Reed et al., 1995
 
 
-       ! ====== RK4 advection (surface, right_random=0) ======
-       ! k1: velocity at current position and time
-       wind_u_rk = (uwd * widfc)
-       wind_v_rk = (vwd * widfc)
-       k1u_rk = ui(1,1) + wind_u_rk
-       k1v_rk = vi(1,1) + wind_v_rk
-       ! k2: half-step position and time
-       x_rk = x(j,i-1) + 0.5d0*dt*k1u_rk
-       y_rk = y(j,i-1) + 0.5d0*dt*k1v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), 0.5d0*dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       wind_u_rk = (uwd_rk * widfc)
-       wind_v_rk = (vwd_rk * widfc)
-       k2u_rk = u_rk + wind_u_rk
-       k2v_rk = v_rk + wind_v_rk
-       ! k3: half-step position and time
-       x_rk = x(j,i-1) + 0.5d0*dt*k2u_rk
-       y_rk = y(j,i-1) + 0.5d0*dt*k2v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), 0.5d0*dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       wind_u_rk = (uwd_rk * widfc)
-       wind_v_rk = (vwd_rk * widfc)
-       k3u_rk = u_rk + wind_u_rk
-       k3v_rk = v_rk + wind_v_rk
-       ! k4: full-step position and time
-       x_rk = x(j,i-1) + dt*k3u_rk
-       y_rk = y(j,i-1) + dt*k3v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       wind_u_rk = (uwd_rk * widfc)
-       wind_v_rk = (vwd_rk * widfc)
-       k4u_rk = u_rk + wind_u_rk
-       k4v_rk = v_rk + wind_v_rk
-       x(j,i)=x(j,i-1) + (dt/6.0d0)*(k1u_rk + 2.0d0*k2u_rk + 2.0d0*k3u_rk + k4u_rk) + U_ALEA*dt
-       y(j,i)=y(j,i-1) + (dt/6.0d0)*(k1v_rk + 2.0d0*k2v_rk + 2.0d0*k3v_rk + k4v_rk) + V_ALEA*dt
-       ! ====== end RK4 ======
+       x(j,i)=x(j,i-1) + ui(1,1)*dt + U_ALEA*dt   + (uwd * widfc)*dt 
+
+       y(j,i)=y(j,i-1) + vi(1,1)*dt + V_ALEA*dt   + (vwd * widfc)*dt
 
        call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
 
@@ -4808,39 +4778,11 @@ if (zf1(m1,i) .ge. 0) then
 !       y(j,i)=y(j,i-1) + 1*vi(1,1)*dt +  yrandom + ( widfc * (  (-uwd * sin(-5*(pi/180)))  + (vwd * cos(-5*(pi/180))) ))*dt&
 !	   + vcomp2*dt
 
-       ! ====== RK4 advection (surface, right_random!=0) ======
-       ! k1: velocity at current position and time
-       wind_u_rk = ( widfc * (  (uwd * cos(0*(pi/180)))  + (vwd * sin(0*(pi/180))) )) + ucomp2
-       wind_v_rk = ( widfc * (  (-uwd * sin(0*(pi/180)))  + (vwd * cos(0*(pi/180))) )) + vcomp2
-       k1u_rk = ui(1,1) + wind_u_rk
-       k1v_rk = vi(1,1) + wind_v_rk
-       ! k2: half-step position and time
-       x_rk = x(j,i-1) + 0.5d0*dt*k1u_rk
-       y_rk = y(j,i-1) + 0.5d0*dt*k1v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), 0.5d0*dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       wind_u_rk = ( widfc * (  (uwd_rk * cos(0*(pi/180)))  + (vwd_rk * sin(0*(pi/180))) )) + ucomp2
-       wind_v_rk = ( widfc * (  (-uwd_rk * sin(0*(pi/180)))  + (vwd_rk * cos(0*(pi/180))) )) + vcomp2
-       k2u_rk = u_rk + wind_u_rk
-       k2v_rk = v_rk + wind_v_rk
-       ! k3: half-step position and time
-       x_rk = x(j,i-1) + 0.5d0*dt*k2u_rk
-       y_rk = y(j,i-1) + 0.5d0*dt*k2v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), 0.5d0*dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       wind_u_rk = ( widfc * (  (uwd_rk * cos(0*(pi/180)))  + (vwd_rk * sin(0*(pi/180))) )) + ucomp2
-       wind_v_rk = ( widfc * (  (-uwd_rk * sin(0*(pi/180)))  + (vwd_rk * cos(0*(pi/180))) )) + vcomp2
-       k3u_rk = u_rk + wind_u_rk
-       k3v_rk = v_rk + wind_v_rk
-       ! k4: full-step position and time
-       x_rk = x(j,i-1) + dt*k3u_rk
-       y_rk = y(j,i-1) + dt*k3v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       wind_u_rk = ( widfc * (  (uwd_rk * cos(0*(pi/180)))  + (vwd_rk * sin(0*(pi/180))) )) + ucomp2
-       wind_v_rk = ( widfc * (  (-uwd_rk * sin(0*(pi/180)))  + (vwd_rk * cos(0*(pi/180))) )) + vcomp2
-       k4u_rk = u_rk + wind_u_rk
-       k4v_rk = v_rk + wind_v_rk
-       x(j,i)=x(j,i-1) + (dt/6.0d0)*(k1u_rk + 2.0d0*k2u_rk + 2.0d0*k3u_rk + k4u_rk) + xrandom
-       y(j,i)=y(j,i-1) + (dt/6.0d0)*(k1v_rk + 2.0d0*k2v_rk + 2.0d0*k3v_rk + k4v_rk) + yrandom
-       ! ====== end RK4 ======
+       x(j,i)=x(j,i-1) + 1*ui(1,1)*dt +  xrandom + ( widfc * (  (uwd * cos(0*(pi/180)))  + (vwd * sin(0*(pi/180))) ))*dt&
+	   + ucomp2*dt
+
+       y(j,i)=y(j,i-1) + 1*vi(1,1)*dt +  yrandom + ( widfc * (  (-uwd * sin(0*(pi/180)))  + (vwd * cos(0*(pi/180))) ))*dt&
+	   + vcomp2*dt
        call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
 
        xrandom = 0 
@@ -4868,31 +4810,9 @@ if (zf1(m1,i) .ge. 0) then
 !         W_ALEA = randvert * ((2.D0*kz/dt)**(0.5D0))    !!  based on Reed et al., 1995
 
 
-       ! ====== RK4 advection (subsurface, right_random=0) ======
-       ! k1: current position and time (no wind for subsurface)
-       k1u_rk = ui(1,1)
-       k1v_rk = vi(1,1)
-       ! k2: half-step
-       x_rk = x(j,i-1) + 0.5d0*dt*k1u_rk
-       y_rk = y(j,i-1) + 0.5d0*dt*k1v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), 0.5d0*dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       k2u_rk = u_rk
-       k2v_rk = v_rk
-       ! k3: half-step
-       x_rk = x(j,i-1) + 0.5d0*dt*k2u_rk
-       y_rk = y(j,i-1) + 0.5d0*dt*k2v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), 0.5d0*dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       k3u_rk = u_rk
-       k3v_rk = v_rk
-       ! k4: full step
-       x_rk = x(j,i-1) + dt*k3u_rk
-       y_rk = y(j,i-1) + dt*k3v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       k4u_rk = u_rk
-       k4v_rk = v_rk
-       x(j,i)=x(j,i-1) + (dt/6.0d0)*(k1u_rk + 2.0d0*k2u_rk + 2.0d0*k3u_rk + k4u_rk) + U_ALEA*dt
-       y(j,i)=y(j,i-1) + (dt/6.0d0)*(k1v_rk + 2.0d0*k2v_rk + 2.0d0*k3v_rk + k4v_rk) + V_ALEA*dt
-       ! ====== end RK4 ======
+       x(j,i)=x(j,i-1) + ui(1,1)*dt + U_ALEA*dt  
+
+       y(j,i)=y(j,i-1) + vi(1,1)*dt + V_ALEA*dt  
 
        call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
 
@@ -4911,31 +4831,15 @@ if (zf1(m1,i) .ge. 0) then
 !         zrandom = zrandom + ( randvert * ((2.D0*kz/dt_random)**(0.5D0)) ) *dt_random  !!  based on Reed et al., 1995
       enddo
 
-       ! ====== RK4 advection (subsurface, right_random!=0) ======
-       ! k1: current position and time (no wind for subsurface)
-       k1u_rk = ui(1,1)
-       k1v_rk = vi(1,1)
-       ! k2: half-step
-       x_rk = x(j,i-1) + 0.5d0*dt*k1u_rk
-       y_rk = y(j,i-1) + 0.5d0*dt*k1v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), 0.5d0*dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       k2u_rk = u_rk
-       k2v_rk = v_rk
-       ! k3: half-step
-       x_rk = x(j,i-1) + 0.5d0*dt*k2u_rk
-       y_rk = y(j,i-1) + 0.5d0*dt*k2v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), 0.5d0*dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       k3u_rk = u_rk
-       k3v_rk = v_rk
-       ! k4: full step
-       x_rk = x(j,i-1) + dt*k3u_rk
-       y_rk = y(j,i-1) + dt*k3v_rk
-       call get_current_velocity_rk(x_rk, y_rk, zf1(j,i-1), dt, u_rk, v_rk, uwd_rk, vwd_rk)
-       k4u_rk = u_rk
-       k4v_rk = v_rk
-       x(j,i)=x(j,i-1) + (dt/6.0d0)*(k1u_rk + 2.0d0*k2u_rk + 2.0d0*k3u_rk + k4u_rk) + xrandom
-       y(j,i)=y(j,i-1) + (dt/6.0d0)*(k1v_rk + 2.0d0*k2v_rk + 2.0d0*k3v_rk + k4v_rk) + yrandom
-       ! ====== end RK4 ======
+!!print*, 'hh', uwd, vwd
+!!print*, x(j,i-1) + ui(1,1)*dt +  xrandom, y(j,i-1) + vi(1,1)*dt +  yrandom
+!!print*, uwd, (uwd * 0.03)*dt 
+!!print*, x(j,i-1) + ui(1,1)*dt +  xrandom + (uwd * 0.03)*dt, y(j,i-1) + vi(1,1)*dt +  yrandom + (vwd * 0.03)*dt
+!stop
+
+       x(j,i)=x(j,i-1) + 1*ui(1,1)*dt +  xrandom 
+
+       y(j,i)=y(j,i-1) + 1*vi(1,1)*dt +  yrandom 
 
        call INI_AMB( LON_REF, LAT_REF, PROF_REF, LON_part(j,i), LAT_part(j,i), PROFOUT,  x(j,i),  y(j,i), ZPOS, OPT)
 
@@ -5593,7 +5497,7 @@ enddo
 print *, "Simulation time:", &
       (stop_time - start_time)/60., "minutes"
 
-!print*, stop_time, start_time
+!print*, 'total', total_particles
 !print*, 'contprob', contprob
 !print*, counttime
 
@@ -5655,342 +5559,5 @@ coastvalue=coastvalueb - coastvalue
 8856  continue
 PRINT*, 'END OF SIMULATION'
 print*, widfc, CDIF_HOR
-
-contains
-
-!=========================================================================
-! Subroutine: get_current_velocity_rk
-! Purpose: Interpolate ocean current velocity AND wind at an arbitrary
-!          (x,y) position and time offset for RK4 intermediate stages.
-!          Includes: spatial Shepard interp, vertical interp between
-!          depth levels, temporal interp with time offset, wind re-interp.
-!          Uses host association to access all model grids and parameters.
-!=========================================================================
-subroutine get_current_velocity_rk(x_pos, y_pos, z_pos, t_offset, u_out, v_out, uwd_out, vwd_out)
-  implicit none
-  double precision, intent(in)  :: x_pos, y_pos, z_pos, t_offset
-  double precision, intent(out) :: u_out, v_out, uwd_out, vwd_out
-
-  ! Local variables
-  double precision :: lon_rk_loc, lat_rk_loc
-  double precision :: xi_rk_arr(1), yi_rk_arr(1)
-  integer :: lat_in_rk(2), lon_in_rk(2), idx_lat_rk, idx_lon_rk
-  integer :: lat_in_era_rk(2), lon_in_era_rk(2), idx_lat_era_rk, idx_lon_era_rk
-  integer :: indexz_rk, vert_idx1_rk, vert_idx2_rk
-  double precision :: ui1_rk, ui2_rk, vi1_rk, vi2_rk
-  double precision :: uwind1_rk, uwind2_rk, vwind1_rk, vwind2_rk
-  double precision :: vel_interp_rk(2), ui_vec_rk(1), ts_vec_rk(1)
-  double precision :: out_int_rk(1), out_int_rk2(1)
-  double precision :: ts_ocean, ts_wind
-  double precision :: deplevel_rk(numz)
-  double precision :: inter_depth_rk(2), par_dep_rk(1)
-
-  ! Shepard interpolation local arrays (ocean)
-  double precision :: slic_lat_rk(slic*2+1, slic*2+1), slic_lon_rk(slic*2+1, slic*2+1)
-  double precision :: lat_1d_rk(siz_1d), lon_1d_rk(siz_1d)
-  double precision :: u1_1d_rk(siz_1d), u2_1d_rk(siz_1d)
-  double precision :: v1_1d_rk(siz_1d), v2_1d_rk(siz_1d)
-  ! Second vertical level arrays
-  double precision :: u1_1d_rk2(siz_1d), u2_1d_rk2(siz_1d)
-  double precision :: v1_1d_rk2(siz_1d), v2_1d_rk2(siz_1d)
-
-  ! Shepard interpolation local arrays (wind)
-  double precision :: slic_lat_w_rk(slic*2+1, slic*2+1), slic_lon_w_rk(slic*2+1, slic*2+1)
-  double precision :: lat_1d_w_rk(siz_1d), lon_1d_w_rk(siz_1d)
-  double precision :: uw1_1d_rk(siz_1d), uw2_1d_rk(siz_1d)
-  double precision :: vw1_1d_rk(siz_1d), vw2_1d_rk(siz_1d)
-
-  ! --- Compute time at this RK stage (minutes) ---
-  if (reverse .ne. 1) then
-    ts_ocean = counttimeh + t_offset / 60.0d0
-    ts_wind  = counttimeh_era + t_offset / 60.0d0
-  else
-    ts_ocean = counttimeh - t_offset / 60.0d0
-    ts_wind  = counttimeh_era - t_offset / 60.0d0
-  endif
-
-  ! --- THEORETICAL case: constant velocity everywhere ---
-  IF (THEORETICAL.EQ.1) THEN
-    u_out = uteo1
-    v_out = uteo2
-    uwd_out = uwd
-    vwd_out = vwd
-    if (reverse .eq. 1) then
-      u_out = -u_out
-      v_out = -v_out
-    endif
-    RETURN
-  ENDIF
-
-  ! --- Convert (x,y) in meters to (lon,lat) ---
-  lat_rk_loc = LAT_REF + y_pos / ((PI/180.D0) * R_TERRA)
-  lon_rk_loc = LON_REF + x_pos / ((PI/180.D0) * R_TERRA * COS(lat_rk_loc*PI/180.D0))
-  xi_rk_arr(1) = lon_rk_loc
-  yi_rk_arr(1) = lat_rk_loc
-
-  ! ========== OCEAN CURRENT INTERPOLATION ==========
-
-  ! --- Find nearest grid indices for ocean model ---
-  if (regi .eq. 1) then
-    idx_lat_rk = nint((lat_rk_loc - GRID_LAT_MIN) / GRID_DELTA_LAT) + 1
-    idx_lon_rk = nint((lon_rk_loc - GRID_LON_MIN) / GRID_DELTA_LON) + 1
-    if (idx_lat_rk < 1) idx_lat_rk = 1
-    if (idx_lat_rk > GRID_N_LAT) idx_lat_rk = GRID_N_LAT
-    if (idx_lon_rk < 1) idx_lon_rk = 1
-    if (idx_lon_rk > GRID_N_LON) idx_lon_rk = GRID_N_LON
-    lat_in_rk(1) = idx_lat_rk
-    lat_in_rk(2) = idx_lon_rk
-    lon_in_rk = lat_in_rk
-  else
-    coord_sum = abs(lat_model - lat_rk_loc) + abs(lon_model - lon_rk_loc)
-    lat_in_rk = minloc(coord_sum)
-    lon_in_rk = lat_in_rk
-  endif
-
-  ! --- Compute depth levels at this grid point ---
-  if (zlayer .eq. 1) then
-    deplevel_rk = levelsd
-  else
-    deplevel_rk = depth(lat_in_rk(1), lon_in_rk(2)) * levelsd
-  endif
-
-  ! --- Vertical index ---
-  indexz_rk = minloc(abs(deplevel_rk - z_pos), 1)
-
-  ! --- Spatial interpolation (ocean) with vertical interp ---
-  if (linear_interp .eq. 1) then
-    ! Bounds check for Shepard stencil
-    if ((lat_in_rk(1)+slic .gt. numlat) .or. (lat_in_rk(1)-slic .lt. 1) .or. &
-        (lon_in_rk(2)+slic .gt. numlon) .or. (lon_in_rk(2)-slic .lt. 1)) then
-      go to 9100  ! fallback to nearest neighbor
-    endif
-
-    slic_lat_rk = lat_model(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                            lon_in_rk(2)-slic:lon_in_rk(2)+slic)
-    slic_lon_rk = lon_model(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                            lon_in_rk(2)-slic:lon_in_rk(2)+slic)
-    lat_1d_rk = reshape(slic_lat_rk, (/siz_1d/))
-    lon_1d_rk = reshape(slic_lon_rk, (/siz_1d/))
-
-    ! Check if vertical interpolation between two levels is needed
-    if ( (indexz_rk.eq.1 .and. z_pos.ge.deplevel_rk(indexz_rk)) .or. &
-         (indexz_rk.eq.numz .and. z_pos.le.deplevel_rk(indexz_rk)) .or. &
-         (z_pos.eq.deplevel_rk(indexz_rk)) .or. (size(deplevel_rk).eq.1) ) then
-
-      ! --- Single level: Shepard at indexz_rk ---
-      u1_1d_rk = reshape(u_model1(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                 lon_in_rk(2)-slic:lon_in_rk(2)+slic, indexz_rk), (/siz_1d/))
-      u2_1d_rk = reshape(u_model2(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                 lon_in_rk(2)-slic:lon_in_rk(2)+slic, indexz_rk), (/siz_1d/))
-      v1_1d_rk = reshape(v_model1(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                 lon_in_rk(2)-slic:lon_in_rk(2)+slic, indexz_rk), (/siz_1d/))
-      v2_1d_rk = reshape(v_model2(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                 lon_in_rk(2)-slic:lon_in_rk(2)+slic, indexz_rk), (/siz_1d/))
-
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           u1_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      ui1_rk = out_int_rk(1)
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           u2_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      ui2_rk = out_int_rk(1)
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           v1_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      vi1_rk = out_int_rk(1)
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           v2_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      vi2_rk = out_int_rk(1)
-
-    else
-
-      ! --- Two-level vertical interpolation ---
-      if (z_pos .gt. deplevel_rk(indexz_rk)) then
-        vert_idx1_rk = indexz_rk
-        vert_idx2_rk = indexz_rk - 1
-      else
-        vert_idx1_rk = indexz_rk
-        vert_idx2_rk = indexz_rk + 1
-      endif
-      inter_depth_rk(1) = deplevel_rk(vert_idx1_rk)
-      inter_depth_rk(2) = deplevel_rk(vert_idx2_rk)
-      par_dep_rk(1) = z_pos
-
-      ! u component at time1: Shepard at both levels, then vertical interp
-      u1_1d_rk = reshape(u_model1(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                 lon_in_rk(2)-slic:lon_in_rk(2)+slic, vert_idx1_rk), (/siz_1d/))
-      u1_1d_rk2 = reshape(u_model1(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                  lon_in_rk(2)-slic:lon_in_rk(2)+slic, vert_idx2_rk), (/siz_1d/))
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           u1_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           u1_1d_rk2, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk2)
-      vel_interp_rk(1) = out_int_rk(1)
-      vel_interp_rk(2) = out_int_rk2(1)
-      call pwl_value_1d(size(inter_depth_rk), inter_depth_rk, vel_interp_rk, 1, par_dep_rk, ui_vec_rk)
-      ui1_rk = ui_vec_rk(1)
-
-      ! u component at time2
-      u2_1d_rk = reshape(u_model2(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                 lon_in_rk(2)-slic:lon_in_rk(2)+slic, vert_idx1_rk), (/siz_1d/))
-      u2_1d_rk2 = reshape(u_model2(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                  lon_in_rk(2)-slic:lon_in_rk(2)+slic, vert_idx2_rk), (/siz_1d/))
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           u2_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           u2_1d_rk2, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk2)
-      vel_interp_rk(1) = out_int_rk(1)
-      vel_interp_rk(2) = out_int_rk2(1)
-      call pwl_value_1d(size(inter_depth_rk), inter_depth_rk, vel_interp_rk, 1, par_dep_rk, ui_vec_rk)
-      ui2_rk = ui_vec_rk(1)
-
-      ! v component at time1
-      v1_1d_rk = reshape(v_model1(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                 lon_in_rk(2)-slic:lon_in_rk(2)+slic, vert_idx1_rk), (/siz_1d/))
-      v1_1d_rk2 = reshape(v_model1(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                  lon_in_rk(2)-slic:lon_in_rk(2)+slic, vert_idx2_rk), (/siz_1d/))
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           v1_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           v1_1d_rk2, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk2)
-      vel_interp_rk(1) = out_int_rk(1)
-      vel_interp_rk(2) = out_int_rk2(1)
-      call pwl_value_1d(size(inter_depth_rk), inter_depth_rk, vel_interp_rk, 1, par_dep_rk, ui_vec_rk)
-      vi1_rk = ui_vec_rk(1)
-
-      ! v component at time2
-      v2_1d_rk = reshape(v_model2(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                 lon_in_rk(2)-slic:lon_in_rk(2)+slic, vert_idx1_rk), (/siz_1d/))
-      v2_1d_rk2 = reshape(v_model2(lat_in_rk(1)-slic:lat_in_rk(1)+slic, &
-                  lon_in_rk(2)-slic:lon_in_rk(2)+slic, vert_idx2_rk), (/siz_1d/))
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           v2_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      call shepard_interp_2d(size(lon_1d_rk), lon_1d_rk, lat_1d_rk, &
-           v2_1d_rk2, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk2)
-      vel_interp_rk(1) = out_int_rk(1)
-      vel_interp_rk(2) = out_int_rk2(1)
-      call pwl_value_1d(size(inter_depth_rk), inter_depth_rk, vel_interp_rk, 1, par_dep_rk, ui_vec_rk)
-      vi2_rk = ui_vec_rk(1)
-
-    endif
-
-    go to 9200
-  endif
-
-9100 continue
-  ! --- Nearest neighbor fallback (ocean) ---
-  ui1_rk = u_model1(lat_in_rk(1), lon_in_rk(2), indexz_rk)
-  ui2_rk = u_model2(lat_in_rk(1), lon_in_rk(2), indexz_rk)
-  vi1_rk = v_model1(lat_in_rk(1), lon_in_rk(2), indexz_rk)
-  vi2_rk = v_model2(lat_in_rk(1), lon_in_rk(2), indexz_rk)
-
-9200 continue
-  ! --- Temporal interpolation (ocean) with time offset ---
-  ts_vec_rk(1) = ts_ocean
-
-  vel_interp_rk(1) = ui1_rk
-  vel_interp_rk(2) = ui2_rk
-  call pwl_value_1d(size(intertime), intertime, vel_interp_rk, 1, ts_vec_rk, ui_vec_rk)
-  u_out = ui_vec_rk(1)
-
-  vel_interp_rk(1) = vi1_rk
-  vel_interp_rk(2) = vi2_rk
-  call pwl_value_1d(size(intertime), intertime, vel_interp_rk, 1, ts_vec_rk, ui_vec_rk)
-  v_out = ui_vec_rk(1)
-
-  if (reverse .eq. 1) then
-    u_out = -u_out
-    v_out = -v_out
-  endif
-
-  ! ========== WIND INTERPOLATION ==========
-  if (wind_theoretical .eq. 1) then
-    ! Theoretical wind: use host values (constant, no spatial dependence)
-    uwd_out = uwd
-    vwd_out = vwd
-  else
-    ! --- Find wind grid indices ---
-    if (regi .eq. 1) then
-      idx_lat_era_rk = nint((lat_rk_loc - GRID_LAT_MINe) / GRID_DELTA_LATe) + 1
-      idx_lon_era_rk = nint((lon_rk_loc - GRID_LON_MINe) / GRID_DELTA_LONe) + 1
-      if (idx_lat_era_rk < 1) idx_lat_era_rk = 1
-      if (idx_lat_era_rk > GRID_N_LATe) idx_lat_era_rk = GRID_N_LATe
-      if (idx_lon_era_rk < 1) idx_lon_era_rk = 1
-      if (idx_lon_era_rk > GRID_N_LONe) idx_lon_era_rk = GRID_N_LONe
-      lat_in_era_rk(1) = idx_lat_era_rk
-      lat_in_era_rk(2) = idx_lon_era_rk
-      lon_in_era_rk = lat_in_era_rk
-    else
-      coord_sum_era = abs(lat_era - lat_rk_loc) + abs(lon_era - lon_rk_loc)
-      lat_in_era_rk = minloc(coord_sum_era)
-      lon_in_era_rk = lat_in_era_rk
-    endif
-
-    ! --- Spatial interpolation (wind) ---
-    if (linear_interp .eq. 1) then
-      if ((lat_in_era_rk(1)+slic .gt. numlat_era) .or. (lat_in_era_rk(1)-slic .lt. 1) .or. &
-          (lon_in_era_rk(2)+slic .gt. numlon_era) .or. (lon_in_era_rk(2)-slic .lt. 1)) then
-        go to 9300
-      endif
-
-      slic_lat_w_rk = lat_era(lat_in_era_rk(1)-slic:lat_in_era_rk(1)+slic, &
-                              lon_in_era_rk(2)-slic:lon_in_era_rk(2)+slic)
-      slic_lon_w_rk = lon_era(lat_in_era_rk(1)-slic:lat_in_era_rk(1)+slic, &
-                              lon_in_era_rk(2)-slic:lon_in_era_rk(2)+slic)
-      lat_1d_w_rk = reshape(slic_lat_w_rk, (/siz_1d/))
-      lon_1d_w_rk = reshape(slic_lon_w_rk, (/siz_1d/))
-
-      uw1_1d_rk = reshape(u10_era1(lat_in_era_rk(1)-slic:lat_in_era_rk(1)+slic, &
-                  lon_in_era_rk(2)-slic:lon_in_era_rk(2)+slic), (/siz_1d/))
-      uw2_1d_rk = reshape(u10_era2(lat_in_era_rk(1)-slic:lat_in_era_rk(1)+slic, &
-                  lon_in_era_rk(2)-slic:lon_in_era_rk(2)+slic), (/siz_1d/))
-      vw1_1d_rk = reshape(v10_era1(lat_in_era_rk(1)-slic:lat_in_era_rk(1)+slic, &
-                  lon_in_era_rk(2)-slic:lon_in_era_rk(2)+slic), (/siz_1d/))
-      vw2_1d_rk = reshape(v10_era2(lat_in_era_rk(1)-slic:lat_in_era_rk(1)+slic, &
-                  lon_in_era_rk(2)-slic:lon_in_era_rk(2)+slic), (/siz_1d/))
-
-      call shepard_interp_2d(size(lon_1d_w_rk), lon_1d_w_rk, lat_1d_w_rk, &
-           uw1_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      uwind1_rk = out_int_rk(1)
-      call shepard_interp_2d(size(lon_1d_w_rk), lon_1d_w_rk, lat_1d_w_rk, &
-           uw2_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      uwind2_rk = out_int_rk(1)
-      call shepard_interp_2d(size(lon_1d_w_rk), lon_1d_w_rk, lat_1d_w_rk, &
-           vw1_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      vwind1_rk = out_int_rk(1)
-      call shepard_interp_2d(size(lon_1d_w_rk), lon_1d_w_rk, lat_1d_w_rk, &
-           vw2_1d_rk, power, 1, xi_rk_arr, yi_rk_arr, out_int_rk)
-      vwind2_rk = out_int_rk(1)
-
-      go to 9400
-    endif
-
-  9300 continue
-    ! --- Nearest neighbor fallback (wind) ---
-    uwind1_rk = u10_era1(lat_in_era_rk(1), lon_in_era_rk(2))
-    uwind2_rk = u10_era2(lat_in_era_rk(1), lon_in_era_rk(2))
-    vwind1_rk = v10_era1(lat_in_era_rk(1), lon_in_era_rk(2))
-    vwind2_rk = v10_era2(lat_in_era_rk(1), lon_in_era_rk(2))
-
-  9400 continue
-    ! --- Temporal interpolation (wind) with time offset ---
-    ts_vec_rk(1) = ts_wind
-
-    vel_interp_rk(1) = uwind1_rk
-    vel_interp_rk(2) = uwind2_rk
-    call pwl_value_1d(size(intertime_era), intertime_era, vel_interp_rk, 1, ts_vec_rk, ui_vec_rk)
-    uwd_out = ui_vec_rk(1)
-
-    vel_interp_rk(1) = vwind1_rk
-    vel_interp_rk(2) = vwind2_rk
-    call pwl_value_1d(size(intertime_era), intertime_era, vel_interp_rk, 1, ts_vec_rk, ui_vec_rk)
-    vwd_out = ui_vec_rk(1)
-
-    if (reverse .eq. 1) then
-      uwd_out = -uwd_out
-      vwd_out = -vwd_out
-    endif
-  endif
-
-end subroutine get_current_velocity_rk
-
 end program
   
