@@ -320,6 +320,9 @@ use datetime_module
    if (trim(apist) .eq. 'OsebergBlend2006') then
    api=45.77766      !oscar Linerle   
  endif   !print*, widfc, CDIF_HOR    !print*, numparcels_dis  !print*, numparcels_dis
+   if (trim(apist) .eq. 'TROLL_RESJEKK_2005') then
+   api=45.881766      !oscar Linerle   
+ endif   !print*, widfc, CDIF_HOR    !print*, numparcels_dis  !print*, numparcels_dis
   !stop
 !  print*, year11, month11, day11, hour11, minute11, secon11
 !  print*, coupling_ind

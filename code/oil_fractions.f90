@@ -1517,8 +1517,37 @@ I = 25; FRAC_MASS_OUT(I) = 28.4600D-02
 
 	  xa=0.2
 	  xw=2.67
-   ELSE     
+   ELSE IF (API .EQ. 45.881766) THEN     !
+      print*, 'TROLL_RESJEKK_2005'
+      I = 1  ;  FRAC_MASS_OUT(I) = 0.4112D-02
+      I = 2  ;  FRAC_MASS_OUT(I) = 0.6561D-02
+      I = 3  ;  FRAC_MASS_OUT(I) = 1.1399D-02
+      I = 4  ;  FRAC_MASS_OUT(I) = 0.1900D-02
+      I = 5  ;  FRAC_MASS_OUT(I) = 1.2781D-02
+      I = 6  ;  FRAC_MASS_OUT(I) = 0.4277D-02
+      I = 7  ;  FRAC_MASS_OUT(I) = 1.6858D-02
+      I = 8  ;  FRAC_MASS_OUT(I) = 0.4606D-02
+      I = 9  ;  FRAC_MASS_OUT(I) = 1.8769D-02
+      I = 10 ;  FRAC_MASS_OUT(I) = 4.2838D-02
+      I = 11 ;  FRAC_MASS_OUT(I) = 3.2686D-02
+      I = 12 ;  FRAC_MASS_OUT(I) = 0.1127D-02
+      I = 13 ;  FRAC_MASS_OUT(I) = 6.1171D-02
+      I = 14 ;  FRAC_MASS_OUT(I) = 0.0097D-02
+      I = 15 ;  FRAC_MASS_OUT(I) = 0.3299D-02
+      I = 16 ;  FRAC_MASS_OUT(I) = 6.7708D-02
+      I = 17 ;  FRAC_MASS_OUT(I) = 0.4578D-02
+      I = 18 ;  FRAC_MASS_OUT(I) = 6.3750D-02
+      I = 19 ;  FRAC_MASS_OUT(I) = 0.2762D-02
+      I = 20 ;  FRAC_MASS_OUT(I) = 6.2899D-02
+      I = 21 ;  FRAC_MASS_OUT(I) = 3.8352D-02
+      I = 22 ;  FRAC_MASS_OUT(I) = 0.0834D-02
+      I = 23 ;  FRAC_MASS_OUT(I) = 6.9442D-02
+      I = 24 ;  FRAC_MASS_OUT(I) = 0.0778D-02
+      I = 25 ;  FRAC_MASS_OUT(I) = 46.6418D-02
 
+	  xa=0.04
+	  xw=0.9
+   ELSE 
       I = 1  ;  FRAC_MASS_OUT(I) = 1
       print*, 'Insert a Correct Oil Name (Oil column in list_oils.dat)'
       stop
